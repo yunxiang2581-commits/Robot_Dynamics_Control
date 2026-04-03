@@ -1,0 +1,31 @@
+<mujoco model="single_joint_pendulum">
+    <!-- 这是一个单关节摆的物理模型 -->
+    <compiler angle="radian"/>
+     <!-- 设置角度为弧度制 -->
+    <option timestep="0.002" gravity="0 0 -9.81"/>
+    <!--设置步长、惯性-->
+    <visual>
+        <headlight ambient="0.6 0.6 0.6" diffuse="0.4 0.4 0.4" specular="0 0 0"/>
+             <!-- 显式效果设置 -->
+    </visual>
+
+    <worldbody>
+             <!-- 世界坐标系 -->
+        <geom name="floor" type="plane" size="2 2 0.1" rgba="0.9 0.9 0.9 1"/>
+             <!-- gemo_几何体；rgba_颜色 -->
+
+        <body name="link1" pos="0 0 0.5">
+                 <!-- body_刚体；pos，表示Body的局部坐标原点 -->
+            <joint name="hinge1" type="hinge" axis="0 1 0" pos="0 0 0" damping="0"/>
+                 <!-- joint_关节；type_关节类型；axis_转动方向；damping_阻尼 -->
+            <geom name="rod" type="capsule" fromto="0 0 0 0 0 0.6" size="0.04" density="1000" rgba="0.2 0.4 0.8 1"/>
+                 <!-- gemo_杆的实体模型；type_形状，胶囊体；fromto_from to:从（000）到（000.6）；size_capsule的半径 -->
+        </body>
+    </worldbody>
+
+    <actuator>
+             <!-- actuator_动力/激励 -->
+        <motor name="motor1" joint="hinge1" gear="1"/>
+             <!-- motor_定义一个电机式执行器；作用于hinge1；gear_注入缩放系数 -->
+    </actuator>
+</mujoco>
