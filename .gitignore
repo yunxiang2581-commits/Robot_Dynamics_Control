@@ -67,3 +67,11 @@ exports/word/logs/*.log
 
 # Local Codex config/cache
 .codex/
+.codex/
+
+# Local Codex config/cache
+.codex/
+
+# Local Codex config/cache
+.codex
+.codex/
