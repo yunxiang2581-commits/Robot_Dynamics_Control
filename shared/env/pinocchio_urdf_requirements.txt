@@ -1,0 +1,8 @@
+mujoco
+pin
+casadi
+osqp
+numpy
+scipy
+matplotlib
+pandas

@@ -1,0 +1,28 @@
+URDF: /home/ubuntu/robot_proj/Pinocchio_URDF/unitree_ros/robots/h1_description/urdf/h1_with_hand.urdf
+nq=52, nv=51, njoints=47, nframes=105
+
+=== chosen frames ===
+pelvis: pelvis
+left_foot: left_ankle_link
+right_foot: right_ankle_link
+
+pelvis
+  position: [ 0.000000,  0.000000,  0.000000]
+  rotation:
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]
+
+left_ankle_link
+  position: [ 0.039468,  0.202860, -0.974200]
+  rotation:
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]
+
+right_ankle_link
+  position: [ 0.039468, -0.202860, -0.974200]
+  rotation:
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]

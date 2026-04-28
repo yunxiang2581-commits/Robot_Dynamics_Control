@@ -1,0 +1,16 @@
+services:
+  robot-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pinocchio-urdf:dev
+    container_name: pinocchio_urdf_dev
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MUJOCO_GL=osmesa
+    stdin_open: true
+    tty: true
+    command: bash
