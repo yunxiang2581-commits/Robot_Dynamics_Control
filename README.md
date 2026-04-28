@@ -4,6 +4,12 @@
 
 当前仓库处于 **准备阶段**：只建立目标、需求、任务、目录、模板和规则，不实现 FK、Jacobian、IK、QP、WBC、RL 等完整算法。
 
+当前唯一工作目录：
+
+```text
+/home/ubuntu/Robot_Dynamics_Control
+```
+
 ## 三条主线
 
 | 主线 | 名称 | 目标 |
@@ -23,6 +29,17 @@ A 项目代码、实验、配置、测试和早期根目录资产已经归入 `p
 | `projects/C_unitree_rl_mjlab_study/` | `unitree_rl_mjlab` 复现与拆解 |
 | `shared/` | 跨项目共享模型、环境和模板 |
 | `tools/export/` | 文档导出工具 |
+
+`legacy_imported/` 与 `root_imported/` 的区别：
+
+- `legacy_imported/`：从旧项目导入的历史参考材料，只用于理解旧脚本意图，不直接作为标准实现。
+- `root_imported/`、`root_imported_src/`、`root_imported_utils/`：从本仓库早期根目录归位来的 A 项目资产，后续需要逐步重构到标准 `src/`、`scripts/`、`configs/`、`tests/`。
+
+下一步建议从 A 项目第一个标准学习脚本开始：
+
+```bash
+python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
+```
 
 ## 准备阶段入口
 
