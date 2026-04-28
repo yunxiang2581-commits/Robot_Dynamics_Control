@@ -1,0 +1,25 @@
+# DLS IK 学习配置模板
+
+model:
+  # URDF 路径: 使用相对路径或替换为 /path/to/your/robot.urdf
+  urdf_path: "../../shared/robot_assets/models/your_robot.urdf"
+  # 目标 frame: 例如脚端、手端或工具 frame
+  target_frame: "left_foot"
+
+solver:
+  # 最大迭代次数: 控制 IK loop 的停止上限
+  max_iter: 100
+  # 收敛阈值: 位置误差小于该值时认为成功
+  tolerance: 0.001
+  # 阻尼系数: 用于缓解奇异点附近的数值不稳定
+  damping: 0.001
+  # 步长: 控制每次 q 更新幅度
+  step_size: 0.2
+
+target:
+  # 目标位置: 教学占位, 单位通常为米
+  position_xyz: [0.0, 0.0, 0.0]
+
+output:
+  # 输出目录: 保存误差曲线、最终 q 和文本报告
+  directory: "outputs/04_dls_ik_demo"
