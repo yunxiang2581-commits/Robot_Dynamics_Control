@@ -64,3 +64,6 @@ exports/word/combined/*.docx
 exports/word/logs/*.log
 
 .DS_Store
+
+# Local Codex config/cache
+.codex/
