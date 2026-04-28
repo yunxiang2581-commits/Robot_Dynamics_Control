@@ -30,6 +30,11 @@ A 项目代码、实验、配置、测试和早期根目录资产已经归入 `p
 | `shared/` | 跨项目共享模型、环境和模板 |
 | `tools/export/` | 文档导出工具 |
 
+根目录保留项：
+
+- `requirements.txt`：当前作为总项目环境入口，先保留在根目录；后续可以按 A/B/C 或 shared 需求拆分到 `shared/env/`。
+- `outputs/`：当前作为总输出索引保留；项目级输出应放到 `projects/*/outputs/`，根 `outputs/` 中的历史运行结果默认不进入 Git。
+
 `legacy_imported/` 与 `root_imported/` 的区别：
 
 - `legacy_imported/`：从旧项目导入的历史参考材料，只用于理解旧脚本意图，不直接作为标准实现。
