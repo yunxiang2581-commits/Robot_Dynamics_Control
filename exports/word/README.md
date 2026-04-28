@@ -2,7 +2,7 @@
 
 ## 用途
 
-本目录用于存放从 Markdown 导出的 Word 文档。Windows 优先使用 `scripts/export_md_to_docx.ps1`，Linux/macOS 或 Git Bash 可使用 `scripts/export_md_to_docx.sh`。两个脚本都通过 Pandoc 完成转换。
+本目录用于存放从 Markdown 导出的 Word 文档。Windows 优先使用 `tools/export/export_md_to_docx.ps1`，Linux/macOS 或 Git Bash 可使用 `tools/export/export_md_to_docx.sh`。两个脚本都通过 Pandoc 完成转换。
 
 ## 目录说明
 
@@ -17,13 +17,13 @@
 Windows PowerShell：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/export_md_to_docx.ps1
+powershell -ExecutionPolicy Bypass -File tools/export/export_md_to_docx.ps1
 ```
 
 Linux/macOS 或 Git Bash：
 
 ```bash
-bash scripts/export_md_to_docx.sh
+bash tools/export/export_md_to_docx.sh
 ```
 
 脚本会从仓库根目录解析路径，转换以下 Markdown 文件：
@@ -32,7 +32,8 @@ bash scripts/export_md_to_docx.sh
 | --- | --- |
 | `README.md` | 项目根 README |
 | `docs/**/*.md` | docs 下所有 Markdown 文档 |
-| `external/*.md` | external 下一级 Markdown 说明文件 |
+| `projects/*/docs/**/*.md` | A/B/C 项目文档 |
+| `projects/*/external/*.md` | B/C 外部项目说明文件 |
 
 ## 输出文件
 
