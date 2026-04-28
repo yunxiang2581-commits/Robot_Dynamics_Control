@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pinocchio Learning"
+  short_description: "Follow the migrated Pinocchio/MuJoCo robotics learning workflow."
+  default_prompt: "Use the Pinocchio learning workflow for this robotics control repository."
