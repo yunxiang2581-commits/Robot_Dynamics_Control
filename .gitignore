@@ -77,3 +77,7 @@ exports/word/logs/*.log
 # Local Codex config/cache
 .codex
 .codex/
+
+# Generated PDF exports
+exports/pdf/
+docs/00_preparation/*.pdf
