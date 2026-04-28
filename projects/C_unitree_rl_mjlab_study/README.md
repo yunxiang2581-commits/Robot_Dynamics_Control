@@ -1,14 +1,10 @@
 # C Unitree RL Mjlab Study
 
-## 中文版说明
+> English version: [README_en.md](README_en.md)
 
 本项目是 C 主线：`unitreerobotics/unitree_rl_mjlab` 复现与拆解。
 
 学习重点包括 MuJoCo、PPO、Train、Play、Sim2Real、observation、action 和 reward。当前阶段只建立项目骨架和文档入口，不提交训练日志、模型权重或大视频。
-
-## English Summary
-
-This project is for reproducing and breaking down `unitreerobotics/unitree_rl_mjlab`. It focuses on MuJoCo RL workflows, PPO, Train/Play, Sim2Real, observations, actions, and rewards.
 
 ## 文档入口
 

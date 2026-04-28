@@ -1,5 +1,7 @@
 # 仓库结构规划
 
+> English version: [05_repository_structure_plan_en.md](05_repository_structure_plan_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |

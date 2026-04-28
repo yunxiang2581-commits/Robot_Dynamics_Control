@@ -1,5 +1,7 @@
 # 环境需求文档
 
+> English version: [04_environment_requirements_en.md](04_environment_requirements_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |
@@ -63,4 +65,3 @@
 | ROS 检查日志 | `outputs/logs/ros_check.log` | ROS 版本、工作空间、依赖状态 |
 | `legged_control` 编译日志 | `outputs/logs/legged_control_build.log` | 成功或失败都保留摘要 |
 | RL 短训练日志 | `outputs/logs/rl_train_short.log` | reward、报错、运行环境 |
-

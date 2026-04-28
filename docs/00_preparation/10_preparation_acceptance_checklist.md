@@ -1,5 +1,7 @@
 # 准备阶段验收清单
 
+> English version: [10_preparation_acceptance_checklist_en.md](10_preparation_acceptance_checklist_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |

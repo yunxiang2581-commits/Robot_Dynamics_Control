@@ -71,6 +71,24 @@ pinocchio_urdf_docker/Dockerfile
 pinocchio_urdf_docker/docker-compose.yml
 ```
 
+Confirmed robot model assets now present under `shared/robot_assets/models/`:
+
+```text
+h1_description/
+  urdf/h1.urdf
+  urdf/h1_with_hand.urdf
+  mjcf/h1.xml
+  mjcf/h1_with_hand.xml
+  mjcf/scene.xml
+  mjcf/scene_with_hand_bright.xml
+  meshes/ (98 .STL/.dae files)
+  package.xml
+  README.md
+  CMakeLists.txt
+  doc/H1.png
+  launch/*
+```
+
 Small non-timestamp output samples copied to `projects/A_self_baseline/outputs/legacy_samples/`:
 
 ```text
@@ -101,11 +119,10 @@ The following requested source areas did not exist in the old project at migrati
 - `/home/ubuntu/robot_proj/Pinocchio_URDF/configs`
 - `/home/ubuntu/robot_proj/Pinocchio_URDF/docs`
 
-The following old project areas had no matching files for the requested copy rule:
+The following old project areas had no matching files for the requested copy rule at initial Step 3 execution:
 
 - `tests/`: no `.py` files found.
 - `envs/`: no `.xml` or `.md` files found.
-- `models/`: no files found during this step.
 
 ## 4. Files Skipped Because They Were Large, Generated, Or Unclear
 
@@ -145,7 +162,7 @@ outputs/task1_h1_model_check/20260421_162511/
 outputs/task1_inspect_humanoid_model/20260418_183056/
 ```
 
-No model files were found under `models/`, so no model file was copied to `shared/robot_assets/models/`.
+After the later asset sync, the selected H1 model package was confirmed under `shared/robot_assets/models/h1_description/`. Full `unitree_ros/` was still not migrated as a repository.
 
 ## 5. File Conflicts
 
@@ -176,6 +193,7 @@ Later steps should treat `projects/A_self_baseline/scripts/legacy_imported/` as 
 - [x] Old `README.md`, `AGENTS.md`, and `AGENT.MD` were copied into A legacy docs with renamed filenames.
 - [x] Environment files were copied under `shared/env/`.
 - [x] Docker-related files were copied under `shared/env/pinocchio_urdf_docker/`.
+- [x] Selected H1 robot model assets are now present under `shared/robot_assets/models/h1_description/`.
 - [x] No `.git/`, `.codex/`, `.vscode/`, `unitree_ros/`, `third_party/`, cache, virtual environment, videos, logs, weights, or training results were copied.
 - [x] No old file was refactored.
 - [x] No robot control algorithm was implemented.

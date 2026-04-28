@@ -1,5 +1,7 @@
 # Codex 工作流规则
 
+> English version: [08_codex_workflow_rules_en.md](08_codex_workflow_rules_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |

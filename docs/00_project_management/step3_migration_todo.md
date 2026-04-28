@@ -2,15 +2,24 @@
 
 ## Model Files To Confirm
 
-- `models/meshes/`: directory exists in the old project, but no files were found during this migration.
-- `models/mjcf/`: directory exists in the old project, but no files were found during this migration.
-- `models/urdf/`: directory exists in the old project, but no files were found during this migration.
+Resolved:
 
-Manual confirmation needed:
+- Selected H1 assets are now available under `shared/robot_assets/models/h1_description/`.
+- Confirmed files include:
+  - `urdf/h1.urdf`
+  - `urdf/h1_with_hand.urdf`
+  - `mjcf/h1.xml`
+  - `mjcf/h1_with_hand.xml`
+  - `mjcf/scene.xml`
+  - `mjcf/scene_with_hand_bright.xml`
+  - `meshes/` with 98 `.STL` and `.dae` files
+  - `package.xml`
 
-- Are model files stored outside `/home/ubuntu/robot_proj/Pinocchio_URDF/models/`?
-- Are the model directories intentionally empty?
-- Should selected robot descriptions be sourced later from `unitree_ros/robots/` or another external asset location?
+Remaining manual confirmation:
+
+- Whether A project should standardize on `h1.urdf` or `h1_with_hand.urdf` as the default Pinocchio model.
+- Whether `launch/`, `doc/`, `README.md`, and `CMakeLists.txt` should stay in Git or be treated as optional reference-only files later.
+- Whether other robot packages from the old `unitree_ros/robots/` tree need selective import later.
 
 ## Output Files To Confirm
 

@@ -1,5 +1,7 @@
 # 准备阶段任务总表
 
+> English version: [03_preparation_task_table_en.md](03_preparation_task_table_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |

@@ -1,0 +1,67 @@
+<mujoco model="Unitree H1 Bright">
+  <include file="h1_with_hand.xml" />
+
+  <statistic center="0 0 1.2" extent="1.8" />
+
+  <visual>
+    <headlight diffuse="1.0 1.0 1.0" ambient="0.65 0.65 0.65" specular="0.35 0.35 0.35" />
+    <rgba haze="0.02 0.02 0.03 1" />
+    <global azimuth="135" elevation="-20" />
+  </visual>
+
+  <asset>
+    <texture
+      type="skybox"
+      builtin="gradient"
+      rgb1="0.92 0.95 1.0"
+      rgb2="0.75 0.82 0.92"
+      width="512"
+      height="3072" />
+
+    <texture
+      type="2d"
+      name="groundplane"
+      builtin="checker"
+      mark="edge"
+      rgb1="0.34 0.37 0.40"
+      rgb2="0.26 0.29 0.32"
+      markrgb="0.95 0.95 0.95"
+      width="512"
+      height="512" />
+
+    <material
+      name="groundplane"
+      texture="groundplane"
+      texuniform="true"
+      texrepeat="6 6"
+      reflectance="0.35" />
+  </asset>
+
+  <worldbody>
+    <light
+      name="key"
+      pos="2.0 0.0 3.5"
+      dir="-2.0 0.0 -3.5"
+      directional="true"
+      diffuse="1.0 1.0 1.0"
+      specular="0.45 0.45 0.45" />
+
+    <light
+      name="fill"
+      pos="-2.0 1.5 2.2"
+      dir="2.0 -1.5 -2.2"
+      directional="true"
+      diffuse="0.75 0.75 0.80"
+      specular="0.20 0.20 0.22" />
+
+    <light
+      name="top"
+      pos="0.0 0.0 4.2"
+      dir="0.0 0.0 -1.0"
+      directional="true"
+      diffuse="0.85 0.85 0.85"
+      specular="0.10 0.10 0.10" />
+
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" />
+  </worldbody>
+</mujoco>

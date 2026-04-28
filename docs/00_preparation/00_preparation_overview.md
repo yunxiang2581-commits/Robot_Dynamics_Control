@@ -1,5 +1,7 @@
 # 准备阶段总览
 
+> English version: [00_preparation_overview_en.md](00_preparation_overview_en.md)
+
 > 当前阶段只做项目管理文档、目录、模板和规则；不实现 FK、Jacobian、IK、QP、WBC、RL 等算法。
 
 ## 阅读导航
@@ -76,4 +78,3 @@
 | 阶段边界 | 文档明确写出准备阶段不实现算法 |
 | 求职相关性 | 所有内容围绕机器人运动控制、动力学、仿真、优化和 RL |
 | 后续可执行性 | 后续 Codex 可以按任务表继续生成骨架和实现 |
-

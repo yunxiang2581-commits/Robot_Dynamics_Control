@@ -1,6 +1,6 @@
 # A Self Baseline
 
-## 中文版说明
+> English version: [README_en.md](README_en.md)
 
 本项目是 A 主线：自研机器人运动控制基础系统。
 
@@ -9,10 +9,6 @@
 当前状态是 TODO 教学骨架：已经建立标准脚本、模块接口、配置模板和导入资产分区，但不包含完整算法实现。
 
 本项目必须和 B/C 保持独立。不要把 B 项目的 `legged_control` 复现笔记、C 项目的强化学习训练输出或外部项目源码混入本目录。
-
-## English Summary
-
-This is the self-developed robot motion control baseline project. It uses Pinocchio, MuJoCo, and OSQP as the planned stack, and currently contains TODO learning skeletons rather than complete algorithms.
 
 ## 文档入口
 

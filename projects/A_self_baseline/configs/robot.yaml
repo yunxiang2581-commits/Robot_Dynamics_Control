@@ -2,11 +2,11 @@
 
 robot:
   # 机器人名称: 用于日志、输出目录和报告标题
-  name: "your_robot"
-  # URDF 路径: 优先使用共享资源的相对路径示例, 不要写死旧项目路径
-  urdf_path: "../../shared/robot_assets/models/your_robot.urdf"
-  # MuJoCo XML 路径: 用于后续 MuJoCo PD 或仿真实验
-  mujoco_xml_path: "../../shared/robot_assets/models/your_robot.xml"
+  name: "h1"
+  # URDF 路径: 当前已确认共享模型资产位于 h1_description 包结构下
+  urdf_path: "../../shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf"
+  # MuJoCo XML 路径: 当前默认使用明亮场景文件作为 A06 占位路径
+  mujoco_xml_path: "../../shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml"
   # package 搜索路径: 用于 Pinocchio 查找 mesh/package 资源
   package_dirs:
     - "../../shared/robot_assets/models"
@@ -17,4 +17,4 @@ frames:
   # 目标 frame 名称占位: 后续通过 01_inspect_urdf.py 人工确认
   end_effector: "left_foot"
   # base frame 名称占位: 用于检查坐标系和可视化
-  base: "base_link"
+  base: "pelvis"

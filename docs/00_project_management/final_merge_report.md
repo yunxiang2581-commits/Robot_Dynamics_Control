@@ -65,7 +65,7 @@ No file was migrated, moved, or deleted in Step 7.
 `shared/` now contains:
 
 - `shared/env/`: imported Pinocchio_URDF environment files and Docker templates.
-- `shared/robot_assets/`: placeholder model asset container.
+- `shared/robot_assets/`: shared robot model container with confirmed `models/h1_description/` assets.
 - `shared/scripts/`: shared script container.
 - `shared/templates/`: shared template container.
 
@@ -167,7 +167,7 @@ No root A project directory residue was found.
 - Step 8: clean empty root directories such as `scripts/` and `external/` if they are no longer needed, and finalize root README wording.
 - Step 8: decide whether `requirements.txt`, `outputs/`, and ignored local files should remain at root.
 - Step 9: start implementing A project `projects/A_self_baseline/scripts/01_inspect_urdf.py`.
-- Before implementation, confirm robot model source under `shared/robot_assets/models/`.
+- Before implementation, choose whether A should use `h1.urdf` or `h1_with_hand.urdf` as the default Pinocchio model.
 
 ## 14. Acceptance Checklist
 

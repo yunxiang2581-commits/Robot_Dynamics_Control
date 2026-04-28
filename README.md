@@ -1,5 +1,7 @@
 # Robot Dynamics Control
 
+> English version: [README_en.md](README_en.md)
+
 面向机器人运动控制算法实习、机器人控制算法工程师、人形机器人运动控制方向的求职 baseline。
 
 当前仓库处于 **准备阶段**：只建立目标、需求、任务、目录、模板和规则，不实现 FK、Jacobian、IK、QP、WBC、RL 等完整算法。

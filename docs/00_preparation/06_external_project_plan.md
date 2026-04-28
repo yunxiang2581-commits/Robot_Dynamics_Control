@@ -1,5 +1,7 @@
 # 开源项目计划
 
+> English version: [06_external_project_plan_en.md](06_external_project_plan_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |

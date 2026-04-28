@@ -1,5 +1,7 @@
 # 风险与备选方案
 
+> English version: [09_risk_and_fallback_plan_en.md](09_risk_and_fallback_plan_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |
@@ -56,4 +58,3 @@
 | PREP-011 | 识别高风险项 | 风险表 | 环境、编译、训练、模型、大文件都有覆盖 |
 | PREP-011 | 制定 fallback | 备选方案列 | 任一高风险发生时项目仍可推进 |
 | PREP-011 | 规划日志 | `outputs/logs/` | 成功和失败都能形成复现记录 |
-

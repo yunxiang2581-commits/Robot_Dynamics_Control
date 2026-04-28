@@ -1,5 +1,7 @@
 # 机器人模型与资源计划
 
+> English version: [07_robot_model_and_asset_plan_en.md](07_robot_model_and_asset_plan_en.md)
+
 ## 阅读导航
 
 | 上一篇 | 当前文档 | 下一篇 |
@@ -40,6 +42,32 @@
 | A7-A10 | 带关节限位的模型 | 适合 IK 和 QP 约束 | 先用低自由度模型 |
 | B | `legged_control` 原项目模型 | 与 NMPC/WBC 工程一致 | 只读配置和文档，不强制运行 |
 | C | Unitree MJCF 模型 | 与 RL 环境一致 | 先跑官方 Play 或短训练 |
+
+## 当前已落地资产
+
+当前仓库已经确认落地以下共享模型资源：
+
+```text
+shared/robot_assets/models/h1_description/
+```
+
+其中包括：
+
+- `urdf/h1.urdf`
+- `urdf/h1_with_hand.urdf`
+- `mjcf/h1.xml`
+- `mjcf/h1_with_hand.xml`
+- `mjcf/scene.xml`
+- `mjcf/scene_with_hand_bright.xml`
+- `meshes/` 目录
+- `package.xml`
+
+A 项当前推荐默认路径：
+
+- Pinocchio: `shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf`
+- MuJoCo: `shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml`
+
+后续如果要进一步瘦身仓库，可再决定是否保留 `launch/`、`doc/`、`README.md` 和 `CMakeLists.txt` 这类 ROS 参考文件。
 
 ## Git 忽略策略
 

@@ -1,14 +1,10 @@
 # B Legged Control Study
 
-## 中文版说明
+> English version: [README_en.md](README_en.md)
 
 本项目是 B 主线：`qiayuanl/legged_control` 复现与拆解。
 
 学习重点包括 NMPC、WBC、QP、状态估计和 ROS control。当前阶段只建立项目骨架和文档入口，不提交大型外部仓库，也不存放 A 项目自研代码。
-
-## English Summary
-
-This project is for reproducing and breaking down `qiayuanl/legged_control`. It focuses on NMPC, WBC, QP, state estimation, and ROS control.
 
 ## 文档入口
 
