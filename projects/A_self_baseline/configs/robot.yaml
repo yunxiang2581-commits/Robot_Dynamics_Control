@@ -1,20 +1,48 @@
-# A 项目机器人模型配置模板
+# A01 inspect URDF 配置模板
+# 说明:
+# 1. 本文件服务于 A pipeline 的第一步: A01 inspect URDF。
+# 2. 当前是学习型 TODO 骨架, 真实 URDF 需要用户确认或填入。
+# 3. 不要写死旧项目绝对路径; 优先使用 monorepo 相对路径或明确占位符。
 
-robot:
-  # 机器人名称: 用于日志、输出目录和报告标题
-  name: "h1"
-  # URDF 路径: 当前已确认共享模型资产位于 h1_description 包结构下
-  urdf_path: "../../shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf"
-  # MuJoCo XML 路径: 当前默认使用明亮场景文件作为 A06 占位路径
-  mujoco_xml_path: "../../shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml"
-  # package 搜索路径: 用于 Pinocchio 查找 mesh/package 资源
-  package_dirs:
-    - "../../shared/robot_assets/models"
-  # 是否使用浮动基: humanoid/legged 常用 true, 固定基教学模型可用 false
-  floating_base: true
+# 机器人名称:
+# - 用途: 日志标题、报告标题、输出摘要中的模型标识。
+# - 注意: 这里只是名称标签, 不会自动决定 URDF 路径。
+robot_name: "h1"
 
-frames:
-  # 目标 frame 名称占位: 后续通过 01_inspect_urdf.py 人工确认
-  end_effector: "left_foot"
-  # base frame 名称占位: 用于检查坐标系和可视化
-  base: "pelvis"
+# URDF 路径:
+# - 用途: A01 读取并检查的主模型描述文件。
+# - 当前示例: 使用 monorepo 中已存在的 H1 共享模型。
+# - 真实 URDF 需要用户确认或填入。
+urdf_path: "../../shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf"
+
+# package 搜索路径:
+# - 用途: Pinocchio 或后续几何工具查找 package://.../meshes 等资源。
+# - 当前示例: 指向 shared/robot_assets/models。
+package_dirs:
+  - "../../shared/robot_assets/models"
+
+# 是否使用浮动基:
+# - true: humanoid/legged 常用, 对应 pin.JointModelFreeFlyer。
+# - false: 固定基教学模型可用。
+free_flyer: true
+
+# frame 关键词:
+# - 用途: A01 后续用这些关键词在 model.frames 中搜索候选目标 frame。
+# - 真实关键词需要用户按机器人模型结构确认。
+frame_keywords:
+  - "foot"
+  - "ankle"
+  - "pelvis"
+  - "torso"
+
+# 输出目录:
+# - 用途: A01 标准报告和 JSON 摘要输出的基准目录。
+# - 当前脚本会固定生成 reports/cache 子路径, 这里保留为学习配置项。
+output_dir: "../outputs"
+
+# 备注:
+# - 用途: 记录当前模型来源、是否需要手动确认 frame 名、是否需要切换到 h1.urdf。
+notes:
+  - "真实 URDF 需要用户确认或填入。"
+  - "如果后续只关注无手版本, 可以改为 h1.urdf。"
+  - "A01 当前阶段只做 TODO 学习骨架, 不完整实现 URDF 加载流程。"

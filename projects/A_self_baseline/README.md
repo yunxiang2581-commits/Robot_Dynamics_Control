@@ -94,6 +94,19 @@ python projects/A_self_baseline/scripts/07_mini_wbc_qp_demo.py --config projects
 - `configs/mujoco_pd.yaml`：MuJoCo PD 跟踪参数模板。
 - `configs/mini_wbc.yaml`：Mini-WBC QP 结构模板。
 
+## A01 Inspect URDF
+
+A01 是整个 A pipeline 的第一环, 负责先把 URDF 路径、模型维度、joint 名称和 frame 名称检查清楚。
+
+- 当前状态: 学习型 TODO 骨架。
+- 标准入口: `scripts/01_inspect_urdf.py`
+- 可复用模块: `src/robot_baseline/model_loader.py`
+- 配置: `configs/robot.yaml`
+- 文档: `docs/01_inspect_urdf.md`
+- legacy 参考: `scripts/legacy_imported/task1_inspect_humanoid_model.py`
+
+A01 当前不会完整跑通 Pinocchio 加载流程, 而是先把路径定位、候选 URDF 搜索、模型摘要和 frame 搜索的学习框架搭好。
+
 ## 当前状态
 
 当前 A 项目是 TODO 教学骨架。脚本和模块已经定义入口、函数签名、中文 TODO 和验证预期，但尚未实现完整 FK、Jacobian、IK、QP、WBC 或 MuJoCo 控制算法。
