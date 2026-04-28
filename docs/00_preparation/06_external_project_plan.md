@@ -19,12 +19,12 @@
 
 ## 开源项目准备表
 
-| 开源项目 | 类型 | 准备阶段目标 | 后续实际任务 | 准备阶段产物 |
-| --- | --- | --- | --- | --- |
-| `qiayuanl/legged_control` | 传统模型控制 | 明确它用于 NMPC/WBC/状态估计学习 | 复现、拆解架构、读源码、对照 Mini-WBC | `docs/02_legged_control/README.md`、`external/legged_control_README.md` |
-| `unitreerobotics/unitree_rl_mjlab` | 强化学习控制 | 明确它用于 MuJoCo RL、Train/Play/Sim2Real 学习 | 跑 Play、拆 obs/action/reward、理解部署 | `docs/03_unitree_rl_mjlab/README.md`、`external/unitree_rl_mjlab_README.md` |
-| OCS2 | 辅助参考 | 作为 NMPC 求解器体系参考 | 后续阅读，不作为第一主线 | 在 B 文档中列为参考 |
-| Unitree RL Lab | 后续扩展 | 作为 IsaacLab 方向扩展 | 第一版不主攻 | 在 C 文档中列为扩展 |
+| 开源项目 | 类型 | 准备阶段目标 | 准备阶段产物 |
+| --- | --- | --- | --- |
+| `qiayuanl/legged_control` | 传统模型控制 | 明确它用于 NMPC/WBC/状态估计学习 | `projects/B_legged_control_study/docs/`、`projects/B_legged_control_study/external/` |
+| `unitreerobotics/unitree_rl_mjlab` | 强化学习控制 | 明确它用于 MuJoCo RL、Train/Play/Sim2Real 学习 | `projects/C_unitree_rl_mjlab_study/docs/`、`projects/C_unitree_rl_mjlab_study/external/` |
+| OCS2 | 辅助参考 | 作为 NMPC 求解器体系参考 | 在 B 文档中列为参考 |
+| Unitree RL Lab | 后续扩展 | 作为 IsaacLab 方向扩展 | 在 C 文档中列为扩展 |
 
 ## `legged_control` 使用计划
 
@@ -52,7 +52,6 @@
 
 | 任务编号 | 任务 | 输出 | 验收标准 |
 | --- | --- | --- | --- |
-| PREP-008 | 定义开源项目用途 | 本文件和 `external/` 说明 | 不把开源项目当成黑盒 |
+| PREP-008 | 定义开源项目用途 | 本文件和 B/C `external/` 说明 | 不把开源项目当成黑盒 |
 | PREP-008 | 定义阅读和复现目标 | B/C 项 README | 后续能按目标拆解源码和日志 |
 | PREP-008 | 定义限制 | 本文件限制说明 | 准备阶段不下载大型仓库 |
-

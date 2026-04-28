@@ -22,13 +22,13 @@
 
 A 项目代码、实验、配置、测试和早期根目录资产已经归入 `projects/A_self_baseline/`。根目录不再直接放 A 项目的控制代码或实验入口。
 
-| 路径 | 说明 |
-| --- | --- |
-| `projects/A_self_baseline/` | 自研机器人运动控制基础系统 |
-| `projects/B_legged_control_study/` | `legged_control` 复现与拆解 |
-| `projects/C_unitree_rl_mjlab_study/` | `unitree_rl_mjlab` 复现与拆解 |
-| `shared/` | 跨项目共享模型、环境和模板 |
-| `tools/export/` | 文档导出工具 |
+- [A 自研机器人运动控制基础系统](projects/A_self_baseline/README.md)：代码、脚本、配置、测试都在 `projects/A_self_baseline/`。
+- [B legged_control 复现与拆解](projects/B_legged_control_study/README.md)：复现笔记和外部项目说明都在 `projects/B_legged_control_study/`。
+- [C unitree_rl_mjlab 复现与拆解](projects/C_unitree_rl_mjlab_study/README.md)：复现笔记和强化学习项目说明都在 `projects/C_unitree_rl_mjlab_study/`。
+- `shared/`：放共享环境、机器人模型资源和模板。
+- `tools/`：放仓库级工具，例如 `tools/export/`。
+- `docs/00_preparation/`：总项目准备阶段文档。
+- `docs/00_project_management/`：迁移和项目管理记录。
 
 根目录保留项：
 
@@ -38,7 +38,7 @@ A 项目代码、实验、配置、测试和早期根目录资产已经归入 `p
 `legacy_imported/` 与 `root_imported/` 的区别：
 
 - `legacy_imported/`：从旧项目导入的历史参考材料，只用于理解旧脚本意图，不直接作为标准实现。
-- `root_imported/`、`root_imported_src/`、`root_imported_utils/`：从本仓库早期根目录归位来的 A 项目资产，后续需要逐步重构到标准 `src/`、`scripts/`、`configs/`、`tests/`。
+- `root_imported/`、`root_imported_src/`、`root_imported_utils/`：从本仓库早期根目录归位来的 A 项目资产，后续需要逐步重构到标准 `src/`、`projects/A_self_baseline/scripts/`、`projects/A_self_baseline/configs/`、`projects/A_self_baseline/tests/`。
 
 下一步建议从 A 项目第一个标准学习脚本开始：
 
@@ -48,19 +48,28 @@ python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
 
 ## 准备阶段入口
 
-| 文档 | 说明 |
-| --- | --- |
-| [00_preparation_overview.md](docs/00_preparation/00_preparation_overview.md) | 准备阶段总览 |
-| [01_job_target_and_skill_matrix.md](docs/00_preparation/01_job_target_and_skill_matrix.md) | 求职目标与能力矩阵 |
-| [02_three_project_scope.md](docs/00_preparation/02_three_project_scope.md) | 三总项目范围说明 |
-| [03_preparation_task_table.md](docs/00_preparation/03_preparation_task_table.md) | 准备阶段任务总表 |
-| [04_environment_requirements.md](docs/00_preparation/04_environment_requirements.md) | 环境需求文档 |
-| [05_repository_structure_plan.md](docs/00_preparation/05_repository_structure_plan.md) | 仓库结构规划 |
-| [06_external_project_plan.md](docs/00_preparation/06_external_project_plan.md) | 开源项目计划 |
-| [07_robot_model_and_asset_plan.md](docs/00_preparation/07_robot_model_and_asset_plan.md) | 机器人模型与资源计划 |
-| [08_codex_workflow_rules.md](docs/00_preparation/08_codex_workflow_rules.md) | Codex 工作流规则 |
-| [09_risk_and_fallback_plan.md](docs/00_preparation/09_risk_and_fallback_plan.md) | 风险与备选方案 |
-| [10_preparation_acceptance_checklist.md](docs/00_preparation/10_preparation_acceptance_checklist.md) | 准备阶段验收清单 |
+### 总览与目标
+
+- [准备阶段总览](docs/00_preparation/00_preparation_overview.md)
+- [求职目标与能力矩阵](docs/00_preparation/01_job_target_and_skill_matrix.md)
+- [三总项目范围说明](docs/00_preparation/02_three_project_scope.md)
+
+### 任务、环境与结构
+
+- [准备阶段任务总表](docs/00_preparation/03_preparation_task_table.md)
+- [环境需求文档](docs/00_preparation/04_environment_requirements.md)
+- [仓库结构规划](docs/00_preparation/05_repository_structure_plan.md)
+
+### 外部项目、资源与规则
+
+- [开源项目计划](docs/00_preparation/06_external_project_plan.md)
+- [机器人模型与资源计划](docs/00_preparation/07_robot_model_and_asset_plan.md)
+- [Codex 工作流规则](docs/00_preparation/08_codex_workflow_rules.md)
+
+### 风险与验收
+
+- [风险与备选方案](docs/00_preparation/09_risk_and_fallback_plan.md)
+- [准备阶段验收清单](docs/00_preparation/10_preparation_acceptance_checklist.md)
 
 ## 推荐推进顺序
 
@@ -90,7 +99,7 @@ python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
 
 ## 导出 Word 文档
 
-本仓库提供 Pandoc 导出脚本，可把根 `README.md`、`docs/**/*.md` 和 `external/*.md` 转换为 Word 文档。
+本仓库提供 Pandoc 导出脚本，可把根 `README.md`、`docs/**/*.md` 和项目文档转换为 Word 文档。
 
 | 项目 | 说明 |
 | --- | --- |

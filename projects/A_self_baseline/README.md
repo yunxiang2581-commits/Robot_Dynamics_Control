@@ -1,79 +1,89 @@
 # A Self Baseline
 
-This project is the self-developed baseline system for robot motion control.
+## 中文版说明
 
-The target stack is Pinocchio + MuJoCo + OSQP. Later stages are expected to include URDF loading, FK, Jacobian, IK, QP-IK, MuJoCo PD control, and a Mini-WBC learning path.
+本项目是 A 主线：自研机器人运动控制基础系统。
 
-The current stage only creates the project skeleton. It does not contain migrated legacy assets or implemented control algorithms yet.
+目标技术栈是 Pinocchio + MuJoCo + OSQP。后续学习链路包括 URDF 加载、FK、Jacobian、IK、QP-IK、MuJoCo PD 控制和教学版 Mini-WBC。
 
-This project must stay independent from B and C. Do not mix reproduction notes, external study code, or RL training outputs from the other projects into this directory.
+当前状态是 TODO 教学骨架：已经建立标准脚本、模块接口、配置模板和导入资产分区，但不包含完整算法实现。
 
-## Document Entry
+本项目必须和 B/C 保持独立。不要把 B 项目的 `legged_control` 复现笔记、C 项目的强化学习训练输出或外部项目源码混入本目录。
 
-- `docs/README.md`: A self-developed baseline project notes migrated from the root project docs.
-- `docs/legacy_imported/README_from_Pinocchio_URDF.md`: legacy README imported from the old Pinocchio_URDF project for reference.
-- `docs/legacy_imported/AGENTS_from_Pinocchio_URDF.md`: legacy agent guidance imported from the old Pinocchio_URDF project.
-- `docs/legacy_imported/AGENT_from_Pinocchio_URDF.md`: legacy agent guidance imported from the old Pinocchio_URDF project.
-- `docs/legacy_script_mapping.md`: mapping from imported legacy scripts to standard A learning scripts.
-- `docs/self_baseline_learning_scripts_plan.md`: implementation plan for the standard TODO learning scripts.
+## English Summary
 
-## Standard Learning Scripts
+This is the self-developed robot motion control baseline project. It uses Pinocchio, MuJoCo, and OSQP as the planned stack, and currently contains TODO learning skeletons rather than complete algorithms.
 
-- `scripts/01_inspect_urdf.py`: inspect URDF model nq, nv, joints, and frames.
-- `scripts/02_fk_frame_pose.py`: TODO entry for target frame forward kinematics.
-- `scripts/03_jacobian_fd_check.py`: TODO entry for Jacobian finite-difference validation.
-- `scripts/04_dls_ik_demo.py`: TODO entry for Damped Least Squares IK.
-- `scripts/05_qp_ik_joint_limit_demo.py`: TODO entry for constrained QP-IK.
-- `scripts/06_mujoco_pd_tracking.py`: TODO entry for MuJoCo joint PD tracking.
-- `scripts/07_mini_wbc_qp_demo.py`: TODO entry for teaching Mini-WBC QP structure.
+## 文档入口
 
-## Source Modules
+- `docs/README.md`：A 项目文档入口。
+- `docs/legacy_imported/README_from_Pinocchio_URDF.md`：从旧 Pinocchio_URDF 项目导入的 README 参考。
+- `docs/legacy_imported/AGENTS_from_Pinocchio_URDF.md`：从旧项目导入的 agent 说明。
+- `docs/legacy_imported/AGENT_from_Pinocchio_URDF.md`：从旧项目导入的 agent 说明。
+- `docs/legacy_script_mapping.md`：legacy 脚本到 A 标准学习脚本的映射表。
+- `docs/self_baseline_learning_scripts_plan.md`：A 标准 TODO 学习脚本规划。
 
-- `src/robot_baseline/model_loader.py`: Pinocchio model loading and summary TODOs.
-- `src/robot_baseline/kinematics.py`: FK and frame candidate TODOs.
-- `src/robot_baseline/jacobian_check.py`: Jacobian and finite-difference TODOs.
-- `src/robot_baseline/ik.py`: DLS IK TODOs.
-- `src/robot_baseline/qp_ik.py`: constrained QP-IK TODOs.
-- `src/robot_baseline/pd_controller.py`: joint PD torque TODO.
-- `src/robot_baseline/mini_wbc.py`: teaching Mini-WBC QP TODOs.
-- `src/robot_baseline/metrics.py`: error, CSV, and plot helper TODOs.
+本项目自己的文档目录是 `projects/A_self_baseline/docs/`。
 
-## Config Files
+## 标准学习脚本
 
-- `configs/robot.yaml`: robot model path and frame placeholders.
-- `configs/ik.yaml`: DLS IK solver template.
-- `configs/qp_ik.yaml`: constrained QP-IK template.
-- `configs/mujoco_pd.yaml`: MuJoCo PD tracking template.
-- `configs/mini_wbc.yaml`: Mini-WBC QP structure template.
+- `scripts/01_inspect_urdf.py`：检查 URDF 模型的 `nq`、`nv`、joint 和 frame。
+- `scripts/02_fk_frame_pose.py`：目标 frame 正运动学 TODO 入口。
+- `scripts/03_jacobian_fd_check.py`：Jacobian 有限差分验证 TODO 入口。
+- `scripts/04_dls_ik_demo.py`：Damped Least Squares IK TODO 入口。
+- `scripts/05_qp_ik_joint_limit_demo.py`：带关节约束的 QP-IK TODO 入口。
+- `scripts/06_mujoco_pd_tracking.py`：MuJoCo 关节 PD 跟踪 TODO 入口。
+- `scripts/07_mini_wbc_qp_demo.py`：教学版 Mini-WBC QP 结构 TODO 入口。
 
-## Current Status
+## 源码模块
 
-The current A project is a TODO teaching skeleton. Scripts and modules define entry points, signatures, comments, and validation expectations, but they do not implement full FK, Jacobian, IK, QP, WBC, or MuJoCo control algorithms.
+- `src/robot_baseline/model_loader.py`：Pinocchio 模型加载和摘要 TODO。
+- `src/robot_baseline/kinematics.py`：FK 和 frame 候选查询 TODO。
+- `src/robot_baseline/jacobian_check.py`：Jacobian 与有限差分验证 TODO。
+- `src/robot_baseline/ik.py`：DLS IK TODO。
+- `src/robot_baseline/qp_ik.py`：带约束 QP-IK TODO。
+- `src/robot_baseline/pd_controller.py`：关节 PD 力矩 TODO。
+- `src/robot_baseline/mini_wbc.py`：教学版 Mini-WBC QP TODO。
+- `src/robot_baseline/metrics.py`：误差、CSV 和绘图辅助 TODO。
 
-## Role Of legacy_imported
+## 配置文件
 
-`legacy_imported/` stores old project scripts and documents as references. Do not edit those files directly during standard implementation. Use them to understand the learning intent, then implement clean A project code in `scripts/` and `src/robot_baseline/`.
+- `configs/robot.yaml`：机器人模型路径和关键 frame 占位。
+- `configs/ik.yaml`：DLS IK 参数模板。
+- `configs/qp_ik.yaml`：带约束 QP-IK 参数模板。
+- `configs/mujoco_pd.yaml`：MuJoCo PD 跟踪参数模板。
+- `configs/mini_wbc.yaml`：Mini-WBC QP 结构模板。
 
-## Role Of root_imported
+## 当前状态
 
-`root_imported/`, `root_imported_src/`, and `root_imported_utils/` contain files moved from the new repository's early root-level A project layout. They are not yet the standard A implementation.
+当前 A 项目是 TODO 教学骨架。脚本和模块已经定义入口、函数签名、中文 TODO 和验证预期，但尚未实现完整 FK、Jacobian、IK、QP、WBC 或 MuJoCo 控制算法。
 
-These files should be reviewed gradually and then refactored into the standard locations:
+## legacy_imported 的作用
 
-- reusable library code -> `src/robot_baseline/`
-- learning entries -> `scripts/`
-- robot/env templates -> `configs/` or `envs/`
-- experiments -> `experiments/`
-- tests -> `tests/`
+`legacy_imported/` 保存从旧项目导入的历史脚本和文档，只作为参考材料。标准实现时不要直接修改这些文件，应先理解旧脚本意图，再在 `scripts/` 和 `src/robot_baseline/` 中实现干净版本。
 
-Do not mix these imported files into the standard skeleton until their purpose and dependencies are clear.
+标准 TODO 脚本在 `scripts/`；标准模块在 `src/robot_baseline/`。
 
-## Recommended Implementation Order
+## root_imported 的作用
 
-1. Inspect URDF and confirm model/frame names.
-2. Implement FK frame pose.
-3. Implement Jacobian and finite-difference validation.
-4. Implement DLS IK.
-5. Implement constrained QP-IK.
-6. Implement MuJoCo PD tracking.
-7. Implement Mini-WBC QP structure.
+`root_imported/`、`root_imported_src/` 和 `root_imported_utils/` 保存从本仓库早期根目录归位来的 A 项目资产。它们还不是标准 A 实现。
+
+后续应逐步审阅这些文件，再重构到标准位置：
+
+- 可复用库代码 -> `src/robot_baseline/`
+- 学习入口脚本 -> `scripts/`
+- 机器人或环境模板 -> `configs/` 或 `envs/`
+- 实验入口 -> `experiments/`
+- 测试 -> `tests/`
+
+在用途和依赖明确前，不要把这些导入文件混入标准骨架。
+
+## 推荐实现顺序
+
+1. 检查 URDF 并确认模型、joint 和 frame 名称。
+2. 实现 FK frame pose。
+3. 实现 Jacobian 和有限差分验证。
+4. 实现 DLS IK。
+5. 实现带约束 QP-IK。
+6. 实现 MuJoCo PD 跟踪。
+7. 实现 Mini-WBC QP 结构。

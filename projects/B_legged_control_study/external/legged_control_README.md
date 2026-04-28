@@ -27,7 +27,6 @@
 
 | 内容 | 路径 |
 | --- | --- |
-| 项目阅读入口 | `docs/02_legged_control/README.md` |
-| 环境和编译日志摘要 | `outputs/logs/legged_control_build.log` |
+| 项目阅读入口 | `projects/B_legged_control_study/docs/README.md` |
+| 环境和编译日志摘要 | `projects/B_legged_control_study/reproduce_logs/` |
 | 自研对照文档 | `docs/04_compare/` |
-

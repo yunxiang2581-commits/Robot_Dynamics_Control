@@ -56,7 +56,7 @@
 | --- | --- | --- | --- |
 | PREP-001 | 创建准备阶段目录 | `docs/00_preparation/` | 目录存在且包含本阶段文档 |
 | PREP-002 | 编写准备阶段总览 | 本文件 | 能说明当前还没进入算法实现 |
-| PREP-003 | 创建后续占位目录 | `docs/01_self_baseline/` 等 | A/B/C 目录结构可见 |
+| PREP-003 | 创建后续占位目录 | `projects/A_self_baseline/docs/` 等 | A/B/C 目录结构可见 |
 | PREP-004 | 建立大文件规则 | `.gitignore` | 视频、日志、权重、缓存不会默认提交 |
 
 ## 输出产物
@@ -65,8 +65,8 @@
 | --- | --- |
 | 准备阶段文档入口 | `docs/00_preparation/` |
 | 根 README | `README.md` |
-| 开源项目占位说明 | `external/legged_control_README.md`、`external/unitree_rl_mjlab_README.md` |
-| 后续阶段占位目录 | `docs/01_self_baseline/`、`docs/02_legged_control/`、`docs/03_unitree_rl_mjlab/` |
+| 开源项目占位说明 | `projects/B_legged_control_study/external/legged_control_README.md`、`projects/C_unitree_rl_mjlab_study/external/unitree_rl_mjlab_README.md` |
+| 后续阶段占位目录 | `projects/A_self_baseline/docs/`、`projects/B_legged_control_study/docs/`、`projects/C_unitree_rl_mjlab_study/docs/` |
 
 ## 验收标准
 

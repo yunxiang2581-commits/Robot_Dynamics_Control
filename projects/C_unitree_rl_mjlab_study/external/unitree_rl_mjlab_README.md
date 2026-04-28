@@ -27,7 +27,6 @@
 
 | 内容 | 路径 |
 | --- | --- |
-| 项目阅读入口 | `docs/03_unitree_rl_mjlab/README.md` |
-| Play 或短训练日志摘要 | `outputs/logs/rl_train_short.log` |
+| 项目阅读入口 | `projects/C_unitree_rl_mjlab_study/docs/README.md` |
+| Play 或短训练日志摘要 | `projects/C_unitree_rl_mjlab_study/reproduce_logs/` |
 | 模型控制与 RL 对比 | `docs/04_compare/` |
-

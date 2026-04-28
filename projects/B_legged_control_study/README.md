@@ -1,13 +1,20 @@
 # B Legged Control Study
 
-This project is for reproducing and breaking down `qiayuanl/legged_control`.
+## 中文版说明
 
-The study focus is NMPC, WBC, QP, state estimation, and ROS control.
+本项目是 B 主线：`qiayuanl/legged_control` 复现与拆解。
 
-The current stage only creates the project skeleton. It does not contain reproduced code or migrated assets yet.
+学习重点包括 NMPC、WBC、QP、状态估计和 ROS control。当前阶段只建立项目骨架和文档入口，不提交大型外部仓库，也不存放 A 项目自研代码。
 
-Do not store A project self-developed baseline code here. Do not directly commit large external repositories into this directory.
+## English Summary
 
-## Document Entry
+This project is for reproducing and breaking down `qiayuanl/legged_control`. It focuses on NMPC, WBC, QP, state estimation, and ROS control.
 
-- `docs/README.md`: B legged_control study notes migrated from the root project docs.
+## 文档入口
+
+- `docs/README.md`：B 项目复现与拆解文档入口。
+- `external/legged_control_README.md`：外部项目用途和参考说明。
+
+本项目自己的复现文档目录是 `projects/B_legged_control_study/docs/`。
+
+外部项目说明放在 `projects/B_legged_control_study/external/`。不直接提交大型外部仓库。

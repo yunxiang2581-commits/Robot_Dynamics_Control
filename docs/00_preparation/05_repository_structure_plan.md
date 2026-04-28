@@ -14,51 +14,43 @@
 
 | 项目 | 说明 |
 | --- | --- |
-| 当前重点目录 | `docs/00_preparation/` |
-| 后续 A/B/C 入口 | `docs/01_self_baseline/`、`docs/02_legged_control/`、`docs/03_unitree_rl_mjlab/` |
-| 代码目录状态 | `src/robot_baseline/` 只放占位文件 |
-| 输出目录规则 | `outputs/` 用于图、视频、日志、报告；大文件默认忽略 |
+| 当前重点目录 | `docs/00_preparation/`、`docs/00_project_management/` |
+| A/B/C 入口 | `projects/A_self_baseline/`、`projects/B_legged_control_study/`、`projects/C_unitree_rl_mjlab_study/` |
+| 代码目录状态 | A 标准 TODO 模块在 `projects/A_self_baseline/src/robot_baseline/` |
+| 输出目录规则 | 根 `outputs/` 作为总输出索引；项目级输出放 `projects/*/outputs/` |
 
 ## 目录结构准备表
 
 | 目录 | 是否创建 | 用途 | 注意事项 |
 | --- | --- | --- | --- |
 | `docs/00_preparation/` | 是 | 准备阶段全部文档 | 当前阶段重点 |
-| `docs/01_self_baseline/` | 是 | A 项目文档占位 | 暂不写算法细节 |
-| `docs/02_legged_control/` | 是 | B 项目文档占位 | 只放阅读和复现模板 |
-| `docs/03_unitree_rl_mjlab/` | 是 | C 项目文档占位 | 只放 RL 拆解模板 |
+| `projects/A_self_baseline/docs/` | 是 | A 项目文档占位 | 暂不写算法细节 |
+| `projects/B_legged_control_study/docs/` | 是 | B 项目文档占位 | 只放阅读和复现模板 |
+| `projects/C_unitree_rl_mjlab_study/docs/` | 是 | C 项目文档占位 | 只放 RL 拆解模板 |
 | `docs/04_compare/` | 是 | 模型控制 vs RL 对比 | 准备阶段放模板 |
 | `docs/interview/` | 是 | 面试讲稿 | 准备阶段放模板 |
-| `src/robot_baseline/` | 可创建 | 后续自研代码 | 只放 `__init__.py` 和 README |
-| `scripts/` | 可创建 | 后续运行脚本 | 准备阶段不写核心算法 |
-| `configs/` | 可创建 | 参数配置 | 可放空模板说明 |
-| `external/` | 是 | 开源项目说明 | 不下载大仓库 |
+| `projects/A_self_baseline/src/robot_baseline/` | 可创建 | 后续自研代码 | 只放 `__init__.py` 和 README |
+| `projects/A_self_baseline/scripts/` | 可创建 | 后续运行脚本 | 准备阶段不写核心算法 |
+| `projects/A_self_baseline/configs/` | 可创建 | 参数配置 | 可放空模板说明 |
+| `projects/B_legged_control_study/external/` | 是 | B 外部项目说明 | 不下载大仓库 |
+| `projects/C_unitree_rl_mjlab_study/external/` | 是 | C 外部项目说明 | 不下载大仓库 |
 | `outputs/` | 是 | 图、视频、日志、报告 | 配合 `.gitignore` |
-| `tests/` | 可创建 | 后续测试 | 准备阶段只放 README |
+| `projects/A_self_baseline/tests/` | 可创建 | 后续测试 | 准备阶段只放 README |
 
 ## 推荐最终结构
 
 ```text
-.
-├── README.md
+Robot_Dynamics_Control/
+├── projects/
+│   ├── A_self_baseline/
+│   ├── B_legged_control_study/
+│   └── C_unitree_rl_mjlab_study/
+├── shared/
+├── tools/
 ├── docs/
-│   ├── 00_preparation/
-│   ├── 01_self_baseline/
-│   ├── 02_legged_control/
-│   ├── 03_unitree_rl_mjlab/
-│   ├── 04_compare/
-│   └── interview/
-├── src/
-│   └── robot_baseline/
-├── scripts/
-├── configs/
-├── external/
+├── exports/
 ├── outputs/
-│   ├── figures/
-│   ├── videos/
-│   ├── logs/
-│   └── reports/
-└── tests/
+└── requirements.txt
 ```
 
 ## 文件职责表
@@ -67,11 +59,11 @@
 | --- | --- | --- |
 | `README.md` | 项目入口、三条主线、当前阶段说明 | 能跳转到准备阶段文档 |
 | `.gitignore` | 大文件和缓存忽略规则 | 不默认提交视频、日志、权重 |
-| `external/*_README.md` | 开源项目用途说明 | 明确准备阶段不下载源码 |
-| `src/robot_baseline/README.md` | 后续自研代码说明 | 明确当前不实现算法 |
-| `scripts/README.md` | 后续脚本命名规则 | 明确准备阶段无运行脚本 |
-| `configs/README.md` | 后续配置管理规则 | 明确准备阶段无参数文件 |
-| `tests/README.md` | 后续测试策略 | 明确准备阶段无算法测试 |
+| `projects/*/external/` | 开源项目用途说明 | 明确准备阶段不下载源码 |
+| `projects/A_self_baseline/src/robot_baseline/README.md` | 后续自研代码说明 | 明确当前不实现算法 |
+| `projects/A_self_baseline/scripts/` | A 标准学习脚本 | 当前是 TODO 教学骨架 |
+| `projects/A_self_baseline/configs/` | A 配置模板 | 不写死旧项目路径 |
+| `projects/A_self_baseline/tests/` | A 测试入口 | 后续随算法实现补充 |
 
 ## 准备任务
 
@@ -80,4 +72,3 @@
 | PREP-007 | 规划目录职责 | 本文件 | 每个目录都有用途说明 |
 | PREP-014 | 创建占位目录 | 目录结构 | 后续阶段入口存在 |
 | PREP-014 | 创建占位 README | 各目录 README | 能说明当前阶段边界 |
-
