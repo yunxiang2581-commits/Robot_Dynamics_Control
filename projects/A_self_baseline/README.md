@@ -54,6 +54,20 @@ The current A project is a TODO teaching skeleton. Scripts and modules define en
 
 `legacy_imported/` stores old project scripts and documents as references. Do not edit those files directly during standard implementation. Use them to understand the learning intent, then implement clean A project code in `scripts/` and `src/robot_baseline/`.
 
+## Role Of root_imported
+
+`root_imported/`, `root_imported_src/`, and `root_imported_utils/` contain files moved from the new repository's early root-level A project layout. They are not yet the standard A implementation.
+
+These files should be reviewed gradually and then refactored into the standard locations:
+
+- reusable library code -> `src/robot_baseline/`
+- learning entries -> `scripts/`
+- robot/env templates -> `configs/` or `envs/`
+- experiments -> `experiments/`
+- tests -> `tests/`
+
+Do not mix these imported files into the standard skeleton until their purpose and dependencies are clear.
+
 ## Recommended Implementation Order
 
 1. Inspect URDF and confirm model/frame names.

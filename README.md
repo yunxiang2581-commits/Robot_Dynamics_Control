@@ -12,6 +12,18 @@
 | B | legged_control 复现与拆解 | 拆解 `qiayuanl/legged_control` 中 NMPC、WBC、状态估计、关节力矩控制链路 |
 | C | unitree_rl_mjlab 复现与拆解 | 拆解 `unitreerobotics/unitree_rl_mjlab` 中 Train、Play、Sim2Real、obs/action/reward/policy 部署流程 |
 
+## Monorepo 项目入口
+
+A 项目代码、实验、配置、测试和早期根目录资产已经归入 `projects/A_self_baseline/`。根目录不再直接放 A 项目的控制代码或实验入口。
+
+| 路径 | 说明 |
+| --- | --- |
+| `projects/A_self_baseline/` | 自研机器人运动控制基础系统 |
+| `projects/B_legged_control_study/` | `legged_control` 复现与拆解 |
+| `projects/C_unitree_rl_mjlab_study/` | `unitree_rl_mjlab` 复现与拆解 |
+| `shared/` | 跨项目共享模型、环境和模板 |
+| `tools/export/` | 文档导出工具 |
+
 ## 准备阶段入口
 
 | 文档 | 说明 |
@@ -60,8 +72,8 @@
 
 | 项目 | 说明 |
 | --- | --- |
-| Windows 运行命令 | `powershell -ExecutionPolicy Bypass -File scripts/export_md_to_docx.ps1` |
-| Bash 运行命令 | `bash scripts/export_md_to_docx.sh` |
+| Windows 运行命令 | `powershell -ExecutionPolicy Bypass -File tools/export/export_md_to_docx.ps1` |
+| Bash 运行命令 | `bash tools/export/export_md_to_docx.sh` |
 | 单文件输出 | `exports/word/single/` |
 | 合并版输出 | `exports/word/combined/robot_motion_control_job_project_docs.docx` |
 | 导出日志 | `exports/word/logs/export_md_to_docx.log` |
