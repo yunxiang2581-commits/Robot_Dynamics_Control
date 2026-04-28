@@ -183,22 +183,36 @@ def main():
 
     # ===== 12. 画图并保存 =====
     position_fig_path = os.path.join(plots_dir, "pd_joint_position.png")
+    velocity_fig_path = os.path.join(plots_dir, "pd_joint_velocity.png")
     torque_fig_path = os.path.join(plots_dir, "pd_joint_torque.png")
 
-    # 图1：角度响应
+    # 图1：位移（关节角）响应
     plt.figure(figsize=(8, 5))
     plt.plot(time_log, q_log, label="q")
     plt.plot(time_log, qd_log, "--", label="qd")
     plt.xlabel("Time [s]")
     plt.ylabel("Joint Angle [rad]")
-    plt.title("PD Joint Position Control")
+    plt.title("PD Joint Position Response")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(position_fig_path, dpi=200)
     plt.show()
 
-    # 图2：控制力矩
+    # 图2：速度响应
+    plt.figure(figsize=(8, 5))
+    plt.plot(time_log, dq_log, label="dq")
+    plt.axhline(y=dqd, linestyle="--", label="dqd")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Joint Velocity [rad/s]")
+    plt.title("PD Joint Velocity Response")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(velocity_fig_path, dpi=200)
+    plt.show()
+
+    # 图3：控制力矩
     plt.figure(figsize=(8, 5))
     plt.plot(time_log, tau_log, label="tau")
     plt.xlabel("Time [s]")
@@ -217,7 +231,9 @@ def main():
         print(f"Final dq = {dq_log[-1]:.4f} rad/s")
     print(f"Run directory: {run_dir}")
     print(f"CSV saved to: {csv_path}")
-    print(f"Plots saved to: {plots_dir}")
+    print(f"Position plot saved to: {position_fig_path}")
+    print(f"Velocity plot saved to: {velocity_fig_path}")
+    print(f"Torque plot saved to: {torque_fig_path}")
     print(f"Meta saved to: {info_path}")
 
 
