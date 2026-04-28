@@ -1,4 +1,12 @@
-"""MuJoCo joint PD trajectory tracking learning entry.
+"""A06 pipeline step: track an A04/A05 joint trajectory in MuJoCo with PD control.
+
+Pipeline role:
+- Step: A06, connects kinematic IK results to a MuJoCo closed-loop tracking test.
+- Consumes: MuJoCo XML and a trajectory from A04 DLS-IK or A05 QP-IK.
+- Produces: tracking logs, error curves, torque curves, and optional video.
+- Downstream: A07 uses tracking error and constraint concepts when explaining Mini-WBC.
+- Output contract: reports/A06_mujoco_pd_tracking.md, logs/A06_pd_tracking.csv,
+  figures/A06_pd_tracking_error.png, and videos/A06_pd_tracking.mp4.
 
 This is a TODO learning entry. References:
 root experiments/exp_pd_joint_control.py
@@ -30,6 +38,11 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO))
     logging.info("MuJoCo PD output directory placeholder: %s", args.output_dir)
 
+    # Pipeline TODO(中文):
+    # - 前置产物: A04 的 DLS-IK q 轨迹或 A05 的 QP-IK q 轨迹, 以及 MuJoCo XML。
+    # - 本步产物: PD tracking 日志、误差曲线、力矩曲线和可选视频。
+    # - 后续消费: A07 使用 A06 的仿真误差和控制输入概念组织 Mini-WBC 任务。
+    # - 输出路径: 后续应通过 pipeline_io 生成 A06 report/log/figure/video 路径。
     # TODO(中文):
     # 1. 要实现什么: 加载 MuJoCo XML, 生成关节期望轨迹, 用 PD 计算 torque 并记录跟踪误差。
     # 2. 求职重要性: PD 轨迹跟踪是控制实验的最小闭环, 能连接仿真、日志和稳定性调试。

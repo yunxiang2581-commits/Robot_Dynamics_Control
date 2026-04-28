@@ -1,4 +1,11 @@
-"""Teaching Mini-WBC QP learning entry.
+"""A07 pipeline step: sketch a teaching Mini-WBC QP structure.
+
+Pipeline role:
+- Step: A07, bridges A project kinematics/QP/PD learning toward WBC concepts.
+- Consumes: A03 task Jacobian concept, A05 QP constraint structure, and A06 tracking feedback.
+- Produces: WBC variable/task/constraint structure report and QP matrix dimension notes.
+- Downstream: B project legged_control WBC/NMPC reading can use this as a concept bridge.
+- Output contract: reports/A07_mini_wbc_qp.md and cache/A07_qp_structure.json.
 
 This is only a QP structure skeleton. It does not implement full WBC.
 """
@@ -26,6 +33,11 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO))
     logging.info("Mini-WBC output directory placeholder: %s", args.output_dir)
 
+    # Pipeline TODO(中文):
+    # - 前置产物: A03 的 Jacobian 概念、A05 的 QP 目标/约束结构、A06 的 tracking 误差概念。
+    # - 本步产物: Mini-WBC QP 变量定义、任务项、约束项和矩阵维度报告。
+    # - 后续消费: B 项目 legged_control 阅读时对照 WBC/NMPC 结构, 不在此处复刻完整框架。
+    # - 输出路径: 后续应通过 pipeline_io 生成 A07 report/cache 路径。
     # TODO(中文):
     # 1. 要实现什么: 构造教学版 WBC QP 的变量、目标项和约束项, 但暂不实现完整动力学控制。
     # 2. 求职重要性: WBC 是腿足机器人控制岗位高频能力点, 需要理解任务、约束和 QP 结构。

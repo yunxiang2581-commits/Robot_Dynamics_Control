@@ -1,4 +1,12 @@
-"""Compute a frame Jacobian and verify it with finite differences.
+"""A03 pipeline step: compute a frame Jacobian and verify finite differences.
+
+Pipeline role:
+- Step: A03, validates the velocity mapping for the frame confirmed by A01/A02.
+- Consumes: URDF path, target frame name, q, dq, finite-difference dt.
+- Produces: frame Jacobian shape, finite-difference velocity, error metrics, optional plot.
+- Downstream: A04 uses the validated Jacobian for DLS-IK; A05 reuses it in QP-IK.
+- Output contract: reports/A03_jacobian_fd_check.md, figures/A03_jacobian_error.png,
+  and cache/A03_jacobian_check.json.
 
 This is a TODO learning entry. Legacy references:
 scripts/legacy_imported/jacobian_h1.py
@@ -30,6 +38,11 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO))
     logging.info("Jacobian check output directory placeholder: %s", args.output_dir)
 
+    # Pipeline TODO(中文):
+    # - 前置产物: A01 的模型信息和 A02 确认的目标 frame。
+    # - 本步产物: 解析 Jacobian、有限差分速度、误差范数和验证报告。
+    # - 后续消费: A04 使用通过验证的 J_pos 做 DLS-IK, A05 使用同一任务 Jacobian 构造 QP。
+    # - 输出路径: 后续应通过 pipeline_io 生成 A03 report/cache/figure 路径。
     # TODO(中文):
     # 1. 要实现什么: 计算 frame Jacobian, 再用 q 与 q+dq 的位姿差做有限差分验证。
     # 2. 求职重要性: Jacobian 是速度映射、IK、QP 控制和 WBC 的核心, 会被重点考察。

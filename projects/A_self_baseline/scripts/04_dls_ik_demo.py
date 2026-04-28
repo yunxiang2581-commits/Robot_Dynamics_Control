@@ -1,4 +1,12 @@
-"""Damped Least Squares IK learning entry.
+"""A04 pipeline step: run a Damped Least Squares IK learning loop.
+
+Pipeline role:
+- Step: A04, converts a target frame position error into an iterative joint update.
+- Consumes: A01 model metadata, A02 target frame, A03 validated Jacobian logic.
+- Produces: DLS-IK error curve, final q, and a lightweight q trajectory.
+- Downstream: A05 compares constrained QP-IK against this baseline; A06 can track the trajectory.
+- Output contract: reports/A04_dls_ik.md, trajectories/A04_dls_ik_q_traj.csv,
+  and figures/A04_dls_ik_error.png.
 
 This is a TODO learning entry. Legacy references:
 scripts/legacy_imported/ik_h1_left_foot_step*.py
@@ -29,6 +37,11 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO))
     logging.info("DLS IK output directory placeholder: %s", args.output_dir)
 
+    # Pipeline TODO(中文):
+    # - 前置产物: A03 验证过的 frame Jacobian 和 A02 的目标 frame 位姿定义。
+    # - 本步产物: DLS-IK 误差历史、q 轨迹、最终 frame 位姿报告。
+    # - 后续消费: A05 使用相同任务定义构造 QP-IK, A06 可读取 q 轨迹做 MuJoCo PD tracking。
+    # - 输出路径: 后续应通过 pipeline_io 生成 A04 report/trajectory/figure 路径。
     # TODO(中文):
     # 1. 要实现什么: 使用 Damped Least Squares 根据位置误差和 Jacobian 计算 dq, 迭代更新 q。
     # 2. 求职重要性: IK 是把任务空间目标转成关节运动的基础, 能展示运动学和数值优化能力。

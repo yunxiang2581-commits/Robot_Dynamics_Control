@@ -27,8 +27,19 @@ A 项目代码、实验、配置、测试和早期根目录资产已经归入 `p
 - [C unitree_rl_mjlab 复现与拆解](projects/C_unitree_rl_mjlab_study/README.md)：复现笔记和强化学习项目说明都在 `projects/C_unitree_rl_mjlab_study/`。
 - `shared/`：放共享环境、机器人模型资源和模板。
 - `tools/`：放仓库级工具，例如 `tools/export/`。
+- `tools/codex_skills/`：放从旧仓库规则迁移来的项目内 Codex skill 技能库。
 - `docs/00_preparation/`：总项目准备阶段文档。
 - `docs/00_project_management/`：迁移和项目管理记录。
+
+## Codex Skill 技能库
+
+旧仓库的 Codex 协作规则已迁为项目内技能库：
+
+- [pinocchio-learning skill](tools/codex_skills/pinocchio-learning/SKILL.md)：A 项目 Pinocchio、MuJoCo、FK、Jacobian、IK、PD 学习流程规则。
+- [旧仓库 AGENTS 原文](tools/codex_skills/pinocchio-learning/references/AGENTS_from_Pinocchio_URDF.md)：完整迁移自 `/home/ubuntu/robot_proj/Pinocchio_URDF/AGENTS.md`。
+- [旧仓库 AGENT 原文](tools/codex_skills/pinocchio-learning/references/AGENT_from_Pinocchio_URDF.md)：完整迁移自 `/home/ubuntu/robot_proj/Pinocchio_URDF/AGENT.MD`。
+
+当前仓库没有把 skill 放入 `.codex/`，因为 `.codex/` 属于本地状态并被 `.gitignore` 忽略。可提交的技能库统一放在 `tools/codex_skills/`。
 
 根目录保留项：
 

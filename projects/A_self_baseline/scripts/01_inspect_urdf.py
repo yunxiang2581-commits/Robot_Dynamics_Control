@@ -1,4 +1,11 @@
-"""Inspect a URDF model and print basic Pinocchio model information.
+"""A01 pipeline step: inspect a URDF model with Pinocchio.
+
+Pipeline role:
+- Step: A01, the first component of the A self-baseline pipeline.
+- Consumes: robot URDF path, optional package/mesh search paths, floating-base choice.
+- Produces: model summary, joint/frame list, candidate target frames for A02-A07.
+- Downstream: A02 uses selected frame names; A03-A05 use nq/nv and joint/frame metadata.
+- Output contract: reports/A01_inspect_urdf.md and cache/A01_model_summary.json.
 
 This is a TODO learning entry. It intentionally does not implement the full
 inspection logic yet. Legacy reference:
@@ -29,6 +36,11 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     logging.info("Output directory placeholder: %s", output_dir)
 
+    # Pipeline TODO(中文):
+    # - 前置产物: 无, A01 是 pipeline 起点。
+    # - 本步产物: 模型摘要 JSON、joint/frame 清单 Markdown、候选 feet/pelvis frame。
+    # - 后续消费: A02 读取 frame 名, A03 复用模型维度, A04/A05 复用目标 frame 约定。
+    # - 输出路径: 后续应通过 robot_baseline.pipeline_io.build_step_output_paths("A01", A_ROOT) 统一生成。
     # TODO(中文):
     # 1. 要实现什么: 使用 Pinocchio 加载 URDF, 输出 nq、nv、关节名、frame 名和模型摘要。
     # 2. 求职重要性: 面试中常要求说明机器人模型自由度、浮动基和固定基区别, 这是 FK/Jacobian/IK 的入口。

@@ -19,6 +19,16 @@
 | 注释要求 | 核心 TODO 使用中文说明输入、输出、推荐 API、验证方式 |
 | 外部项目 | 不下载大仓库，不魔改第三方源码 |
 
+## 项目内 Skill 技能库
+
+旧仓库 `Pinocchio_URDF` 中没有标准 `SKILL.md` 技能包，但有 `AGENTS.md` 和 `AGENT.MD` 两份 Codex 协作规则。当前仓库已将它们转换为可提交的项目内 skill：
+
+- `tools/codex_skills/pinocchio-learning/SKILL.md`
+- `tools/codex_skills/pinocchio-learning/references/AGENTS_from_Pinocchio_URDF.md`
+- `tools/codex_skills/pinocchio-learning/references/AGENT_from_Pinocchio_URDF.md`
+
+后续处理 A 项目 Pinocchio、MuJoCo、FK、Jacobian、IK、PD 学习脚本时，应优先遵守该 skill 中的路径、注释、TODO 和验证规则。
+
 ## 总规则
 
 | 编号 | 规则 | 原因 | 验收方式 |
