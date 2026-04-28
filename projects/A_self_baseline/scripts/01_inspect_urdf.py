@@ -1,16 +1,18 @@
-"""A01 pipeline step: inspect URDF as the first A-project learning skeleton.
+"""A01 pipeline 第一步: URDF 检查学习型 TODO 骨架。
 
-Pipeline role:
-- Step: A01, the first component of the A self-baseline pipeline.
-- Inputs: `configs/robot.yaml` and one confirmed URDF path.
-- Outputs: `outputs/reports/A01_inspect_urdf_report.md` and
-  `outputs/cache/A01_model_summary.json`.
-- Downstream: A02 consumes the frame names and model summary produced here.
+本文件在 A 项目中的角色:
+- 步骤位置: A01, 是 A self-baseline pipeline 的第一环。
+- 输入: `configs/robot.yaml` 和一个最终确认的 URDF 路径。
+- 输出:
+  - `outputs/reports/A01_inspect_urdf_report.md`
+  - `outputs/cache/A01_model_summary.json`
+- 下游关系: A02 会消费这里确认的 frame 名称和模型摘要。
 
-This file is intentionally kept as a learning-oriented TODO skeleton.
-It does not fully run the Pinocchio loading pipeline yet.
-Legacy reference:
-scripts/legacy_imported/task1_inspect_humanoid_model.py
+当前文件有意保持为学习型 TODO 骨架。
+它不会完整跑通 Pinocchio 的 URDF 加载流程。
+
+legacy 参考:
+`scripts/legacy_imported/task1_inspect_humanoid_model.py`
 """
 
 from __future__ import annotations
