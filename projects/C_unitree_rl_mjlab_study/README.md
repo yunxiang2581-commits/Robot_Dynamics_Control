@@ -7,3 +7,7 @@ The study focus is MuJoCo, PPO, Train, Play, Sim2Real, observation, action, and 
 The current stage only creates the project skeleton. It does not contain reproduced code or migrated assets yet.
 
 Do not store A project self-developed baseline code here. Do not commit large training outputs, model weights, or videos.
+
+## Document Entry
+
+- `docs/README.md`: C unitree_rl_mjlab study notes migrated from the root project docs.
