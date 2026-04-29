@@ -81,3 +81,6 @@ exports/word/logs/*.log
 # Generated PDF exports
 exports/pdf/
 docs/00_preparation/*.pdf
+
+# Full upstream mirrors kept locally for reference only
+external/mink_upstream/
