@@ -1,5 +1,9 @@
 # Reference: mink UR5e
 
+相关需求总文档：`mink_capability_vs_A_requirements.md`。
+
+本文解决“为什么选 mink / UR5e 作为 A 项目对照组”。`mink_capability_vs_A_requirements.md` 解决“mink 能做什么、A 项目要实现什么、哪些内容暂缓、最终展示物是什么”。
+
 ## 1. mink 做了什么
 
 `mink` 是围绕 MuJoCo 机器人模型构建的 differential IK 工具库。它把模型状态、任务、限制条件和 IK 求解组织成清晰接口，使用户可以用较少样板代码表达任务空间控制问题。

@@ -6,7 +6,9 @@ A 项目当前主线调整为：
 
 > 对标 `kevinzakka/mink` UR5e 示例的教学版 6-DOF 机械臂控制 baseline。
 
-这里的“对标”不是完整复刻 mink 库，也不是直接调用 mink 替代自己的实现。A 项目要做的是逐步复现 mink UR5e 示例背后的核心链路：模型检查、configuration/site pose、site Jacobian、微分 IK、task/limit/QP-IK、target tracking、actuator tracking，以及最终和 mink 的概念对照报告。
+这里的“对标”不是完整复刻 mink 库，也不是直接调用 mink 替代自己的实现。A 项目要做的是逐步复现 mink UR5e 示例背后的核心链路：模型检查、configuration/site pose、site Jacobian、微分 IK、task/limit/QP-IK、target tracking、actuator tracking，以及最终和 mink 的概念对照报告与 demo showcase。
+
+需求总文档见 `mink_capability_vs_A_requirements.md`。
 
 H1 legacy 仍然保留为历史学习参考，不删除、不覆盖，但它不再是当前 A 项目的主线。
 
@@ -23,6 +25,7 @@ A00 reference and assets
   -> A07 MuJoCo actuator tracking
   -> A08 collision avoidance TODO
   -> A09 comparison report
+  -> A10 demo showcase / video recording
 ```
 
 这条链路以 6-DOF 机械臂为当前学习对象，优先对齐 mink UR5e 示例中的 MuJoCo model、configuration、site、task、limit、QP 和 actuator tracking 概念。
@@ -99,6 +102,13 @@ A00 reference and assets
 - 对标 mink 的概念：把自己实现的模型检查、site pose、IK、tracking 与 mink 示例逐项比较。
 - 验收标准：报告能说明“自己实现了什么”“mink 提供了什么抽象”“差距在哪里”“后续如何补齐”。
 
+### A10 - Demo Showcase / Video Recording
+
+- 输入：A04/A05 轨迹、A07 actuator tracking 日志、误差图、视频和 A09 comparison report。
+- 输出：demo showcase 文档、README 展示片段、可选 GitHub Release 说明和主 demo 视频。
+- 对标 mink 的概念：example demo / viewer video / actuator tracking showcase。
+- 验收标准：主视频 `outputs/videos/A07_ur5e_actuator_tracking_demo.mp4` 可展示 UR5e 在 MuJoCo 中跟踪目标轨迹，并配套 logs、figures、reports、trajectories 和 comparison report。
+
 ## 4. A04 与 A05 的关系
 
 A04 是最小 DLS differential IK，用来理解误差、Jacobian、阻尼和迭代更新。
@@ -131,7 +141,8 @@ A07 学习 actuator tracking：把 A04/A05 产生的期望关节状态送入 MuJ
 ## 8. 验收标准
 
 - README、配置和脚本 docstring 都明确当前主线是 UR5e / mink-style 6-DOF manipulator。
-- A01-A09 的输入、输出、mink 对标概念和验收标准清楚。
+- A01-A10 的输入、输出、mink 对标概念和验收标准清楚。
+- 最终展示物包括 reports、trajectories、logs、figures、videos 和 comparison report。
 - H1 legacy 被明确标记为历史参考，而不是当前主线。
 - 不调用 mink 替代自己的实现。
 - 不实现 FK、Jacobian、IK、QP、WBC、MuJoCo 控制算法。

@@ -1,5 +1,7 @@
 # A Mink Alignment Plan
 
+需求总文档见 `mink_capability_vs_A_requirements.md`。本计划负责把需求拆成阶段，需求总文档负责定义 mink 能力、A 项目边界和最终展示交付物。
+
 ## 阶段 1：model inspect、configuration/site pose、site Jacobian
 
 - 输入：`configs/robot.yaml`、`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`、末端 site 候选名称。
@@ -51,3 +53,11 @@
 - 验收标准：能说明自己实现链路、mink 抽象、当前差距和下一步补齐顺序。
 - 对标 mink 的概念：example-level comparison。
 - 边界说明：`external/mink_upstream/` 是上游完整仓库镜像，不是 A 项目标准入口；copied files are reference assets/examples, not our implementation。
+
+## 阶段 8：demo showcase / video recording
+
+- 输入：A04/A05 轨迹、A07 actuator tracking 日志、误差图、报告和 A09 comparison report。
+- 输出：`outputs/videos/A07_ur5e_actuator_tracking_demo.mp4`、demo showcase 文档、README 或 GitHub Release 展示说明。
+- 验收标准：视频能展示 UR5e 机械臂在 MuJoCo 中跟踪目标关节轨迹，并能用日志、误差图和报告解释结果。
+- 对标 mink 的概念：example demo、viewer/actuator showcase。
+- 求职展示意义：demo video 是最终可展示交付物，用来把模型、IK、QP、tracking 和报告串成一个可理解成果。

@@ -23,7 +23,8 @@ A 项目不是完整复刻 mink 库，也不是直接调用 mink 替代自己的
 
 本项目自己的文档目录是 `projects/A_self_baseline/docs/`。
 
-- `docs/A_pipeline_contract.md`：UR5e/mink-style A00-A09 pipeline 契约。
+- `docs/A_pipeline_contract.md`：UR5e/mink-style A00-A10 pipeline 契约。
+- `docs/mink_capability_vs_A_requirements.md`：mink 能力拆解与 A 项目对标需求总文档。
 - `docs/reference_mink_ur5e.md`：mink 与 UR5e 示例的参考说明。
 - `docs/A_mink_alignment_plan.md`：A 项目对齐 mink UR5e 的阶段计划。
 - `docs/legacy_script_mapping.md`：历史 legacy 脚本到标准学习脚本的映射。
@@ -31,7 +32,7 @@ A 项目不是完整复刻 mink 库，也不是直接调用 mink 替代自己的
 - `docs/01_inspect_urdf.md`：A01 旧 URDF inspect 学习说明，后续会适配为 model inspect / MJCF inspect。
 - `docs/legacy_imported/`：旧项目导入文档，仅作历史参考。
 
-## A00-A09 Pipeline 总览
+## A00-A10 Pipeline 总览
 
 ```text
 A00 reference and assets
@@ -44,9 +45,22 @@ A00 reference and assets
   -> A07 MuJoCo actuator tracking
   -> A08 collision avoidance TODO
   -> A09 comparison report
+  -> A10 demo showcase / video recording
 ```
 
-当前标准入口仍放在 `scripts/` 下的 A01-A07。A08/A09 先作为文档和后续 TODO 管理，不在本步骤新增算法代码。
+当前标准入口仍放在 `scripts/` 下的 A01-A07。A08/A09/A10 先作为文档、对照报告和展示交付管理，不在本步骤新增算法代码。
+
+## mink capability vs A requirements
+
+需求总文档见 `docs/mink_capability_vs_A_requirements.md`。
+
+它用于明确 mink 能力、A 项目需要自己实现的最小范围、暂缓功能、A00-A10 任务表和最终可展示成果。最终 demo 不只是报告，还包括 MuJoCo video demo。主展示目标是：
+
+```text
+outputs/videos/A07_ur5e_actuator_tracking_demo.mp4
+```
+
+这个视频应配套 tracking log、tracking error figure 和 report，并在 README 或 GitHub Release 中展示。
 
 ## 标准入口
 
@@ -110,5 +124,6 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 8. A07：实现 MuJoCo actuator tracking。
 9. A08：记录 collision avoidance TODO。
 10. A09：输出和 mink 的对照报告。
+11. A10：整理 demo showcase / video recording。
 
 每一步都应先输出文本报告，便于复盘和面试讲解。
