@@ -1,14 +1,26 @@
-"""A05 pipeline step: formulate QP-IK with joint velocity and position limits.
+"""A05 pipeline 第五步: task + limit + QP-IK 学习型 TODO 骨架。
 
-Pipeline role:
-- Step: A05, upgrades A04 DLS-IK into a constrained QP-IK formulation.
-- Consumes: A04 task definition, A03 Jacobian logic, joint position/velocity limits.
-- Produces: QP status, constrained dq or q trajectory, constraint violation summary.
-- Downstream: A06 can track the constrained IK trajectory; A07 reuses the QP structure.
-- Output contract: reports/A05_qp_ik_joint_limit.md, trajectories/A05_qp_ik_q_traj.csv,
-  and cache/A05_qp_status.json.
+所属 pipeline 步骤:
+- A05 task + limit + QP-IK。
 
-This is a TODO learning entry. No complete legacy implementation is copied.
+对标 mink 的概念:
+- `FrameTask`、`PostureTask`、`ConfigurationLimit`、`VelocityLimit`。
+- 这是 A 项目最贴近 mink 核心抽象的一步。
+
+本脚本输入:
+- A04 的 task/error 定义。
+- A03 的 site Jacobian。
+- 关节速度限制、位置限制、QP 权重和 damping。
+
+本脚本输出:
+- `outputs/trajectories/A05_qp_ik_q_traj.npy`。
+- `outputs/logs/A05_qp_ik_constraints.csv`。
+- `outputs/reports/A05_qp_ik_report.md`。
+
+当前状态:
+- TODO learning skeleton。
+- 第一版只做最小 QP-IK 设计说明, 不实现完整 collision avoidance。
+- 不调用 mink 替代自己的实现。
 """
 
 from __future__ import annotations
@@ -37,17 +49,18 @@ def main() -> None:
 
     # Pipeline TODO(中文):
     # - 前置产物: A04 的 DLS-IK 目标、误差定义和 q 更新基线。
-    # - 本步产物: 带关节限制的 QP-IK 解、QP 求解状态和约束检查报告。
-    # - 后续消费: A06 可消费 A05 轨迹做更安全的 PD tracking, A07 复用 QP 目标/约束组织方式。
+    # - 本步产物: 带 task/limit 的 QP-IK 解、QP 求解状态和约束检查报告。
+    # - 后续消费: A06 可消费 A05 轨迹做 target tracking, A07 复用 actuator tracking 所需的 q_des/dq_des。
     # - 输出路径: 后续应通过 pipeline_io 生成 A05 report/trajectory/cache 路径。
     # TODO(中文):
-    # 1. 要实现什么: 构造 min ||J dq - v_task||^2 + 正则项, 并加入关节速度/位置约束。
-    # 2. 求职重要性: QP-IK 是从 DLS IK 走向约束控制和 WBC 的关键桥梁。
-    # 3. 推荐 API: pin.getFrameJacobian, osqp.OSQP, scipy.sparse.csc_matrix, pin.integrate。
-    # 4. 输入: q、目标任务速度、关节上下限、速度上下限、QP 权重。
-    # 5. 输出: dq、QP 状态、约束违反量、误差曲线和文本报告。
-    # 6. 如何验证: 检查 dq 满足上下限, task error 下降, OSQP 状态为 solved。
-    # 7. legacy 参考: 当前没有完整 legacy QP-IK, 后续可参考 DLS IK 和 Jacobian 脚本。
+    # 1. 要实现什么: 构造 min ||J dq - v_des||^2 + damping ||dq||^2, 并加入 dq_min <= dq <= dq_max。
+    # 2. 为什么这一步存在: 它把 A04 的无约束 IK 推进到带 task 和 limit 的 QP-IK。
+    # 3. 对标 mink 的哪个概念: FrameTask、PostureTask、ConfigurationLimit、VelocityLimit。
+    # 4. 推荐 API: mujoco.mj_jacSite, scipy.optimize 或 osqp, scipy.sparse。
+    # 5. 输入是什么: q、site Jacobian、期望任务速度 v_des、关节/速度上下限、QP 权重。
+    # 6. 输出是什么: dq、q 轨迹、约束日志、QP 状态和 Markdown 报告。
+    # 7. 如何验证: dq 满足上下限, task error 下降, QP 状态可解释, 约束日志无异常。
+    # 8. 暂不做什么: 第一版不实现完整 collision avoidance, 只保留后续 TODO。
     raise NotImplementedError("TODO: implement constrained QP-IK learning step.")
 
 

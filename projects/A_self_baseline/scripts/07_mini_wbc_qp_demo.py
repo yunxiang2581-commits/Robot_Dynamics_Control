@@ -1,13 +1,28 @@
-"""A07 pipeline step: sketch a teaching Mini-WBC QP structure.
+"""A07 pipeline 第七步: MuJoCo actuator tracking / mini task-space QP 过渡骨架。
 
-Pipeline role:
-- Step: A07, bridges A project kinematics/QP/PD learning toward WBC concepts.
-- Consumes: A03 task Jacobian concept, A05 QP constraint structure, and A06 tracking feedback.
-- Produces: WBC variable/task/constraint structure report and QP matrix dimension notes.
-- Downstream: B project legged_control WBC/NMPC reading can use this as a concept bridge.
-- Output contract: reports/A07_mini_wbc_qp.md and cache/A07_qp_structure.json.
+所属 pipeline 步骤:
+- A07 MuJoCo actuator tracking。
 
-This is only a QP structure skeleton. It does not implement full WBC.
+对标 mink 的概念:
+- `arm_ur5e_actuators.py`。
+- 把 A04/A05 生成的 `q_des` 或 `dq_des` 送入 MuJoCo actuator / `data.ctrl`。
+
+本脚本输入:
+- A04/A05 生成的期望轨迹。
+- UR5e MJCF 模型中的 actuator 名称和 control range。
+- 可选 mini task-space QP 结构说明。
+
+本脚本输出:
+- `outputs/logs/A07_actuator_tracking.csv`。
+- `outputs/figures/A07_tracking_error.png`。
+- `outputs/videos/A07_ur5e_actuator_tracking_demo.mp4`。
+- `outputs/reports/A07_actuator_tracking_report.md`。
+
+当前状态:
+- TODO learning skeleton。
+- 当前阶段不承诺完整 humanoid WBC。
+- 不实现完整 actuator tracking 或 QP 控制。
+- 不调用 mink 替代自己的实现。
 """
 
 from __future__ import annotations
@@ -34,18 +49,19 @@ def main() -> None:
     logging.info("Mini-WBC output directory placeholder: %s", args.output_dir)
 
     # Pipeline TODO(中文):
-    # - 前置产物: A03 的 Jacobian 概念、A05 的 QP 目标/约束结构、A06 的 tracking 误差概念。
-    # - 本步产物: Mini-WBC QP 变量定义、任务项、约束项和矩阵维度报告。
-    # - 后续消费: B 项目 legged_control 阅读时对照 WBC/NMPC 结构, 不在此处复刻完整框架。
+    # - 前置产物: A04/A05 的 q_des 或 dq_des, A06 的 target tracking 概念, 以及 actuator 名称。
+    # - 本步产物: actuator tracking 日志、误差图、可选视频和报告。
+    # - 后续消费: A09 用它和 mink arm_ur5e_actuators.py 做对照; B 项目 WBC 阅读只作为远期概念桥梁。
     # - 输出路径: 后续应通过 pipeline_io 生成 A07 report/cache 路径。
     # TODO(中文):
-    # 1. 要实现什么: 构造教学版 WBC QP 的变量、目标项和约束项, 但暂不实现完整动力学控制。
-    # 2. 求职重要性: WBC 是腿足机器人控制岗位高频能力点, 需要理解任务、约束和 QP 结构。
-    # 3. 推荐 API: osqp.OSQP, scipy.sparse, Pinocchio dynamics APIs 后续再逐步引入。
-    # 4. 输入: 任务权重、接触约束、关节限制、期望加速度或任务空间目标。
-    # 5. 输出: QP 矩阵维度、变量解释、求解状态占位和结构化报告。
-    # 6. 如何验证: 先验证矩阵维度、约束数量和单位一致, 再逐步接入动力学。
-    # 7. legacy 参考: 当前无 Mini-WBC legacy, 后续可参考 B 项目 legged_control 拆解文档。
+    # 1. 要实现什么: 读取 A04/A05 的期望轨迹, 映射到 MuJoCo actuator/control, 并记录 tracking error。
+    # 2. 为什么这一步存在: mink UR5e actuator 示例展示了 IK 结果如何进入仿真控制输入。
+    # 3. 对标 mink 的哪个概念: arm_ur5e_actuators.py 中的 actuator tracking。
+    # 4. 推荐 API: data.ctrl, mujoco.mj_step, actuator names, control range 检查。
+    # 5. 输入是什么: q_des 或 dq_des、MuJoCo XML、actuator 名称、仿真时长。
+    # 6. 输出是什么: A07 actuator tracking CSV、误差图、可选视频和 Markdown 报告。
+    # 7. 如何验证: actuator 名称匹配, ctrl 维度等于 nu, tracking error 有界, 仿真无 NaN。
+    # 8. 暂不做什么: 当前不承诺完整 humanoid WBC, 只保留 mini task-space QP 作为远期过渡说明。
     raise NotImplementedError("TODO: implement Mini-WBC QP structure learning step.")
 
 

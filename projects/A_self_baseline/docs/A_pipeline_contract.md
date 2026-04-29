@@ -1,130 +1,127 @@
 # A Pipeline Contract
 
-## 1. A 项目总体目标
+## 1. A 项目当前目标
 
-A 项目是自研机器人运动控制基础系统。目标是用 Pinocchio、MuJoCo 和 OSQP 建立一条从机器人模型到控制原型的可解释学习链路。
+A 项目当前主线调整为：
 
-当前阶段的重点不是一次性实现完整控制栈，而是把 A01-A07 组织成同一条 pipeline：每一步有明确输入、输出、保存路径和验证方式，后续实现时可以逐步替换 TODO。
+> 对标 `kevinzakka/mink` UR5e 示例的教学版 6-DOF 机械臂控制 baseline。
 
-## 2. A01-A07 为什么是完整链路
+这里的“对标”不是完整复刻 mink 库，也不是直接调用 mink 替代自己的实现。A 项目要做的是逐步复现 mink UR5e 示例背后的核心链路：模型检查、configuration/site pose、site Jacobian、微分 IK、task/limit/QP-IK、target tracking、actuator tracking，以及最终和 mink 的概念对照报告。
 
-A01-A07 对应机器人运动控制求职中常见的能力链：
+H1 legacy 仍然保留为历史学习参考，不删除、不覆盖，但它不再是当前 A 项目的主线。
+
+## 2. 新 Pipeline 链路
 
 ```text
-A01 URDF 检查
-  -> A02 FK frame pose
-  -> A03 Jacobian 有限差分验证
-  -> A04 DLS-IK
-  -> A05 QP-IK with limits
-  -> A06 MuJoCo PD tracking
-  -> A07 Mini-WBC QP
+A00 reference and assets
+  -> A01 model inspect
+  -> A02 configuration / site pose
+  -> A03 site Jacobian check
+  -> A04 DLS differential IK
+  -> A05 task + limit + QP-IK
+  -> A06 target / mocap-style tracking
+  -> A07 MuJoCo actuator tracking
+  -> A08 collision avoidance TODO
+  -> A09 comparison report
 ```
 
-这条链路从模型结构开始，逐步进入运动学、约束优化、仿真闭环和 WBC 结构。每一步都应能独立验证，但不应被当成彼此孤立的 demo。
+这条链路以 6-DOF 机械臂为当前学习对象，优先对齐 mink UR5e 示例中的 MuJoCo model、configuration、site、task、limit、QP 和 actuator tracking 概念。
 
-## 3. A01-A07 的依赖关系
+## 3. 每一步契约
 
-- A01 产生模型摘要、joint/frame 名称清单，是所有后续步骤的基础。
-- A02 消费 A01 的模型和 frame 选择，产生目标 frame 位姿报告。
-- A03 消费 A02 中确认的 frame，验证 Jacobian 是否能正确描述 frame 速度。
-- A04 消费 A03 验证过的 Jacobian，产生 DLS-IK 的 `q` 轨迹和误差曲线。
-- A05 消费 A04 的任务定义，把 DLS 更新改造成带关节限制的 QP-IK 问题。
-- A06 消费 A04 或 A05 产生的关节轨迹，在 MuJoCo 中做 PD tracking。
-- A07 消费 A03-A06 中形成的任务、约束、轨迹和误差概念，过渡到教学版 WBC/QP 结构。
+### A00 - Reference and Assets
 
-## 4. 每一步输入、输出和保存路径
+- 输入：mink UR5e 示例说明、后续用户确认的 UR5e/MJCF 模型资产路径。
+- 输出：参考文档、资产路径约定和不下载外部仓库的记录。
+- 对标 mink 的概念：example、model asset、viewer target、actuator example。
+- 验收标准：`reference_mink_ur5e.md` 说明清楚参考范围，模型建议路径为 `shared/robot_assets/models/mink_universal_robots_ur5e/`。
 
-### A01 - Inspect URDF
+### A01 - Model Inspect
 
-- 输入：URDF 路径、package/mesh 搜索路径、是否使用 floating base。
-- 输出：`nq`、`nv`、joint 名称、frame 名称、候选脚端/躯干 frame。
-- 保存路径：
-  - `outputs/reports/A01_inspect_urdf.md`
-  - `outputs/cache/A01_model_summary.json`
+- 输入：`configs/robot.yaml`、`mjcf_path`，可选 `urdf_path`。
+- 输出：`nq`、`nv`、`nu`、joint、body、site、actuator、keyframe 和末端候选对象清单。
+- 对标 mink 的概念：MuJoCo model loading、UR5e scene inspect、configuration 的基础模型维度。
+- 验收标准：报告列出模型维度和关键 site/body/actuator；不依赖旧项目绝对路径。
 
-### A02 - FK Frame Pose
+### A02 - Configuration / Site Pose
 
-- 输入：A01 确认的 URDF、目标 frame、关节配置 `q`。
-- 输出：目标 frame 的位置、旋转、SE3 位姿摘要。
-- 保存路径：
-  - `outputs/reports/A02_fk_frame_pose.md`
-  - `outputs/cache/A02_frame_pose.json`
+- 输入：A01 确认的 MJCF 模型、配置 `q`、末端 site 名称。
+- 输出：目标 site/body 的位置、旋转矩阵和可复盘的 JSON/Markdown 摘要。
+- 对标 mink 的概念：`mink.Configuration` 中从 `q` 到当前 frame/site pose 的查询能力。
+- 验收标准：能说明 `q -> MuJoCo data -> site pose` 的数据流，并记录目标 site 的 pose。
 
-### A03 - Jacobian FD Check
+### A03 - Site Jacobian Check
 
-- 输入：A01/A02 确认的模型、目标 frame、`q`、`dq`、`dt`。
-- 输出：解析 Jacobian、有限差分速度、误差范数。
-- 保存路径：
-  - `outputs/reports/A03_jacobian_fd_check.md`
-  - `outputs/figures/A03_jacobian_error.png`
-  - `outputs/cache/A03_jacobian_check.json`
+- 输入：A02 确认的 site、配置 `q`、扰动 `dq` 和有限差分步长。
+- 输出：site Jacobian、有限差分速度、误差指标和图像占位。
+- 对标 mink 的概念：differential IK 背后的速度映射 `site velocity = J(q) dq`。
+- 验收标准：TODO 中明确解析 Jacobian 与有限差分验证的输入、输出、API 和误差检查方法。
 
-### A04 - DLS IK
+### A04 - DLS Differential IK
 
-- 输入：A03 验证过的 Jacobian、目标 frame、目标位置、初始 `q`、阻尼和步长。
-- 输出：IK 误差曲线、`q` 轨迹、最终 frame 位姿。
-- 保存路径：
-  - `outputs/reports/A04_dls_ik.md`
-  - `outputs/trajectories/A04_dls_ik_q_traj.csv`
-  - `outputs/figures/A04_dls_ik_error.png`
+- 输入：A03 验证过的 site Jacobian、当前 site pose、目标 site 位置/姿态。
+- 输出：`q` 轨迹、误差曲线、收敛报告。
+- 对标 mink 的概念：`solve_ik` 的最小无约束教学版。
+- 验收标准：TODO 中写清 DLS 数学结构 `dq = J.T @ solve(J @ J.T + lambda I, gain * e)`，但不实现完整算法。
 
-### A05 - QP-IK With Joint Limits
+### A05 - Task + Limit + QP-IK
 
-- 输入：A04 的任务定义、A03 的 Jacobian、关节位置/速度上下限、QP 权重。
-- 输出：QP 状态、受约束 `dq` 或 `q` 轨迹、约束违反量。
-- 保存路径：
-  - `outputs/reports/A05_qp_ik_joint_limit.md`
-  - `outputs/trajectories/A05_qp_ik_q_traj.csv`
-  - `outputs/cache/A05_qp_status.json`
+- 输入：A04 的任务误差、A03 的 site Jacobian、关节速度/位置限制、QP 权重。
+- 输出：QP-IK 轨迹、约束日志和求解报告。
+- 对标 mink 的概念：`FrameTask`、`PostureTask`、`ConfigurationLimit`、`VelocityLimit`。
+- 验收标准：TODO 中说明最小 QP 形式和 `scipy.optimize`/`osqp` 可选实现方向；暂不做完整 collision avoidance。
 
-### A06 - MuJoCo PD Tracking
+### A06 - Target / Mocap-Style Tracking
 
-- 输入：MuJoCo XML、A04 或 A05 产生的关节轨迹、PD 增益、仿真时间。
-- 输出：跟踪日志、关节位置/速度/力矩曲线、可选视频。
-- 保存路径：
-  - `outputs/reports/A06_mujoco_pd_tracking.md`
-  - `outputs/logs/A06_pd_tracking.csv`
-  - `outputs/figures/A06_pd_tracking_error.png`
-  - `outputs/videos/A06_pd_tracking.mp4`
+- 输入：A01 模型、目标 site、固定 target 或后续 mocap-style target。
+- 输出：target tracking 日志和报告。
+- 对标 mink 的概念：UR5e viewer target、mocap target 驱动任务空间目标。
+- 验收标准：TODO 中说明第一版 fixed target、后续扩展 `data.mocap_pos` 和 `data.mocap_quat`。
 
-### A07 - Mini-WBC QP
+### A07 - MuJoCo Actuator Tracking
 
-- 输入：A03 的 Jacobian 概念、A05 的 QP 约束概念、A06 的仿真反馈概念、任务权重和接触约束占位。
-- 输出：WBC QP 变量说明、矩阵维度、任务和约束结构报告。
-- 保存路径：
-  - `outputs/reports/A07_mini_wbc_qp.md`
-  - `outputs/cache/A07_qp_structure.json`
+- 输入：A04/A05 生成的 `q_des` 或 `dq_des`、MuJoCo actuator 名称和控制参数。
+- 输出：actuator tracking 日志、误差图、可选视频和报告。
+- 对标 mink 的概念：`arm_ur5e_actuators.py` 中把 IK 结果送入 MuJoCo actuator/control 的思路。
+- 验收标准：TODO 中明确 `data.ctrl`、`mujoco.mj_step` 和 actuator 名称检查；不承诺完整 humanoid WBC。
 
-## 5. A04 DLS-IK 和 A05 QP-IK 的关系
+### A08 - Collision Avoidance TODO
 
-A04 是无显式约束的数值 IK 学习入口，重点是理解误差、Jacobian、阻尼和 `pin.integrate`。
+- 输入：A05 的 QP-IK 结构、后续确认的碰撞几何、最小距离阈值。
+- 输出：collision avoidance TODO 设计记录。
+- 对标 mink 的概念：collision avoidance constraint。
+- 验收标准：只保留 TODO，不实现完整避障；说明它为什么在 QP-IK 之后引入。
 
-A05 在 A04 的基础上引入约束：关节速度限制、关节位置限制、正则项和 OSQP 求解状态。A05 不应重新定义一套孤立问题，而应复用 A04 的目标 frame、目标位置、误差定义和验证方式。
+### A09 - Comparison Report
 
-## 6. A06 如何消费 A04/A05 的轨迹
+- 输入：A01-A08 的报告、日志和轨迹。
+- 输出：A 项目与 mink UR5e 示例的对照报告。
+- 对标 mink 的概念：把自己实现的模型检查、site pose、IK、tracking 与 mink 示例逐项比较。
+- 验收标准：报告能说明“自己实现了什么”“mink 提供了什么抽象”“差距在哪里”“后续如何补齐”。
 
-A06 不应只生成一个独立正弦 demo。标准 pipeline 中，A06 的主要输入应该是：
+## 4. A04 与 A05 的关系
 
-- A04 生成的 DLS-IK 轨迹；
-- 或 A05 生成的 QP-IK 轨迹；
-- MuJoCo XML；
-- PD 增益和仿真时间。
+A04 是最小 DLS differential IK，用来理解误差、Jacobian、阻尼和迭代更新。
 
-第一版实现可以先使用占位轨迹或单关节轨迹，但接口和文档应保留“消费 IK 轨迹”的位置。
+A05 在 A04 的任务定义基础上加入 task 权重和 limit 约束，过渡到更接近 mink 的 QP-IK。A05 不应重新写成孤立 demo，而应复用 A04 的目标定义、误差定义和验证方式。
 
-## 7. A07 如何作为 WBC/legged_control 的过渡
+## 5. A06 与 A07 的关系
 
-A07 是教学版 Mini-WBC QP，不直接复刻 B 项目的完整 WBC。它的作用是把 A 项目中已经建立的概念串起来：
+A06 学习 target / mocap-style tracking 的任务生成方式：目标从哪里来，如何影响 site 误差。
 
-- A03：任务 Jacobian；
-- A05：QP 目标项和约束；
-- A06：仿真反馈和跟踪误差；
-- B 项目：后续阅读 `legged_control` WBC/NMPC 时的概念桥梁。
+A07 学习 actuator tracking：把 A04/A05 产生的期望关节状态送入 MuJoCo `data.ctrl`，检查 actuator、control range、tracking error 和仿真稳定性。
 
-## 8. 验收标准
+## 6. H1 Legacy 的新定位
 
-- A01-A07 的 README、docstring 和 TODO 都明确自己在 pipeline 中的位置。
-- 每一步都说明前置输入、后续输出和保存路径。
-- `outputs/README.md` 定义统一输出目录。
-- `pipeline_io.py` 提供统一路径和占位写入函数的 TODO 骨架。
-- 所有核心算法仍保留 TODO，未实现完整 FK、Jacobian、IK、QP、WBC 或 MuJoCo 控制。
+- H1 legacy 是历史学习参考，保留在 `legacy_imported/` 中。
+- H1 legacy 不删除，因为它记录了早期 Pinocchio/URDF/FK/Jacobian/IK 学习路径。
+- 当前 A 项目主线切换为 UR5e / 6-DOF manipulator / mink-style baseline。
+- 新标准入口仍然是 `scripts/01_...` 到 `scripts/07_...`，不是 `legacy_imported/`。
+
+## 7. 验收标准
+
+- README、配置和脚本 docstring 都明确当前主线是 UR5e / mink-style 6-DOF manipulator。
+- A01-A09 的输入、输出、mink 对标概念和验收标准清楚。
+- H1 legacy 被明确标记为历史参考，而不是当前主线。
+- 不调用 mink 替代自己的实现。
+- 不实现 FK、Jacobian、IK、QP、WBC、MuJoCo 控制算法。

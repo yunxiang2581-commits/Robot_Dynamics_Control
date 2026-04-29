@@ -1,18 +1,29 @@
-"""A01 pipeline 第一步: URDF 检查学习型 TODO 骨架。
+"""A01 pipeline 第一步: model inspect / MJCF inspect 学习型 TODO 骨架。
 
-本文件在 A 项目中的角色:
-- 步骤位置: A01, 是 A self-baseline pipeline 的第一环。
-- 输入: `configs/robot.yaml` 和一个最终确认的 URDF 路径。
-- 输出:
-  - `outputs/reports/A01_inspect_urdf_report.md`
-  - `outputs/cache/A01_model_summary.json`
-- 下游关系: A02 会消费这里确认的 frame 名称和模型摘要。
+所属 pipeline 步骤:
+- A01 model inspect, 是 UR5e/mink-style A 项目主线的第一步。
 
-当前文件有意保持为学习型 TODO 骨架。
-它不会完整跑通 Pinocchio 的 URDF 加载流程。
+对标 mink 的概念:
+- MuJoCo model loading。
+- UR5e `scene.xml` 中的 joint、body、site、actuator、keyframe 检查。
+- 后续 `Configuration`、site pose 和 IK 都依赖这里确认的模型维度与对象名称。
+
+本脚本输入:
+- `configs/robot.yaml`。
+- 第一版重点输入是 `mjcf_path`, 对标 mink UR5e `scene.xml`。
+- `urdf_path` 只作为可选补充, 不是当前主线阻塞项。
+
+本脚本输出:
+- `outputs/reports/A01_model_inspect_report.md`。
+- `outputs/cache/A01_model_summary.json`。
+
+当前状态:
+- TODO learning skeleton。
+- 不完整实现 MuJoCo/Pinocchio 加载流程。
+- 不调用 mink 替代自己的实现。
 
 legacy 参考:
-`scripts/legacy_imported/task1_inspect_humanoid_model.py`
+- `scripts/legacy_imported/task1_inspect_humanoid_model.py` 仅作为历史学习参考。
 """
 
 from __future__ import annotations
@@ -90,13 +101,14 @@ def main() -> None:
 
     TODO(中文):
     - 要补什么: 后续按顺序补配置读取、候选 URDF 构造、Pinocchio 模型加载、
-      模型摘要、frame 关键词搜索、Markdown/JSON 输出。
-    - 为什么需要这一步: A01 是整个 A pipeline 的入口; 这一步先把学习顺序、
-      输入、输出和失败提示框架搭起来。
-    - 推荐使用什么函数/API: `logging`, `Path`, `json.dumps`,
-      `model_loader.*` 系列函数。
-    - 输入是什么: `configs/robot.yaml` 和可选 `--urdf`。
-    - 输出是什么: 规划中的报告路径、JSON 路径和 TODO 骨架日志。
+      模型摘要、body/site/actuator/keyframe 搜索、Markdown/JSON 输出。
+    - 为什么需要这一步: A01 是整个 UR5e/mink-style pipeline 的入口; 后续
+      site pose、Jacobian、IK 和 actuator tracking 都依赖这里确认的模型对象。
+    - 对标 mink 的哪个概念: MuJoCo model loading 和 UR5e scene inspect。
+    - 推荐使用什么函数/API: `mujoco.MjModel.from_xml_path`, `logging`,
+      `Path`, `json.dumps`, 后续可保留 `model_loader.*` 作为可选 URDF 辅助。
+    - 输入是什么: `configs/robot.yaml` 中的 `mjcf_path`, 可选 `urdf_path`。
+    - 输出是什么: A01 model inspect 报告路径、JSON 摘要路径和 TODO 骨架日志。
     - 如何验证: 当前阶段验证脚本可编译、日志清晰、不会伪装成完整实现。
     """
     args = parse_args()
@@ -114,20 +126,21 @@ def main() -> None:
     # 路径教学说明:
     # 1. A_ROOT 用于定位 A 项自己的 configs、outputs 和 src。
     # 2. REPO_ROOT 用于定位 shared/robot_assets 等共享资源。
-    # 3. 当前先把路径框架写清楚, 模型加载和搜索逻辑后续再逐个补 TODO。
+    # 3. 当前先把路径框架写清楚, MJCF 模型加载和对象搜索逻辑后续再逐个补 TODO。
     logging.info("A_ROOT resolved from __file__: %s", A_ROOT)
     logging.info("REPO_ROOT resolved from A_ROOT.parents[1]: %s", REPO_ROOT)
 
     # Pipeline TODO(中文):
-    # - 前置输入: configs/robot.yaml 和最终确认的 URDF 路径。
-    # - 本步产物: A01 Markdown 报告、模型摘要 JSON、候选 frame 搜索结果。
-    # - 后续消费: A02 读取 frame 名称和模型摘要, A03 复用模型维度与 frame 选择。
+    # - 前置输入: configs/robot.yaml 和最终确认的 UR5e scene.xml / MJCF 路径。
+    # - 本步产物: A01 Markdown 报告、模型摘要 JSON、joint/body/site/actuator/keyframe 清单。
+    # - 后续消费: A02 读取 site 名称和模型摘要, A03 复用模型维度与 site 选择。
     # - 验证重点: 路径定位正确、输出路径固定、日志能说明当前做到了哪一步。
 
     try:
         # TODO(中文):
         # - 要补什么: 调用 model_loader.load_yaml_config 读取配置。
-        # - 为什么需要这一步: 避免把 URDF 路径、关键词和 free_flyer 配置写死在脚本里。
+        # - 为什么需要这一步: 避免把 MJCF 路径、末端候选名称和搜索关键词写死在脚本里。
+        # - 对标 mink 的哪个概念: mink 示例先加载 MuJoCo model, 再基于模型对象做 configuration 和 task。
         # - 推荐使用什么函数/API: model_loader.load_yaml_config。
         # - 输入是什么: args.config。
         # - 输出是什么: config dict。
@@ -142,10 +155,11 @@ def main() -> None:
             "summary_json_path": str(output_paths["summary_json"]),
             "next_todos": [
                 "读取 YAML 配置",
-                "构造 URDF 候选路径",
-                "调用 Pinocchio 加载模型",
-                "提取模型摘要",
-                "按关键词搜索 frame",
+                "确认 mjcf_path 和可选 urdf_path",
+                "调用 mujoco.MjModel.from_xml_path 加载 scene.xml",
+                "检查 nq、nv、nu",
+                "列出 joint、body、site、actuator、keyframe",
+                "搜索 attachment_site、tool0、ee_link、wrist_3_link 等末端候选",
                 "生成 Markdown 报告和 JSON 摘要",
             ],
         }

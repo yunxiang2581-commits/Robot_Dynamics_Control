@@ -1,17 +1,30 @@
-"""A06 pipeline step: track an A04/A05 joint trajectory in MuJoCo with PD control.
+"""A06 pipeline 第六步: target / mocap-style tracking 学习型 TODO 骨架。
 
-Pipeline role:
-- Step: A06, connects kinematic IK results to a MuJoCo closed-loop tracking test.
-- Consumes: MuJoCo XML and a trajectory from A04 DLS-IK or A05 QP-IK.
-- Produces: tracking logs, error curves, torque curves, and optional video.
-- Downstream: A07 uses tracking error and constraint concepts when explaining Mini-WBC.
-- Output contract: reports/A06_mujoco_pd_tracking.md, logs/A06_pd_tracking.csv,
-  figures/A06_pd_tracking_error.png, and videos/A06_pd_tracking.mp4.
+所属 pipeline 步骤:
+- A06 target / mocap-style tracking。
 
-This is a TODO learning entry. References:
-root experiments/exp_pd_joint_control.py
-scripts/legacy_imported/mujoco_h1_left_knee_perturb.py
-scripts/legacy_imported/mujoco_h1_sim_learning.py
+对标 mink 的概念:
+- `arm_ur5e.py` 中 viewer target / mocap target 的思想。
+- 第一版可以先使用 fixed target, 后续再扩展 mocap-style target。
+
+本脚本输入:
+- UR5e MJCF 模型。
+- 目标 site 名称。
+- fixed target 或后续 mocap target。
+
+本脚本输出:
+- `outputs/logs/A06_target_tracking.csv`。
+- `outputs/reports/A06_target_tracking_report.md`。
+
+当前状态:
+- TODO learning skeleton。
+- 不实现完整 target tracking 或 viewer 交互。
+- 不调用 mink 替代自己的实现。
+
+References:
+- root experiments/exp_pd_joint_control.py
+- `scripts/legacy_imported/mujoco_h1_left_knee_perturb.py`
+- `scripts/legacy_imported/mujoco_h1_sim_learning.py`
 """
 
 from __future__ import annotations
@@ -39,18 +52,19 @@ def main() -> None:
     logging.info("MuJoCo PD output directory placeholder: %s", args.output_dir)
 
     # Pipeline TODO(中文):
-    # - 前置产物: A04 的 DLS-IK q 轨迹或 A05 的 QP-IK q 轨迹, 以及 MuJoCo XML。
-    # - 本步产物: PD tracking 日志、误差曲线、力矩曲线和可选视频。
-    # - 后续消费: A07 使用 A06 的仿真误差和控制输入概念组织 Mini-WBC 任务。
+    # - 前置产物: A02/A03 的 site pose/Jacobian 概念, A04/A05 的 IK 入口, 以及 MuJoCo XML。
+    # - 本步产物: fixed target 或 mocap-style target tracking 日志和报告。
+    # - 后续消费: A07 使用 target tracking 产生的期望 q_des/dq_des 进入 actuator tracking。
     # - 输出路径: 后续应通过 pipeline_io 生成 A06 report/log/figure/video 路径。
     # TODO(中文):
-    # 1. 要实现什么: 加载 MuJoCo XML, 生成关节期望轨迹, 用 PD 计算 torque 并记录跟踪误差。
-    # 2. 求职重要性: PD 轨迹跟踪是控制实验的最小闭环, 能连接仿真、日志和稳定性调试。
-    # 3. 推荐 API: mujoco.MjModel.from_xml_path, mujoco.MjData, mujoco.mj_step, numpy。
-    # 4. 输入: MuJoCo XML、目标关节、q_des/dq_des 轨迹、kp/kd、仿真时长。
-    # 5. 输出: CSV 日志、误差曲线、关节位置/速度/力矩图。
-    # 6. 如何验证: 误差有界, torque 无异常尖峰, 仿真无 NaN, 图像与日志一致。
-    # 7. legacy 参考: root PD 实验和 scripts/legacy_imported/mujoco_*.py。
+    # 1. 要实现什么: 加载 MuJoCo XML, 设置 fixed target, 后续扩展 mocap target, 并记录目标跟踪误差。
+    # 2. 为什么这一步存在: mink UR5e 示例的交互目标需要先被转成可复盘的 target tracking 流程。
+    # 3. 对标 mink 的哪个概念: viewer target / mocap target。
+    # 4. 推荐 API: mujoco viewer, data.mocap_pos, data.mocap_quat, mujoco.mj_step。
+    # 5. 输入是什么: MuJoCo XML、目标 site、fixed target 或 mocap target、仿真时长。
+    # 6. 输出是什么: A06 target tracking CSV 日志和 Markdown 报告。
+    # 7. 如何验证: 目标值、当前 site pose 和误差在日志中可解释, 仿真无 NaN。
+    # 8. legacy 参考: root PD 实验和 scripts/legacy_imported/mujoco_*.py。
     raise NotImplementedError("TODO: implement MuJoCo PD tracking learning step.")
 
 

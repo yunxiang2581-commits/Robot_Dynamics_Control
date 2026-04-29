@@ -1,15 +1,29 @@
-"""A04 pipeline step: run a Damped Least Squares IK learning loop.
+"""A04 pipeline 第四步: DLS differential IK 学习型 TODO 骨架。
 
-Pipeline role:
-- Step: A04, converts a target frame position error into an iterative joint update.
-- Consumes: A01 model metadata, A02 target frame, A03 validated Jacobian logic.
-- Produces: DLS-IK error curve, final q, and a lightweight q trajectory.
-- Downstream: A05 compares constrained QP-IK against this baseline; A06 can track the trajectory.
-- Output contract: reports/A04_dls_ik.md, trajectories/A04_dls_ik_q_traj.csv,
-  and figures/A04_dls_ik_error.png.
+所属 pipeline 步骤:
+- A04 DLS differential IK。
 
-This is a TODO learning entry. Legacy references:
-scripts/legacy_imported/ik_h1_left_foot_step*.py
+对标 mink 的概念:
+- `mink.solve_ik` 的最小无约束教学版。
+- 先理解 differential IK 的误差、Jacobian、阻尼和关节更新, 暂不引入 task/limit/QP。
+
+本脚本输入:
+- A01 模型摘要、A02 目标 site pose、A03 验证过的 site Jacobian。
+- 当前 `q`、目标 site 位置/姿态、阻尼系数和 gain。
+
+本脚本输出:
+- `outputs/trajectories/A04_dls_ik_q_traj.npy`。
+- `outputs/logs/A04_dls_ik_error.csv`。
+- `outputs/figures/A04_dls_ik_error.png`。
+- `outputs/reports/A04_dls_ik_report.md`。
+
+当前状态:
+- TODO learning skeleton。
+- 不实现完整 DLS IK。
+- 不调用 mink 替代自己的实现。
+
+Legacy references:
+- `scripts/legacy_imported/ik_h1_left_foot_step*.py`
 """
 
 from __future__ import annotations
@@ -38,18 +52,20 @@ def main() -> None:
     logging.info("DLS IK output directory placeholder: %s", args.output_dir)
 
     # Pipeline TODO(中文):
-    # - 前置产物: A03 验证过的 frame Jacobian 和 A02 的目标 frame 位姿定义。
-    # - 本步产物: DLS-IK 误差历史、q 轨迹、最终 frame 位姿报告。
+    # - 前置产物: A03 验证过的 site Jacobian 和 A02 的目标 site 位姿定义。
+    # - 本步产物: DLS-IK 误差历史、q 轨迹、最终 site 位姿报告。
     # - 后续消费: A05 使用相同任务定义构造 QP-IK, A06 可读取 q 轨迹做 MuJoCo PD tracking。
     # - 输出路径: 后续应通过 pipeline_io 生成 A04 report/trajectory/figure 路径。
     # TODO(中文):
-    # 1. 要实现什么: 使用 Damped Least Squares 根据位置误差和 Jacobian 计算 dq, 迭代更新 q。
-    # 2. 求职重要性: IK 是把任务空间目标转成关节运动的基础, 能展示运动学和数值优化能力。
-    # 3. 推荐 API: pin.forwardKinematics, pin.getFrameJacobian, pin.integrate, numpy.linalg.solve。
-    # 4. 输入: URDF、目标 frame、初始 q、目标位置、阻尼系数、步长、最大迭代次数。
-    # 5. 输出: q 轨迹、误差曲线、最终 frame 位置和文本报告。
-    # 6. 如何验证: 误差应下降, 最终误差低于阈值, q 更新没有越界或 NaN。
-    # 7. legacy 参考: scripts/legacy_imported/ik_h1_left_foot_step*.py。
+    # 1. 要实现什么: 使用 Damped Least Squares 根据 site 误差和 Jacobian 计算 dq, 迭代更新 q。
+    # 2. 为什么这一步存在: 它是从 site pose/Jacobian 走向 QP-IK 前的最小 IK baseline。
+    # 3. 对标 mink 的哪个概念: mink.solve_ik 的最小无约束教学版。
+    # 4. 推荐 API: mujoco.mj_forward, mujoco.mj_jacSite, numpy.linalg.solve。
+    # 5. 输入是什么: MJCF、目标 site、初始 q、目标位置、阻尼系数、gain、最大迭代次数。
+    # 6. 输出是什么: q 轨迹、误差 CSV、误差图和文本报告。
+    # 7. 如何验证: 误差应下降, q 更新没有 NaN, site 最终接近目标。
+    # 8. 数学结构: e = target - current; dq = J.T @ solve(J @ J.T + lambda * I, gain * e)。
+    # 9. legacy 参考: scripts/legacy_imported/ik_h1_left_foot_step*.py。
     raise NotImplementedError("TODO: implement DLS IK learning loop.")
 
 

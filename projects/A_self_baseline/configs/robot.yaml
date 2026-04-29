@@ -1,48 +1,64 @@
-# A01 inspect URDF 配置模板
+# A 项目机器人模型配置模板
 # 说明:
-# 1. 本文件服务于 A pipeline 的第一步: A01 inspect URDF。
-# 2. 当前是学习型 TODO 骨架, 真实 URDF 需要用户确认或填入。
-# 3. 不要写死旧项目绝对路径; 优先使用 monorepo 相对路径或明确占位符。
+# 1. 当前主线对标 mink UR5e 示例, 第一版学习对象是 6-DOF 机械臂。
+# 2. 本文件只提供配置模板, 不下载 mink 仓库, 不复制模型资产。
+# 3. 真实 MJCF/URDF 路径需要用户确认或填入。
 
 # 机器人名称:
 # - 用途: 日志标题、报告标题、输出摘要中的模型标识。
-# - 注意: 这里只是名称标签, 不会自动决定 URDF 路径。
-robot_name: "h1"
+# - 当前约定: 使用 UR5e/mink reference 作为学习对照。
+robot_name: ur5e_mink_reference
 
-# URDF 路径:
-# - 用途: A01 读取并检查的主模型描述文件。
-# - 当前示例: 使用 monorepo 中已存在的 H1 共享模型。
-# - 真实 URDF 需要用户确认或填入。
-urdf_path: "../../shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf"
+# 模型类型:
+# - 用途: 告诉 A01 当前优先检查 MuJoCo MJCF, 而不是把 URDF/Pinocchio 作为主线阻塞项。
+# - 可选理解: `mujoco_mjcf` 对应 MuJoCo XML scene/model。
+model_type: mujoco_mjcf
 
-# package 搜索路径:
-# - 用途: Pinocchio 或后续几何工具查找 package://.../meshes 等资源。
-# - 当前示例: 指向 shared/robot_assets/models。
-package_dirs:
-  - "../../shared/robot_assets/models"
+# MuJoCo MJCF 路径:
+# - 用途: A01 model inspect 的主输入。
+# - 当前只是建议路径, 模型资产后续应由用户确认后放入 shared。
+# - 不要写旧项目绝对路径。
+mjcf_path: ../../shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml
+
+# 可选 URDF 路径:
+# - 用途: 如果后续需要 Pinocchio/URDF 对照, 可以填入 UR5e URDF。
+# - 当前主线不依赖这个字段跑通。
+urdf_path: /path/to/optional/ur5e.urdf
 
 # 是否使用浮动基:
-# - true: humanoid/legged 常用, 对应 pin.JointModelFreeFlyer。
-# - false: 固定基教学模型可用。
-free_flyer: true
+# - false: 固定基 6-DOF 机械臂常用设置。
+# - true: humanoid/legged 才通常需要 floating base。
+free_flyer: false
 
-# frame 关键词:
-# - 用途: A01 后续用这些关键词在 model.frames 中搜索候选目标 frame。
-# - 真实关键词需要用户按机器人模型结构确认。
+# 末端执行器候选:
+# - 用途: A01/A02 先检查这些 body/site/frame 名称是否存在。
+# - 对标 mink: UR5e 示例通常围绕 attachment/tool site 做任务空间控制。
+end_effector_candidates:
+  - attachment_site
+  - tool0
+  - ee_link
+  - wrist_3_link
+
+# 模型对象搜索关键词:
+# - 用途: A01 检查 joint/body/site 时, 用关键词缩小候选对象。
+# - 验证方式: 报告中应列出匹配到的候选名称, 不要直接猜一个名字。
 frame_keywords:
-  - "foot"
-  - "ankle"
-  - "pelvis"
-  - "torso"
+  - base
+  - shoulder
+  - elbow
+  - wrist
+  - tool
+  - ee
+  - attachment
 
 # 输出目录:
-# - 用途: A01 标准报告和 JSON 摘要输出的基准目录。
-# - 当前脚本会固定生成 reports/cache 子路径, 这里保留为学习配置项。
-output_dir: "../outputs"
+# - 用途: A01-A07 标准报告、缓存、轨迹、日志和图像的根目录。
+output_dir: outputs
 
 # 备注:
-# - 用途: 记录当前模型来源、是否需要手动确认 frame 名、是否需要切换到 h1.urdf。
+# - 用途: 记录当前模型来源、主线定位和后续人工确认事项。
 notes:
-  - "真实 URDF 需要用户确认或填入。"
-  - "如果后续只关注无手版本, 可以改为 h1.urdf。"
-  - "A01 当前阶段只做 TODO 学习骨架, 不完整实现 URDF 加载流程。"
+  - 第一版对标 mink UR5e 示例
+  - 当前不调用 mink 替代自己的实现
+  - 模型资产后续放到 shared/robot_assets/models/mink_universal_robots_ur5e/
+  - H1 legacy 仅作为历史参考，不是 A 当前主线
