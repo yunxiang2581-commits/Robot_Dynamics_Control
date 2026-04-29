@@ -65,6 +65,21 @@ A00 reference and assets
 - `configs/` 是配置入口，当前 `configs/robot.yaml` 已转为 UR5e/mink-style MJCF 模型模板。
 - `outputs/` 是项目级输出目录，报告、缓存、轨迹、日志、图像和视频按子目录保存。
 
+## mink 本地参考资产
+
+`external/mink_upstream/` 是 mink 上游完整仓库的本地只读镜像，不是 A 项目标准入口。
+
+A 项目只复制最小 UR5e assets/examples：
+
+- 模型资产：`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`
+- IK 对照脚本：`projects/A_self_baseline/external/mink/examples/arm_ur5e.py`
+- actuator 对照脚本：`projects/A_self_baseline/external/mink/examples/arm_ur5e_actuators.py`
+- 上游说明：`projects/A_self_baseline/external/mink/README.md`
+- 许可证：`projects/A_self_baseline/external/mink/LICENSE`
+- 依赖参考：`projects/A_self_baseline/external/mink/pyproject.toml`
+
+copied files are reference assets/examples, not our implementation。标准实现仍然在 `scripts/` 和 `src/robot_baseline/`。
+
 ## legacy_imported 的作用
 
 `legacy_imported/` 保存从旧项目导入的 H1/Pinocchio/URDF/FK/Jacobian/IK 学习脚本和文档，只作为历史参考。

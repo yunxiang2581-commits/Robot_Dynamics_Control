@@ -31,14 +31,14 @@ A00 reference and assets
 
 ### A00 - Reference and Assets
 
-- 输入：mink UR5e 示例说明、后续用户确认的 UR5e/MJCF 模型资产路径。
-- 输出：参考文档、资产路径约定和不下载外部仓库的记录。
+- 输入：`external/mink_upstream/` 上游只读镜像、UR5e/MJCF 模型资产路径。
+- 输出：最小参考材料、资产路径约定和本地来源记录。
 - 对标 mink 的概念：example、model asset、viewer target、actuator example。
-- 验收标准：`reference_mink_ur5e.md` 说明清楚参考范围，模型建议路径为 `shared/robot_assets/models/mink_universal_robots_ur5e/`。
+- 验收标准：`reference_mink_ur5e.md` 说明清楚参考范围，模型路径为 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`；对照脚本路径为 `projects/A_self_baseline/external/mink/examples/`。
 
 ### A01 - Model Inspect
 
-- 输入：`configs/robot.yaml`、`mjcf_path`，可选 `urdf_path`。
+- 输入：`configs/robot.yaml`、`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，可选 `urdf_path`。
 - 输出：`nq`、`nv`、`nu`、joint、body、site、actuator、keyframe 和末端候选对象清单。
 - 对标 mink 的概念：MuJoCo model loading、UR5e scene inspect、configuration 的基础模型维度。
 - 验收标准：报告列出模型维度和关键 site/body/actuator；不依赖旧项目绝对路径。
@@ -118,7 +118,17 @@ A07 学习 actuator tracking：把 A04/A05 产生的期望关节状态送入 MuJ
 - 当前 A 项目主线切换为 UR5e / 6-DOF manipulator / mink-style baseline。
 - 新标准入口仍然是 `scripts/01_...` 到 `scripts/07_...`，不是 `legacy_imported/`。
 
-## 7. 验收标准
+## 7. mink 本地参考资产边界
+
+- `external/mink_upstream/` 是上游完整仓库镜像，只读参考，不是 A 项目标准入口。
+- A 项目只复制最小 UR5e assets/examples：
+  - `shared/robot_assets/models/mink_universal_robots_ur5e/`
+  - `projects/A_self_baseline/external/mink/examples/arm_ur5e.py`
+  - `projects/A_self_baseline/external/mink/examples/arm_ur5e_actuators.py`
+- copied files are reference assets/examples, not our implementation。
+- 标准实现仍然在 `projects/A_self_baseline/scripts/` 和 `projects/A_self_baseline/src/robot_baseline/`。
+
+## 8. 验收标准
 
 - README、配置和脚本 docstring 都明确当前主线是 UR5e / mink-style 6-DOF manipulator。
 - A01-A09 的输入、输出、mink 对标概念和验收标准清楚。

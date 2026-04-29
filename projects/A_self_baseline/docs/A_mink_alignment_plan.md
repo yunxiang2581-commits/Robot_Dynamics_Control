@@ -2,10 +2,11 @@
 
 ## 阶段 1：model inspect、configuration/site pose、site Jacobian
 
-- 输入：`configs/robot.yaml`、UR5e `scene.xml`、末端 site 候选名称。
+- 输入：`configs/robot.yaml`、`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`、末端 site 候选名称。
 - 输出：模型摘要、site pose 报告、Jacobian 有限差分验证报告。
 - 验收标准：能解释 `nq`、`nv`、`nu`、joint、body、site、actuator；能从 `q` 查询 site pose；TODO 中明确 `mj_jacSite` 验证方式。
 - 对标 mink 的概念：MuJoCo model loading、`Configuration`、site Jacobian。
+- 本地参考：`projects/A_self_baseline/external/mink/examples/arm_ur5e.py`。
 
 ## 阶段 2：DLS differential IK
 
@@ -34,6 +35,7 @@
 - 输出：actuator tracking CSV、误差曲线、可选视频和报告。
 - 验收标准：TODO 中明确 `data.ctrl`、`mujoco.mj_step`、actuator 名称和 tracking error 检查。
 - 对标 mink 的概念：`arm_ur5e_actuators.py`。
+- 本地参考：`projects/A_self_baseline/external/mink/examples/arm_ur5e_actuators.py`。
 
 ## 阶段 6：collision avoidance TODO
 
@@ -48,3 +50,4 @@
 - 输出：A 项目与 mink UR5e 示例的对照报告。
 - 验收标准：能说明自己实现链路、mink 抽象、当前差距和下一步补齐顺序。
 - 对标 mink 的概念：example-level comparison。
+- 边界说明：`external/mink_upstream/` 是上游完整仓库镜像，不是 A 项目标准入口；copied files are reference assets/examples, not our implementation。

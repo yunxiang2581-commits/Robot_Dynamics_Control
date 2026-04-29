@@ -59,12 +59,16 @@ UR5e 是固定基 6-DOF 机械臂，比 H1 人形机器人更适合作为第一�
 | A08 | collision avoidance TODO | collision avoidance constraint |
 | A09 | 产出对照报告 | comparison with mink |
 
-## 7. 模型资产建议路径
+## 7. 本地上游与最小复制资产
 
-后续如果用户确认引入 UR5e/MJCF 资产，建议放到：
+`external/mink_upstream/` 已作为本地上游完整仓库镜像，用于只读参考。它不是 A 项目标准入口，也不应整体复制进 A 项目。
+
+A 项目只复制最小 UR5e assets/examples：
 
 ```text
-shared/robot_assets/models/mink_universal_robots_ur5e/
+shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml
+projects/A_self_baseline/external/mink/examples/arm_ur5e.py
+projects/A_self_baseline/external/mink/examples/arm_ur5e_actuators.py
 ```
 
 第一版建议关注：
@@ -74,7 +78,12 @@ shared/robot_assets/models/mink_universal_robots_ur5e/
 - actuator 定义；
 - site / body / keyframe 名称。
 
-本步骤不下载 mink 仓库，也不复制模型资产。
+copied files are reference assets/examples, not our implementation。标准实现仍然在：
+
+```text
+projects/A_self_baseline/scripts/
+projects/A_self_baseline/src/robot_baseline/
+```
 
 ## 8. 当前边界
 
