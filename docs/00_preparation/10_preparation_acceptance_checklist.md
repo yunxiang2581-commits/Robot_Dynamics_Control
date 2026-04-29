@@ -10,7 +10,7 @@
 
 ## 本文用途
 
-本文件用于判断准备阶段是否完成。勾完本清单后，才能进入 A/B/C 三条主线的代码骨架和算法开发。
+本文件用于判断准备阶段是否完成。当前准备阶段已完成，项目已进入 A 项目实现阶段。
 
 ## 核心结论
 
@@ -19,7 +19,7 @@
 | 文档 | 准备阶段文档齐全、结构统一、能互相跳转 |
 | 仓库 | README、`.gitignore`、`projects/`、`shared/`、`tools/`、`outputs/` 齐全 |
 | 边界 | 明确准备阶段不实现算法 |
-| 后续条件 | 可以进入 A/B/C 的代码骨架和文档模板阶段 |
+| 后续条件 | 已进入 A 项目 A01 model inspect 实现阶段 |
 
 ## 文档验收
 
@@ -50,7 +50,7 @@
 | [x] | `tools/export/` 已保存导出脚本 | Word 导出脚本已归位 |
 | [x] | 根目录已瘦身完成 | A 项目代码不再直接放在根目录 |
 | [x] | `.gitignore` 已包含大文件忽略规则 | 视频、日志、权重、缓存被忽略 |
-| [x] | 下一步入口明确 | 进入 `projects/A_self_baseline/scripts/01_inspect_urdf.py` |
+| [x] | 下一步入口明确 | 进入 A01 model inspect：`projects/A_self_baseline/scripts/01_inspect_urdf.py` |
 
 ## 进入开发阶段条件
 
@@ -61,3 +61,7 @@
 | 结构可用 | A/B/C monorepo 目录入口存在 |
 | 风险可控 | 编译、训练、模型、ROS、大文件风险都有备选方案 |
 | 工作流明确 | 后续 Codex 按 TODO 教学骨架逐步实现 |
+
+## 当前进入状态
+
+准备阶段验收已完成。当前开发入口是 A 项目 A01 model inspect，目标是读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml` 并输出 MuJoCo 模型对象摘要。

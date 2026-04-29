@@ -4,7 +4,9 @@
 
 面向机器人运动控制算法实习、机器人控制算法工程师、人形机器人运动控制方向的求职 baseline。
 
-当前仓库处于 **准备阶段**：只建立目标、需求、任务、目录、模板和规则，不实现 FK、Jacobian、IK、QP、WBC、RL 等完整算法。
+当前仓库已完成准备阶段和 A 项目 mink/UR5e 对标需求整理，正式进入 **A 项目实现阶段**。
+
+当前实现入口是 A01 `model inspect`：先读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，检查 MuJoCo 模型的 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe。后续仍按“先 TODO 骨架，再最小可运行实现”的方式逐步推进，不一次性实现 FK、Jacobian、IK、QP、WBC 或 RL。
 
 当前唯一工作目录：
 
@@ -16,7 +18,7 @@
 
 | 主线 | 名称 | 目标 |
 | --- | --- | --- |
-| A | 自研机器人运动控制基础系统 | 用 Pinocchio + MuJoCo + OSQP 建立 URDF、FK、Jacobian、IK、QP-IK、PD、Mini-WBC 教学链路 |
+| A | mink-style UR5e 6-DOF 机械臂控制 baseline | 对标 mink UR5e 示例，逐步实现 MuJoCo model inspect、site pose、Jacobian、DLS IK、QP-IK、target tracking、actuator tracking 和 demo showcase |
 | B | legged_control 复现与拆解 | 拆解 `qiayuanl/legged_control` 中 NMPC、WBC、状态估计、关节力矩控制链路 |
 | C | unitree_rl_mjlab 复现与拆解 | 拆解 `unitreerobotics/unitree_rl_mjlab` 中 Train、Play、Sim2Real、obs/action/reward/policy 部署流程 |
 
@@ -53,7 +55,7 @@ A 项目代码、实验、配置、测试和早期根目录资产已经归入 `p
 - `legacy_imported/`：从旧项目导入的历史参考材料，只用于理解旧脚本意图，不直接作为标准实现。
 - `root_imported/`、`root_imported_src/`、`root_imported_utils/`：从本仓库早期根目录归位来的 A 项目资产，后续需要逐步重构到标准 `src/`、`projects/A_self_baseline/scripts/`、`projects/A_self_baseline/configs/`、`projects/A_self_baseline/tests/`。
 
-下一步建议从 A 项目第一个标准学习脚本开始：
+当前下一步从 A 项目 A01 model inspect 开始。先检查命令入口，再补最小可运行 MJCF inspect：
 
 ```bash
 python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
@@ -88,10 +90,10 @@ python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
 
 | 阶段 | 内容 | 当前状态 |
 | --- | --- | --- |
-| PREP | 项目管理文档、目录、模板、规则 | 进行中 |
-| A0 | 自研基础系统代码骨架和 TODO 教学骨架 | 未开始 |
-| A1 | URDF、FK、Jacobian | 未开始 |
-| A2 | DLS-IK、QP-IK、MuJoCo PD、Mini-WBC | 未开始 |
+| PREP | 项目管理文档、目录、模板、规则 | 已完成 |
+| A0 | mink/UR5e 对标需求、资产、pipeline 和 TODO 教学骨架 | 已完成 |
+| A1 | A01 model inspect、A02 site pose、A03 site Jacobian | A01 准备实现 |
+| A2 | A04 DLS IK、A05 QP-IK、A06/A07 tracking | 未开始 |
 | B | legged_control 阅读、复现记录、NMPC/WBC 拆解 | 未开始 |
 | C | unitree_rl_mjlab 阅读、Play/Train 记录、RL 拆解 | 未开始 |
 | Compare | 模型控制 vs 强化学习控制对比 | 未开始 |

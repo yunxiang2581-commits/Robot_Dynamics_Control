@@ -76,10 +76,20 @@ outputs/videos/A07_ur5e_actuator_tracking_demo.mp4
 
 ## 9. 验收清单
 
-- [ ] 创建 mink 能力与 A 需求总文档。
-- [ ] README 链接到需求总文档。
-- [ ] pipeline contract 包含 A10 demo showcase / video recording。
-- [ ] alignment plan 增加阶段 8。
-- [ ] reference 文档说明两个文档的分工。
-- [ ] 未修改 Python 代码。
-- [ ] 未修改 `external/mink_upstream`。
+- [x] 创建 mink 能力与 A 需求总文档。
+- [x] README 链接到需求总文档。
+- [x] pipeline contract 包含 A10 demo showcase / video recording。
+- [x] alignment plan 增加阶段 8。
+- [x] reference 文档说明两个文档的分工。
+- [x] 未修改 Python 代码。
+- [x] 未修改 `external/mink_upstream`。
+
+## 10. 当前项目状态
+
+Step 8.11 已完成。A 项目已具备进入实现阶段的文档条件：
+
+- A 当前主线：mink-style UR5e 6-DOF manipulator control baseline；
+- 当前实现入口：A01 model inspect；
+- 当前模型资产：`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`；
+- 下一步任务：实现 A01 最小可运行 MJCF inspect，输出模型维度和对象清单；
+- 仍不做：FK、Jacobian、IK、QP、WBC、RL 的跨阶段实现。

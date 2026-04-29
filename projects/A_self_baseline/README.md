@@ -17,7 +17,9 @@ A 项目不是完整复刻 mink 库，也不是直接调用 mink 替代自己的
 - comparison with mink
 - 可展示 demo
 
-当前状态仍是 TODO 教学骨架：脚本、配置和文档会明确学习路径、输入输出和验证方式，但不包含完整 FK、Jacobian、IK、QP、WBC 或 MuJoCo 控制算法实现。
+当前状态：A 项目已完成 mink/UR5e 对标需求、最小参考资产和 A00-A10 pipeline 文档整理，进入 A01 `model inspect` 实现阶段。
+
+第一项实现任务是 A01 最小可运行 MJCF inspect：读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，输出 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe 摘要。后续仍按“先 TODO 骨架，再最小可运行实现”的方式推进。
 
 ## 文档入口
 
@@ -114,8 +116,8 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 
 ## 当前学习顺序
 
-1. A00：确认 mink UR5e 参考范围和模型资产路径。
-2. A01：检查 MuJoCo MJCF 模型维度和对象名称。
+1. A00：确认 mink UR5e 参考范围和模型资产路径。当前状态：已完成。
+2. A01：检查 MuJoCo MJCF 模型维度和对象名称。当前状态：准备实现。
 3. A02：实现 configuration / site pose 查询。
 4. A03：实现 site Jacobian 并做有限差分验证。
 5. A04：实现 DLS differential IK。
@@ -127,3 +129,22 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 11. A10：整理 demo showcase / video recording。
 
 每一步都应先输出文本报告，便于复盘和面试讲解。
+
+## 当前实现入口
+
+```bash
+python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
+```
+
+下一步进入 A01 最小可运行 MJCF inspect。实现时只补 A01 相关 TODO，不扩展到 FK、Jacobian、IK 或 QP。
+
+## A01 model inspect status
+
+当前 A01 是 TODO learning skeleton，不是完整 model inspect 实现。
+
+- 标准入口是 `scripts/01_inspect_urdf.py`。
+- 模块骨架是 `src/robot_baseline/model_loader.py`。
+- 配置是 `configs/robot.yaml`。
+- 文档是 `docs/01_inspect_urdf.md`。
+- 下一步 Step 9B 才做最小可运行实现。
+

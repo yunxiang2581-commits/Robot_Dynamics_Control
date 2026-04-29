@@ -1,97 +1,128 @@
-# A01 Inspect URDF
+# A01 model inspect / MJCF inspect TODO skeleton
 
-## 1. A01 在 pipeline 中的位置
+## 1. A01 当前定位
 
-A01 是 A pipeline 的第一环。
+A01 当前定位是 **model inspect / MJCF inspect**。
 
-```text
-A01 inspect URDF
-  -> A02 FK frame pose
-  -> A03 Jacobian FD check
-  -> A04 DLS-IK
-  -> A05 QP-IK
-  -> A06 MuJoCo PD tracking
-  -> A07 Mini-WBC QP
-```
+文件名暂时仍为 `01_inspect_urdf.py`，但 A_self_baseline 当前主线对标 `kevinzakka/mink` 的 UR5e MuJoCo 示例，因此第一版重点检查 `scene.xml`，不是在本步骤完整实现 URDF / Pinocchio 流程。
 
-它负责先把机器人模型路径、自由度、joint 名称和 frame 名称查清楚, 后续所有步骤都依赖这里的结果。
+## 2. 为什么 A01 先做模型检查
 
-## 2. 为什么 URDF 检查是第一步
+A02-A07 都依赖模型基础信息：
 
-- 如果 URDF 路径不稳定, 后续 FK、Jacobian、IK 都会反复卡在路径错误上。
-- 如果 joint 名和 frame 名不清楚, 后续很容易靠猜名字写死脚本。
-- 如果 `nq`、`nv` 和浮动基设置不清楚, 面试时很难解释 Pinocchio 模型的基本结构。
+- `nq`
+- `nv`
+- `nu`
+- joint names
+- body names
+- site names
+- actuator names
+- keyframe names
+- end-effector candidates
 
-## 3. 本步骤学习目标
+如果不先检查模型对象名称，后续 FK、Jacobian、IK、QP、actuator tracking 很容易靠猜名字写代码，调试成本会很高。
 
-- 学会通过 `__file__` 稳定定位 A_ROOT 和 REPO_ROOT。
-- 学会从 YAML 配置和命令行共同决定 URDF 路径。
-- 学会组织候选 URDF 路径列表, 并打印清晰错误信息。
-- 学会区分固定基和浮动基模型在 `nq`、`nv` 上的差异。
-- 学会按关键词搜索候选 frame, 为 A02/A03/A04 提供输入。
+## 3. 对标 mink 的概念
+
+A01 对标 mink UR5e 示例中的以下概念：
+
+- MuJoCo model loading
+- UR5e scene inspect
+- `Configuration` 的前置模型维度检查
+
+mink 示例后续会围绕 MuJoCo model、configuration、site/task 构建控制逻辑。A_self_baseline 先用 A01 明确模型维度和对象名称。
 
 ## 4. 输入
 
+A01 未来输入包括：
+
 - `projects/A_self_baseline/configs/robot.yaml`
-- 命令行可选 `--urdf`
-- 共享模型资源示例:
-  - `shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf`
+- `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`
+- `end_effector_candidates`
 
-## 5. 输出
+默认候选末端包括：
 
-- `projects/A_self_baseline/outputs/reports/A01_inspect_urdf_report.md`
-- `projects/A_self_baseline/outputs/cache/A01_model_summary.json`
+- `attachment_site`
+- `tool0`
+- `ee_link`
+- `wrist_3_link`
+
+## 5. 未来输出
+
+A01 后续最小可运行实现会输出：
+
+- `outputs/reports/A01_model_inspect_report.md`
+- `outputs/cache/A01_model_summary.json`
+
+Step 9A 不生成这些真实输出，只整理 TODO 骨架。
 
 ## 6. TODO 实现清单
 
-1. 读取 `configs/robot.yaml`。
-2. 解析 `urdf_path`、`package_dirs`、`free_flyer` 和 `frame_keywords`。
-3. 构造候选 URDF 路径列表。
-4. 调用 Pinocchio 加载模型。
-5. 提取 `nq`、`nv`、joint 列表和 frame 列表。
-6. 按关键词搜索候选 frame。
-7. 生成 Markdown 报告。
-8. 生成 JSON 摘要。
+### TODO 1: 读取 YAML
 
-## 7. 推荐 Pinocchio API
+- 推荐 API: `yaml.safe_load`, `Path.read_text`
+- 输入: `configs/robot.yaml`
+- 输出: Python `dict`
+- 验证: 打印 key 列表，确认包含 `mjcf_path` 和 `end_effector_candidates`
 
-- `pin.buildModelFromUrdf`
-- `pin.JointModelFreeFlyer`
-- `model.names`
-- `model.frames`
+### TODO 2: 解析路径
 
-## 8. 验收标准
+- 推荐 API: `pathlib.Path`, `expanduser`, `is_absolute`, `resolve`
+- 输入: YAML 中的 `mjcf_path` 和 CLI 覆盖路径
+- 输出: 解析后的 `Path`
+- 验证: 打印解析前后路径，并确认路径定位逻辑清楚
 
-- 脚本和模块可以通过 `py_compile`。
-- A_ROOT 和 REPO_ROOT 路径定位代码清晰可读。
-- 配置模板字段完整。
-- 脚本明确写出输入和输出路径。
-- 代码仍然是 TODO 学习骨架, 没有伪装成完整实现。
+### TODO 3: 加载 MJCF
 
-## 9. 常见错误
+- 推荐 API: `mujoco.MjModel.from_xml_path`
+- 输入: `scene.xml`
+- 输出: MuJoCo `MjModel`
+- 验证: 只打印 `model.nq`, `model.nv`, `model.nu`
 
-- `pinocchio` 未安装:
-  - 现象: 后续实现时 import 失败。
-  - 处理: 先检查 Python 环境和依赖版本。
-- URDF 路径不存在:
-  - 现象: 找不到模型文件。
-  - 处理: 打印候选路径列表, 不要只报一个模糊错误。
-- `package_dirs` 不正确:
-  - 现象: URDF 中的 `package://...` 或 mesh 路径无法解析。
-  - 处理: 优先检查 `shared/robot_assets/models` 是否传入。
-- frame 名称找不到:
-  - 现象: 后续 FK/Jacobian/IK 脚本无法定位目标 frame。
-  - 处理: 先做精确匹配, 再做关键词包含匹配。
+### TODO 4: 枚举模型对象
 
-## 10. 与 legacy 文件的关系
+- 推荐 API: `mujoco.mj_id2name`, `mujoco.mjtObj`
+- 输入: MuJoCo `model`
+- 输出: joint/body/site/actuator/keyframe 名称列表
+- 验证: 名称列表长度与 model 中对应数量字段一致
 
-参考文件:
+### TODO 5: 检查末端候选
 
-- `projects/A_self_baseline/scripts/legacy_imported/task1_inspect_humanoid_model.py`
+- 推荐 API: Python list/dict, 字符串精确匹配和包含匹配
+- 输入: `end_effector_candidates`
+- 输出: 每个候选名称是否存在、存在于哪类对象中
+- 验证: 报告中明确列出命中和未命中项
 
-关系说明:
+### TODO 6: 保存 JSON
 
-- 可以参考它的学习顺序: 先找 URDF, 再检查固定基/浮动基, 再打印 joint/frame 信息。
-- 不直接复制成完整实现。
-- 不修改 legacy 原文件。
-- 标准入口始终应使用 `projects/A_self_baseline/scripts/01_inspect_urdf.py`。
+- 推荐 API: `json.dumps`, `Path.write_text`
+- 输入: 模型 summary dict
+- 输出: `outputs/cache/A01_model_summary.json`
+- 验证: 打开 JSON，确认字段完整
+
+### TODO 7: 保存 Markdown
+
+- 推荐 API: `Path.write_text`, Markdown 列表和表格
+- 输入: 模型 summary dict
+- 输出: `outputs/reports/A01_model_inspect_report.md`
+- 验证: 报告可读，包含维度、对象名称和末端候选检查
+
+## 7. 当前不做什么
+
+Step 9A 明确不做：
+
+- 不做 FK
+- 不做 Jacobian
+- 不做 IK
+- 不做 QP
+- 不做 actuator tracking
+- 不做视频录制
+- 不调用 mink 替代自己的实现
+- 不修改 `external/mink_upstream`
+- 不修改 `legacy_imported`
+
+## 8. 下一步
+
+下一步是 **Step 9B：逐个补 TODO，做最小可运行 model inspect**。
+
+Step 9B 才开始实现最小 MuJoCo model loading、对象枚举、JSON summary 和 Markdown report。
