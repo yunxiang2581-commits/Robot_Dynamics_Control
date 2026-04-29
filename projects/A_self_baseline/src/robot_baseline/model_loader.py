@@ -30,6 +30,8 @@ def load_yaml_config(config_path: str | Path) -> dict:
     - 如何验证: 后续 Step 9B 中读取后打印 key 列表，并检查是否包含 `mjcf_path`
       和 `end_effector_candidates`。
     """
+    pathlib.Path(config_path)  # 验证类型，但不解析路径，留给 resolve_path 处理。
+    
     if not isinstance(config_path, (str, Path)):
         raise TypeError(f"config_path must be str or Path, got {type(config_path)!r}")
     raise NotImplementedError("TODO A01: read robot.yaml with yaml.safe_load in Step 9B.")

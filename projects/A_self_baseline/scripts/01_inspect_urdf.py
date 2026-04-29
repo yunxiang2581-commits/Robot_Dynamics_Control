@@ -51,7 +51,7 @@ TODO_ITEMS = [
 def parse_args() -> argparse.Namespace:
     """解析 A01 CLI 参数。
 
-    TODO(中文教学):
+    CLI 说明(中文教学):
     - 要做什么: 保留 `--config`, `--mjcf`, `--output-dir` 三个入口参数。
     - 为什么这一步存在: A01 后续既要支持配置文件默认值，也要支持命令行覆盖。
     - 对标 mink 的哪个概念: mink 示例明确指定 UR5e scene.xml；这里用 CLI 让 scene.xml
@@ -90,7 +90,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     """打印 A01 TODO skeleton 状态，不运行完整 model inspect。
 
-    TODO(中文教学):
+    A01 主流程说明(中文教学):
     - 要做什么: 后续按 TODO_ITEMS 的顺序逐步补 A01 最小可运行实现。
     - 为什么这一步存在: A01 是 A02-A07 的模型基础信息准备阶段，不应跳过模型检查。
     - 对标 mink 的哪个概念: MuJoCo model loading、UR5e scene inspect、Configuration
