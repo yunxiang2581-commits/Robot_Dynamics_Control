@@ -44,7 +44,8 @@ A00 reference and assets
 - 输入：`configs/robot.yaml`、`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，可选 `urdf_path`。
 - 输出：`nq`、`nv`、`nu`、joint、body、site、actuator、keyframe 和末端候选对象清单。
 - 对标 mink 的概念：MuJoCo model loading、UR5e scene inspect、configuration 的基础模型维度。
-- 验收标准：报告列出模型维度和关键 site/body/actuator；不依赖旧项目绝对路径。
+- 当前状态：最小可运行实现已完成，已生成 `outputs/reports/A01_model_inspect_report.md` 和 `outputs/cache/A01_model_summary.json`。
+- 验收标准：报告列出模型维度和关键 site/body/actuator/keyframe；不依赖旧项目绝对路径。
 
 ### A02 - Configuration / Site Pose
 

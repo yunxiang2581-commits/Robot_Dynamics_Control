@@ -1,4 +1,4 @@
-"""A01 model inspect / MJCF inspect TODO learning skeleton.
+"""A01 model inspect / MJCF inspect minimal runnable script.
 
 当前 pipeline 定位：
 - A01 model inspect。
@@ -9,12 +9,13 @@
 - 学会先检查 MuJoCo model 的 `nq / nv / nu` 和对象名称。
 - 为后续 A02-A07 准备 joint/body/site/actuator/keyframe 和末端候选信息。
 
-当前文件故意保留 TODO，不直接写满核心逻辑。
-按 AGENTS.md：先理解每一步，再逐段补全。
+当前状态：
+- A01 最小可运行 model inspect 已补齐。
+- 脚本会生成 `outputs/cache/A01_model_summary.json` 和
+  `outputs/reports/A01_model_inspect_report.md`。
+- 中文 TODO 注释继续保留，用于解释每段实现的学习目的。
 
 明确不做：
-- 不完整加载 MuJoCo model。
-- 不生成真实 JSON/Markdown 报告。
 - 不做 FK / Jacobian / IK / QP / WBC / MuJoCo 控制。
 - 不调用 mink 替代自己的实现。
 """
@@ -65,15 +66,15 @@ from robot_baseline import model_loader  # noqa: E402,F401
 
 
 # =============================
-# TODO 2: 默认输入与未来输出路径
+# TODO 2: 默认输入与输出路径
 # =============================
 # 要实现什么：
 # - 定义默认 robot.yaml 路径。
-# - 定义未来 A01 JSON summary 和 Markdown report 的目标路径。
+# - 定义 A01 JSON summary 和 Markdown report 的目标路径。
 #
 # 为什么需要：
 # - A01 是 A02-A07 的模型基础信息入口，输出路径需要稳定。
-# - 当前只声明路径，不创建真实报告或缓存。
+# - 当前用于生成真实报告和缓存路径。
 #
 # 对标 mink 的哪个概念：
 # - 对标 mink UR5e 示例中固定的 scene.xml 输入和后续 configuration/task 复用模型信息。
@@ -133,9 +134,9 @@ def parse_args() -> argparse.Namespace:
     """
     TODO 4: 解析 CLI 参数。
 
-    需要补什么：
+    当前实现：
     - 保留 `--config`、`--mjcf`、`--output-dir`、`--log-level`。
-    - 当前只建立 CLI 框架，不触发完整模型检查。
+    - 解析 CLI 参数，供 A01 model inspect 主流程使用。
 
     为什么需要：
     - A01 后续既要支持 robot.yaml 默认值，也要支持命令行覆盖。
@@ -184,11 +185,11 @@ def parse_args() -> argparse.Namespace:
 
 def planned_output_paths(output_dir: str | None) -> dict[str, Path]:
     """
-    TODO 5: 计算未来输出路径。
+    TODO 5: 计算输出路径。
 
-    需要补什么：
+    当前实现：
     - 根据 `--output-dir` 或 DEFAULT_OUTPUT_DIR 得到 report 和 summary_json 路径。
-    - 当前只返回路径，不创建目录，不写文件。
+    - 当前只返回路径；目录创建和写文件由 TODO 12/13 对应函数完成。
 
     为什么需要：
     - A01 后续会生成 JSON summary 和 Markdown report。
@@ -222,11 +223,11 @@ def planned_output_paths(output_dir: str | None) -> dict[str, Path]:
 
 def log_a01_final_targets() -> None:
     """
-    TODO 6: 打印 A01 最终目标。
+    TODO 6: 打印 A01 检查目标。
 
-    需要补什么：
-    - 当前只输出目标说明。
-    - 后续 Step 9B 才把这些目标变成真实检查结果。
+    当前实现：
+    - 输出 A01 已检查或需要复核的模型对象清单。
+    - 这些目标会写入 JSON summary 和 Markdown report。
 
     为什么需要：
     - 学习脚本先让读者明确本步骤要产出什么，再进入实现。
@@ -254,10 +255,19 @@ def log_a01_final_targets() -> None:
 
 def main() -> None:
     """
-    A01 TODO skeleton 主流程。
+    A01 最小可运行 model inspect 主流程。
 
-    当前只输出框架信息和 TODO 任务说明。
-    不完整调用 `model_loader`，不加载 MuJoCo model，不生成 summary/report。
+    输入：
+    - robot.yaml 配置；
+    - 可选 MJCF 路径覆盖项；
+    - 输出目录。
+
+    输出：
+    - A01_model_summary.json；
+    - A01_model_inspect_report.md。
+
+    数学逻辑：
+    - 本步骤只检查模型对象，不改变 FK/Jacobian/IK/QP 数学逻辑。
     """
     args = parse_args()
     logging.basicConfig(
@@ -267,22 +277,21 @@ def main() -> None:
 
     output_paths = planned_output_paths(args.output_dir)
 
-    logging.info("A01 当前状态: TODO learning skeleton")
-    logging.info("当前不会完整加载 MuJoCo model，也不会生成真实报告或缓存。")
+    logging.info("A01 当前状态: minimal runnable model inspect")
     logging.info("A_ROOT: %s", A_ROOT)
     logging.info("REPO_ROOT: %s", REPO_ROOT)
     logging.info("config argument: %s", args.config)
     logging.info("mjcf override argument: %s", args.mjcf)
     logging.info("output-dir argument: %s", args.output_dir)
-    logging.info("未来 JSON summary 目标: %s", output_paths["summary_json"])
-    logging.info("未来 Markdown report 目标: %s", output_paths["report"])
+    logging.info("JSON summary 目标: %s", output_paths["summary_json"])
+    logging.info("Markdown report 目标: %s", output_paths["report"])
 
     log_a01_final_targets()
 
     # =============================
     # TODO 7: 读取 robot.yaml
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - config = model_loader.load_yaml_config(args.config)
     #
     # 为什么需要：
@@ -304,12 +313,12 @@ def main() -> None:
     #
     # 如何验证：
     # - 打印 config keys，确认包含 mjcf_path、end_effector_candidates、output_dir。
-    # config = model_loader.load_yaml_config(args.config)
-
+    config = model_loader.load_yaml_config(args.config)
+    logging.info("Loaded config keys: %s", list(config.keys()))
     # =============================
     # TODO 8: 解析 mjcf_path
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - 从 args.mjcf 或 config["mjcf_path"] 得到 MJCF 路径。
     # - 调用 model_loader.resolve_path(...) 得到绝对 Path。
     #
@@ -333,13 +342,16 @@ def main() -> None:
     #
     # 如何验证：
     # - 打印 mjcf_path，并确认 mjcf_path.exists() 为 True。
-    # mjcf_value = args.mjcf or config["mjcf_path"]
-    # mjcf_path = model_loader.resolve_path(mjcf_value, A_ROOT)
+    mjcf_value = args.mjcf or config["mjcf_path"]
+    mjcf_path = model_loader.resolve_path(mjcf_value, A_ROOT)
+
+    logging.info("Resolved MJCF path: %s", mjcf_path)
+    logging.info("MJCF path exists: %s", mjcf_path.exists())
 
     # =============================
     # TODO 9: 加载 MuJoCo model
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - model = model_loader.load_mujoco_model(mjcf_path)
     #
     # 为什么需要：
@@ -360,12 +372,14 @@ def main() -> None:
     #
     # 如何验证：
     # - 打印 model.nq、model.nv、model.nu，UR5e 预期为 6/6/6。
-    # model = model_loader.load_mujoco_model(mjcf_path)
-
+    model = model_loader.load_mujoco_model(mjcf_path)
+    logging.info("Model nq: %d", model.nq)
+    logging.info("Model nv: %d", model.nv)
+    logging.info("Model nu: %d", model.nu)
     # =============================
     # TODO 10: 枚举 joint/body/site/actuator/keyframe
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - 分别调用 model_loader.get_mujoco_names(model, obj_type)。
     #
     # 为什么需要：
@@ -388,11 +402,20 @@ def main() -> None:
     #
     # 如何验证：
     # - 列表长度应与 model.njnt、model.nbody、model.nsite、model.nu、model.nkey 一致。
-
+    joint_names = model_loader.get_mujoco_names(model, "joint")
+    body_names = model_loader.get_mujoco_names(model, "body")
+    site_names = model_loader.get_mujoco_names(model, "site")
+    actuator_names = model_loader.get_mujoco_names(model, "actuator")
+    keyframe_names = model_loader.get_mujoco_names(model, "keyframe")
+    logging.info("Joint names: %s", joint_names)
+    logging.info("Body names: %s", body_names)
+    logging.info("Site names: %s", site_names)
+    logging.info("Actuator names: %s", actuator_names)
+    logging.info("Keyframe names: %s", keyframe_names)
     # =============================
     # TODO 11: 检查 end-effector candidates
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - 调用 model_loader.summarize_mujoco_model(model, candidates)。
     # - 查看 attachment_site、tool0、ee_link、wrist_3_link 是否存在。
     #
@@ -416,11 +439,13 @@ def main() -> None:
     #
     # 如何验证：
     # - attachment_site 应命中 site，wrist_3_link 应命中 body。
-
+    candidates = config.get("end_effector_candidates", END_EFFECTOR_CANDIDATES)
+    summary = model_loader.summarize_mujoco_model(model, candidates)
+    logging.info("end_effector_check: %s", summary["end_effector_check"])
     # =============================
     # TODO 12: 写 JSON summary
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - model_loader.write_json_summary(summary, output_paths["summary_json"])
     #
     # 为什么需要：
@@ -443,11 +468,13 @@ def main() -> None:
     #
     # 如何验证：
     # - 打开 JSON，确认 nq/nv/nu 和名称列表字段完整。
+    model_loader.write_json_summary(summary, output_paths["summary_json"])
 
+    logging.info("Wrote JSON summary to: %s", output_paths["summary_json"])
     # =============================
     # TODO 13: 写 Markdown report
     # =============================
-    # 需要补什么：
+    # 当前实现：
     # - model_loader.write_model_report(summary, output_paths["report"])
     #
     # 为什么需要：
@@ -470,8 +497,8 @@ def main() -> None:
     #
     # 如何验证：
     # - 报告包含 nq/nv/nu、joint/body/site/actuator/keyframe、末端候选检查。
-
-    logging.warning("当前只是 A01 TODO 骨架；需要明确要求补 TODO 时才实现对应逻辑。")
+    model_loader.write_model_report(summary, output_paths["report"])
+    logging.info("Wrote Markdown report to: %s", output_paths["report"])
 
 
 if __name__ == "__main__":

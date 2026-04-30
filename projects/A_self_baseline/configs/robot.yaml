@@ -1,6 +1,6 @@
 # A_self_baseline 机器人模型配置模板
-# 当前阶段: A01 model inspect / MJCF inspect TODO 骨架。
-# 本文件只定义学习用配置契约，不代表 Step 9A 已经能完整运行模型检查。
+# 当前阶段: A01 model inspect / MJCF inspect 最小实现已可运行。
+# 本文件是 A01-A07 共享的 UR5e / mink-style 模型配置入口。
 
 # 机器人名称:
 # - 用途: 日志、报告、JSON summary 中的模型标识。
@@ -13,7 +13,7 @@ model_type: mujoco_mjcf
 
 # MuJoCo MJCF 路径:
 # - 当前对标 mink UR5e scene.xml。
-# - 相对路径以后由 A01 的 resolve_path() 按配置文件或 A_ROOT 解析。
+# - 相对路径由 A01 的 resolve_path() 按 A_ROOT 解析。
 mjcf_path: ../../shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml
 
 # 可选 URDF 路径:
@@ -27,8 +27,7 @@ urdf_path: /path/to/optional/ur5e.urdf
 free_flyer: false
 
 # 末端执行器候选:
-# - A01 最终要检查这些名称是否存在于 body/site 等 MuJoCo 对象中。
-# - 当前 Step 9A 只保留配置，不实现完整检查。
+# - A01 会检查这些名称是否存在于 body/site 等 MuJoCo 对象中。
 end_effector_candidates:
   - attachment_site
   - tool0
@@ -47,8 +46,7 @@ frame_keywords:
   - attachment
 
 # 标准输出根目录:
-# - Step 9A 不创建真实 outputs/reports 或 outputs/cache。
-# - Step 9B 才开始写最小可运行 model inspect 输出。
+# - A01 会写出 reports/A01_model_inspect_report.md 和 cache/A01_model_summary.json。
 output_dir: outputs
 
 # 备注:
@@ -56,6 +54,6 @@ output_dir: outputs
 notes:
   - 第一版对标 mink UR5e 示例
   - 当前不调用 mink 替代自己的实现
-  - 当前 A01 是 TODO 骨架，不是完整实现
+  - 当前 A01 已完成最小可运行 model inspect
   - 模型资产位于 shared/robot_assets/models/mink_universal_robots_ur5e/
   - H1 legacy 仅作为历史参考，不是 A 当前主线

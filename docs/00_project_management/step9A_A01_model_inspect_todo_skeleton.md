@@ -97,3 +97,26 @@ Step 9B 建议按以下顺序补：
 - [x] 未修改 legacy_imported；
 - [x] 未修改 external/mink_upstream；
 - [x] py_compile 通过。
+
+## 9. 后续状态更新
+
+Step 9B 已把 A01 从 TODO skeleton 推进到最小可运行 model inspect：
+
+- 已读取 `configs/robot.yaml`。
+- 已解析 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`。
+- 已用 `mujoco.MjModel.from_xml_path` 加载模型。
+- 已枚举 joint/body/site/actuator/keyframe。
+- 已写出 `outputs/cache/A01_model_summary.json`。
+- 已写出 `outputs/reports/A01_model_inspect_report.md`。
+
+当前 A01 检查结果：
+
+- `nq=6`
+- `nv=6`
+- `nu=6`
+- `site_names=["attachment_site"]`
+- `keyframe_names=["home"]`
+- `attachment_site=True`
+- `wrist_3_link=True`
+
+下一步进入 A02 configuration / site pose，不扩展到 Jacobian、IK 或 QP。

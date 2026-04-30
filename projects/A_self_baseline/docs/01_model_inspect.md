@@ -1,10 +1,12 @@
-# A01 model inspect / MJCF inspect TODO skeleton
+# A01 model inspect / MJCF inspect status
 
 ## 1. A01 当前定位
 
 A01 当前定位是 **model inspect / MJCF inspect**。
 
 标准入口已统一为 `scripts/01_model_inspect.py`。A_self_baseline 当前主线对标 `kevinzakka/mink` 的 UR5e MuJoCo 示例，因此第一版重点检查 `scene.xml`，不是在本步骤完整实现 URDF / Pinocchio 流程。
+
+当前状态：**A01 最小可运行实现已完成**。
 
 ## 2. 为什么 A01 先做模型检查
 
@@ -34,7 +36,7 @@ mink 示例后续会围绕 MuJoCo model、configuration、site/task 构建控制
 
 ## 4. 输入
 
-A01 未来输入包括：
+A01 当前输入包括：
 
 - `projects/A_self_baseline/configs/robot.yaml`
 - `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`
@@ -47,21 +49,30 @@ A01 未来输入包括：
 - `ee_link`
 - `wrist_3_link`
 
-## 5. 未来输出
+## 5. 当前输出
 
-A01 后续最小可运行实现会输出：
+A01 当前已输出：
 
 - `outputs/reports/A01_model_inspect_report.md`
 - `outputs/cache/A01_model_summary.json`
 
-Step 9A/9C 不生成这些真实输出，只整理 TODO 骨架和入口命名。
+当前检查结果摘要：
+
+- `nq = 6`
+- `nv = 6`
+- `nu = 6`
+- joint names: `shoulder_pan`, `shoulder_lift`, `elbow`, `wrist_1`, `wrist_2`, `wrist_3`
+- site names: `attachment_site`
+- actuator names: `shoulder_pan`, `shoulder_lift`, `elbow`, `wrist_1`, `wrist_2`, `wrist_3`
+- keyframe names: `home`
+- end-effector candidates: `attachment_site=True`, `tool0=False`, `ee_link=False`, `wrist_3_link=True`
 
 ## 6. TODO 清单与脚本编号说明
 
-当前 `scripts/01_model_inspect.py` 采用 legacy step-script 风格：
+当前 `scripts/01_model_inspect.py` 采用 legacy step-script 风格，并保留中文教学 TODO 注释：
 
-- **TODO 1-6 是脚本骨架 TODO**：路径常量、默认输入输出、末端候选、CLI、输出路径规划、最终目标说明。
-- **TODO 7-13 是 A01 功能实现 TODO**：读取配置、解析 MJCF、加载模型、枚举对象、检查末端、保存 JSON、保存 Markdown。
+- **TODO 1-6 是脚本结构说明**：路径常量、默认输入输出、末端候选、CLI、输出路径规划、最终目标说明。
+- **TODO 7-13 已补最小实现**：读取配置、解析 MJCF、加载模型、枚举对象、检查末端、保存 JSON、保存 Markdown。
 
 这样做的原因是：先把脚本结构放在代码中，再把未来要补的核心功能按位置展开，避免只在文档里列需求。
 
@@ -72,7 +83,7 @@ Step 9A/9C 不生成这些真实输出，只整理 TODO 骨架和入口命名。
 - 输出: `A_ROOT`, `REPO_ROOT`, `SRC_ROOT`
 - 验证: 运行脚本，确认日志中的 A_ROOT / REPO_ROOT 正确
 
-### TODO 2: 默认输入与未来输出路径
+### TODO 2: 默认输入与输出路径
 
 - 推荐 API: `pathlib.Path`, 路径 `/` 运算符
 - 输入: `A_ROOT`
@@ -93,7 +104,7 @@ Step 9A/9C 不生成这些真实输出，只整理 TODO 骨架和入口命名。
 - 输出: `argparse.Namespace`
 - 验证: 运行 `python projects/A_self_baseline/scripts/01_model_inspect.py --help`
 
-### TODO 5: 计算未来输出路径
+### TODO 5: 计算输出路径
 
 - 推荐 API: `Path.expanduser`, `Path.is_absolute`, pathlib 路径拼接
 - 输入: CLI `--output-dir`
@@ -158,7 +169,7 @@ Step 9A/9C 不生成这些真实输出，只整理 TODO 骨架和入口命名。
 
 ## 7. 当前不做什么
 
-Step 9A 明确不做：
+当前 A01 明确不做：
 
 - 不做 FK
 - 不做 Jacobian
@@ -172,6 +183,6 @@ Step 9A 明确不做：
 
 ## 8. 下一步
 
-下一步是 **Step 9B：逐个补 TODO，做最小可运行 model inspect**。
+下一步是 **A02：configuration / site pose**。
 
-Step 9B 才开始实现最小 MuJoCo model loading、对象枚举、JSON summary 和 Markdown report。
+A02 只应补 `q -> MuJoCo data -> site pose` 数据流，推荐 API 包括 `mujoco.MjData`、`mujoco.mj_forward`、`data.site_xpos` 和 `data.site_xmat`。不要在 A02 扩展到 Jacobian、IK 或 QP。

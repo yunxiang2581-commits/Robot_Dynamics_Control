@@ -4,7 +4,7 @@
 
 本目录是 A 项目的文档入口。
 
-当前 A 项目已从准备阶段进入实现阶段，主线是对标 mink UR5e 示例的教学版 6-DOF 机械臂控制 baseline。当前实现入口是 A01 `model inspect`，目标是先检查 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml` 中的 MuJoCo 模型对象。
+当前 A 项目已从准备阶段进入实现阶段，主线是对标 mink UR5e 示例的教学版 6-DOF 机械臂控制 baseline。A01 `model inspect` 最小实现已完成，已经检查 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml` 中的 MuJoCo 模型对象。
 
 ## 后续内容
 
@@ -14,8 +14,8 @@
 | `A_pipeline_contract.md` | A00-A10 pipeline 契约 | 每一步输入、输出、对标 mink 概念和验收标准清楚 |
 | `reference_mink_ur5e.md` | 为什么选 mink UR5e | 明确 reference 与 copied assets 的边界 |
 | `A_mink_alignment_plan.md` | 分阶段实现计划 | 明确从 A01 到 A10 的推进顺序 |
-| `01_model_inspect.md` | A01 历史 URDF inspect 说明 | 后续适配为 A01 model inspect / MJCF inspect |
+| `01_model_inspect.md` | A01 model inspect / MJCF inspect 说明 | 记录当前最小实现、输出和下一步 |
 
 ## 当前下一步
 
-进入 A01 最小可运行 MJCF inspect，只补 A01 相关模型检查逻辑和报告输出，不实现后续 FK、Jacobian、IK 或 QP。
+进入 A02 configuration / site pose，只补 A02 相关 `q -> MuJoCo data -> site pose` 数据流，不实现后续 Jacobian、IK 或 QP。
