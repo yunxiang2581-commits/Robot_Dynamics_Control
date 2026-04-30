@@ -12,8 +12,9 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-
-
+import yaml
+import mujoco
+import json
 def load_yaml_config(config_path: str | Path) -> dict:
     """读取 A01 配置文件的 TODO 骨架。
 
@@ -30,11 +31,21 @@ def load_yaml_config(config_path: str | Path) -> dict:
     - 如何验证: 后续 Step 9B 中读取后打印 key 列表，并检查是否包含 `mjcf_path`
       和 `end_effector_candidates`。
     """
-    pathlib.Path(config_path)  # 验证类型，但不解析路径，留给 resolve_path 处理。
-    
     if not isinstance(config_path, (str, Path)):
         raise TypeError(f"config_path must be str or Path, got {type(config_path)!r}")
-    raise NotImplementedError("TODO A01: read robot.yaml with yaml.safe_load in Step 9B.")
+    
+    path = Path(config_path).expanduser().resolve()  # 验证类型，但不解析路径，留给 resolve_path 处理。
+    
+    if not path.exists():
+        raise FileNotFoundError(f"Config file not found at {path}")
+    
+    text = path.read_text(encoding="utf-8")  # 这里可能抛出 FileNotFoundError 或 UnicodeDecodeError，后续 Step 9B 中验证。 
+    
+    config = yaml.safe_load(text)  # 这里可能抛出 yaml.YAMLError，后续 Step 9B 中验证。
+    
+    
+    
+    return config
 
 
 def resolve_path(path_str: str | Path, base_dir: Path) -> Path:
@@ -55,8 +66,13 @@ def resolve_path(path_str: str | Path, base_dir: Path) -> Path:
         raise TypeError(f"path_str must be str or Path, got {type(path_str)!r}")
     if not isinstance(base_dir, Path):
         raise TypeError(f"base_dir must be Path, got {type(base_dir)!r}")
-    raise NotImplementedError("TODO A01: resolve config and CLI paths in Step 9B.")
+    
 
+    path = Path(path_str).expanduser()  # 验证类型，但不解析路径，留给后续逻辑处理。
+
+    if path.is_absolute():
+        return path.resolve()  # 这里可能抛出 FileNotFoundError，后续 Step 9B 中验证。
+    return (base_dir / path).resolve()  # 这里可能抛出 FileNotFoundError，后续 Step 9B 中验证。
 
 def load_mujoco_model(mjcf_path: str | Path):
     """加载 MuJoCo MJCF model 的 TODO 骨架。
@@ -74,8 +90,12 @@ def load_mujoco_model(mjcf_path: str | Path):
     """
     if not isinstance(mjcf_path, (str, Path)):
         raise TypeError(f"mjcf_path must be str or Path, got {type(mjcf_path)!r}")
-    raise NotImplementedError("TODO A01: load MuJoCo model in Step 9B, not in Step 9A.")
-
+    path = Path(mjcf_path).expanduser().resolve()  # 验证类型，但不解析路径，留给后续逻辑处理。
+    if not path.exists():
+        raise FileNotFoundError(f"MJCF file not found at {path}")
+    
+    return mujoco.MjModel.from_xml_path(str(path)) # 这里可能抛出 mujoco.MujocoException，后续 Step 9B 中验证。
+    
 
 def get_mujoco_names(model: Any, obj_type: str) -> list[str]:
     """枚举 MuJoCo 对象名称的 TODO 骨架。
@@ -94,7 +114,28 @@ def get_mujoco_names(model: Any, obj_type: str) -> list[str]:
     """
     if not isinstance(obj_type, str):
         raise TypeError(f"obj_type must be str, got {type(obj_type)!r}")
-    raise NotImplementedError("TODO A01: enumerate MuJoCo names in Step 9B.")
+    
+    obj_type_map = {
+        "joint": (mujoco.mjtObj.mjOBJ_JOINT, model.njnt),
+        "body": (mujoco.mjtObj.mjOBJ_BODY, model.nbody),
+        "site": (mujoco.mjtObj.mjOBJ_SITE, model.nsite),
+        "actuator": (mujoco.mjtObj.mjOBJ_ACTUATOR, model.nu),
+        "keyframe": (mujoco.mjtObj.mjOBJ_KEY, model.nkey)
+    }
+
+
+    if obj_type not in obj_type_map:
+        raise ValueError(f"Unsupported object type: {obj_type}")
+    
+    mj_obj_type, count = obj_type_map[obj_type]
+
+    names = []
+    for obj_id in range(count):
+        name = mujoco.mj_id2name(model, mj_obj_type, obj_id)
+        if name is None:
+            raise ValueError(f"Object ID {obj_id} of type {obj_type} has no name.")
+        names.append(name)
+    return names
 
 
 def summarize_mujoco_model(model: Any, end_effector_candidates: list[str] | None = None) -> dict:
@@ -112,9 +153,40 @@ def summarize_mujoco_model(model: Any, end_effector_candidates: list[str] | None
     - 输出是什么: `dict`，未来写入 `A01_model_summary.json`。
     - 如何验证: 后续 Step 9B 中确认 summary 包含维度字段和末端候选检查结果。
     """
+
     if end_effector_candidates is not None and not isinstance(end_effector_candidates, list):
         raise TypeError("end_effector_candidates must be list[str] or None.")
-    raise NotImplementedError("TODO A01: summarize MuJoCo model in Step 9B.")
+    joint_names = get_mujoco_names(model, "joint")
+    body_names = get_mujoco_names(model, "body")
+    site_names = get_mujoco_names(model, "site")
+    actuator_names = get_mujoco_names(model, "actuator")
+    keyframe_names = get_mujoco_names(model, "keyframe")
+
+    if end_effector_candidates is  None:
+        end_effector_candidates = []
+      
+    available_names = set(body_names) | set(site_names)
+
+    end_effector_check = {}
+    for candidate in end_effector_candidates:
+        if candidate in available_names:
+            end_effector_check[candidate] = True
+        else:
+            end_effector_check[candidate] = False
+    summary = {
+        "nq": int(model.nq),
+        "nv": int(model.nv),
+        "nu": int(model.nu),
+        "joint_names": joint_names,
+        "body_names": body_names,
+        "site_names": site_names,
+        "actuator_names": actuator_names,
+        "keyframe_names": keyframe_names,
+        "end_effector_candidates": end_effector_candidates,
+        "end_effector_check": end_effector_check,
+    }
+    return summary
+
 
 
 def write_json_summary(summary: dict, output_path: Path) -> None:
@@ -134,7 +206,10 @@ def write_json_summary(summary: dict, output_path: Path) -> None:
         raise TypeError(f"summary must be dict, got {type(summary)!r}")
     if not isinstance(output_path, Path):
         raise TypeError(f"output_path must be Path, got {type(output_path)!r}")
-    raise NotImplementedError("TODO A01: write JSON summary in Step 9B.")
+    
+    output_path.parent.mkdir(parents=True, exist_ok=True)  # 确保目录存在，避免写入失败。
+    json_text = json.dumps(summary, indent=2,ensure_ascii=False)  # 这里可能抛出 TypeError，如果 summary 中包含非 JSON 可序列化对象，后续 Step 9
+    output_path.write_text(json_text, encoding="utf-8")  # 这里可能抛出 IOError，后续 Step 9B 中验证。  
 
 
 def write_model_report(summary: dict, output_path: Path) -> None:
@@ -155,4 +230,45 @@ def write_model_report(summary: dict, output_path: Path) -> None:
         raise TypeError(f"summary must be dict, got {type(summary)!r}")
     if not isinstance(output_path, Path):
         raise TypeError(f"output_path must be Path, got {type(output_path)!r}")
-    raise NotImplementedError("TODO A01: write Markdown model report in Step 9B.")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    lines = []
+
+    lines.append("# A01 Model Inspect Report")
+    lines.append("")
+    lines.append("## Model Dimensions")
+    lines.append(f"- nq: {summary.get('nq')}")
+    lines.append(f"- nv: {summary.get('nv')}")
+    lines.append(f"- nu: {summary.get('nu')}")
+    lines.append("")
+
+    lines.append("## Joint Names")
+    for name in summary.get("joint_names", []):
+        lines.append(f"- {name}")
+    lines.append("")
+
+    lines.append("## Body Names")
+    for name in summary.get("body_names", []):
+        lines.append(f"- {name}")
+    lines.append("")
+
+    lines.append("## Site Names")
+    for name in summary.get("site_names", []):
+        lines.append(f"- {name}")
+    lines.append("")
+
+    lines.append("## Actuator Names")
+    for name in summary.get("actuator_names", []):
+        lines.append(f"- {name}")
+    lines.append("")
+
+    lines.append("## End Effector Candidates")
+    end_effector_check = summary.get("end_effector_check", {})
+    for name, exists in end_effector_check.items():
+        lines.append(f"- {name}: {exists}")
+    lines.append("")
+
+    report_text = "\n".join(lines)
+
+    output_path.write_text(report_text, encoding="utf-8")
+    
