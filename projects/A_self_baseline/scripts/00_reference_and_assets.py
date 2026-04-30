@@ -58,7 +58,25 @@ def main() -> None:
     # - 输入是什么: --mink-reference、--asset-root。
     # - 输出是什么: reference asset audit / path summary。
     # - 如何验证: 报告列出检查过的路径、存在状态和缺失原因。
-
+    mink_reference = Path(args.mink_reference).expanduser().resolve()
+    asset_root = Path(args.asset_root).expanduser().resolve()
+    ur5e_model_dir = asset_root / "models" / "mink_universal_robots_ur5e"
+    ur5e_scene_path = ur5e_model_dir / "scene.xml"
+    
+    check_paths = {
+        "mink reference": mink_reference,
+        "asset root": asset_root,
+        "UR5e model directory": ur5e_model_dir,
+        "UR5e scene.xml": ur5e_scene_path,
+    }
+    path_status = {}
+    for name, path in check_paths.items():
+        if path.exists():
+            path_status[name] = "exists"
+            logging.info("Checked %s: %s", name, path)
+        else:
+            path_status[name] = "missing"
+            logging.warning("Missing %s: expected at %s", name, path)
     # =============================
     # TODO 2: 检查许可证和最小复制边界
     # =============================
@@ -69,7 +87,38 @@ def main() -> None:
     # - 输入是什么: LICENSE、README、asset 文件列表。
     # - 输出是什么: 许可证摘要和“最小复制边界”表。
     # - 如何验证: 报告明确说明哪些文件需要、哪些不复制、为什么不复制整个 mink。
-    raise NotImplementedError("TODO: A00 remains a reference and assets learning skeleton.")
+    license_candidates = [
+        mink_reference / "LICENSE",
+        mink_reference / "LICENSE.md",
+        mink_reference / "COPYING",
+    ]
+
+    readme_candidates = [
+        mink_reference / "README.md",
+        mink_reference / "README.rst",
+    ]
+
+    license_paths = []
+    for path in license_candidates:
+        if path.exists():
+            license_paths.append(path)
+
+    readme_paths = []
+    for path in readme_candidates:
+        if path.exists():
+            readme_paths.append(path)
+
+    minimal_copy_items = [
+        "shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml",
+        "shared/robot_assets/models/mink_universal_robots_ur5e/assets/",
+    ]
+
+    copy_boundary = {
+        "copy_entire_mink": False,
+        "reason": "Only reference examples and minimal UR5e assets are needed.",
+        "minimal_items": minimal_copy_items,
+    }
+
 
 
 if __name__ == "__main__":
