@@ -50,7 +50,7 @@
 | [x] | `tools/export/` 已保存导出脚本 | Word 导出脚本已归位 |
 | [x] | 根目录已瘦身完成 | A 项目代码不再直接放在根目录 |
 | [x] | `.gitignore` 已包含大文件忽略规则 | 视频、日志、权重、缓存被忽略 |
-| [x] | 下一步入口明确 | 进入 A01 model inspect：`projects/A_self_baseline/scripts/01_inspect_urdf.py` |
+| [x] | 下一步入口明确 | 进入 A01 model inspect：`projects/A_self_baseline/scripts/01_model_inspect.py` |
 
 ## 进入开发阶段条件
 

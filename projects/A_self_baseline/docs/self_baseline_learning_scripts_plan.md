@@ -18,13 +18,13 @@ This sequence turns legacy one-off scripts into stable learning entries that can
 
 ## 3. Script Learning Goals
 
-- `01_inspect_urdf.py`: inspect model nq, nv, joints, and frames.
-- `02_fk_frame_pose.py`: compute a target frame pose with forward kinematics.
-- `03_jacobian_fd_check.py`: compute a frame Jacobian and verify it with finite differences.
-- `04_dls_ik_demo.py`: build a Damped Least Squares IK learning loop.
-- `05_qp_ik_joint_limit_demo.py`: introduce constrained QP-IK with joint velocity and position limits.
-- `06_mujoco_pd_tracking.py`: create a MuJoCo joint PD tracking learning entry.
-- `07_mini_wbc_qp_demo.py`: outline a teaching Mini-WBC QP structure.
+- `01_model_inspect.py`: inspect model nq, nv, joints, and frames.
+- `02_configuration_site_pose.py`: compute a target frame pose with forward kinematics.
+- `03_site_jacobian_check.py`: compute a frame Jacobian and verify it with finite differences.
+- `04_dls_differential_ik.py`: build a Damped Least Squares IK learning loop.
+- `05_task_limit_qp_ik.py`: introduce constrained QP-IK with joint velocity and position limits.
+- `06_target_mocap_tracking.py`: create a MuJoCo joint PD tracking learning entry.
+- `07_mujoco_actuator_tracking.py`: outline a teaching Mini-WBC QP structure.
 
 ## 4. Script Inputs
 
@@ -60,13 +60,13 @@ Later implementation should read legacy scripts, extract the teaching intent, an
 
 ## 8. Recommended Implementation Order
 
-1. `01_inspect_urdf.py`
-2. `02_fk_frame_pose.py`
-3. `03_jacobian_fd_check.py`
-4. `04_dls_ik_demo.py`
-5. `05_qp_ik_joint_limit_demo.py`
-6. `06_mujoco_pd_tracking.py`
-7. `07_mini_wbc_qp_demo.py`
+1. `01_model_inspect.py`
+2. `02_configuration_site_pose.py`
+3. `03_site_jacobian_check.py`
+4. `04_dls_differential_ik.py`
+5. `05_task_limit_qp_ik.py`
+6. `06_target_mocap_tracking.py`
+7. `07_mujoco_actuator_tracking.py`
 
 ## 9. Current Non-Goals
 

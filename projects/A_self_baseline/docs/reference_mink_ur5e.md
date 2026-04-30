@@ -46,9 +46,9 @@ UR5e 是固定基 6-DOF 机械臂，比 H1 人形机器人更适合作为第一�
 - 多机器人 example；
 - 完整库级测试体系。
 
-这些内容后续可作为扩展目标，但不应阻塞 A01-A07 最小教学链路。
+这些内容后续可作为扩展目标，但不应阻塞 A00-A10 mink-style 教学链路。
 
-## 6. A01-A09 对照关系
+## 6. A00-A10 对照关系
 
 | A 步骤 | A 项目学习目标 | 对标 mink 概念 |
 |---|---|---|
@@ -62,6 +62,7 @@ UR5e 是固定基 6-DOF 机械臂，比 H1 人形机器人更适合作为第一�
 | A07 | actuator tracking TODO | `arm_ur5e_actuators.py` |
 | A08 | collision avoidance TODO | collision avoidance constraint |
 | A09 | 产出对照报告 | comparison with mink |
+| A10 | 整理 demo showcase / video recording | demo / viewer video |
 
 ## 7. 本地上游与最小复制资产
 

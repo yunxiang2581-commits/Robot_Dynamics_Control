@@ -17,7 +17,7 @@
 标准输出文件建议使用步骤编号前缀：
 
 ```text
-A01_inspect_urdf.md
+A01_model_inspect.md
 A02_fk_frame_pose.md
 A03_jacobian_fd_check.md
 A04_dls_ik_q_traj.csv

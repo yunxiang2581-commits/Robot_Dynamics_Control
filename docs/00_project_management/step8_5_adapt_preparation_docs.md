@@ -75,7 +75,7 @@ This step did not implement FK, Jacobian, IK, QP, WBC, MuJoCo control, or RL log
 Enter A project implementation from:
 
 ```text
-projects/A_self_baseline/scripts/01_inspect_urdf.py
+projects/A_self_baseline/scripts/01_model_inspect.py
 ```
 
 The next technical task should be A-01 inspect URDF.

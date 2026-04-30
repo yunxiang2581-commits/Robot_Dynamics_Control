@@ -126,7 +126,7 @@ A07 学习 actuator tracking：把 A04/A05 产生的期望关节状态送入 MuJ
 - H1 legacy 是历史学习参考，保留在 `legacy_imported/` 中。
 - H1 legacy 不删除，因为它记录了早期 Pinocchio/URDF/FK/Jacobian/IK 学习路径。
 - 当前 A 项目主线切换为 UR5e / 6-DOF manipulator / mink-style baseline。
-- 新标准入口仍然是 `scripts/01_...` 到 `scripts/07_...`，不是 `legacy_imported/`。
+- 新标准入口统一为 `scripts/00_...` 到 `scripts/10_...`，不是 `legacy_imported/`。
 
 ## 7. mink 本地参考资产边界
 

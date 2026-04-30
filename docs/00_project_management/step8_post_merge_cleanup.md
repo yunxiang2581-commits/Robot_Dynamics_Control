@@ -78,7 +78,7 @@ Large or generated root outputs remain ignored by `.gitignore` and should not be
 Enter A project implementation from:
 
 ```text
-projects/A_self_baseline/scripts/01_inspect_urdf.py
+projects/A_self_baseline/scripts/01_model_inspect.py
 ```
 
 The first implementation step should load and inspect a URDF model, then report `nq`, `nv`, joints, and frames.

@@ -21,9 +21,9 @@ A_self_baseline 的目标是学习并复现 mink UR5e 示例背后的机器人�
 本步骤只修改允许范围内的文件：
 
 - `projects/A_self_baseline/src/robot_baseline/model_loader.py`
-- `projects/A_self_baseline/scripts/01_inspect_urdf.py`
+- `projects/A_self_baseline/scripts/01_model_inspect.py`
 - `projects/A_self_baseline/configs/robot.yaml`
-- `projects/A_self_baseline/docs/01_inspect_urdf.md`
+- `projects/A_self_baseline/docs/01_model_inspect.md`
 - `docs/00_project_management/step9A_A01_model_inspect_todo_skeleton.md`
 - `projects/A_self_baseline/README.md`
 
@@ -39,7 +39,7 @@ A_self_baseline 的目标是学习并复现 mink UR5e 示例背后的机器人�
 - `write_json_summary`
 - `write_model_report`
 
-### 01_inspect_urdf.py
+### 01_model_inspect.py
 
 - TODO 1: 读取 robot.yaml
 - TODO 2: 解析 mjcf_path

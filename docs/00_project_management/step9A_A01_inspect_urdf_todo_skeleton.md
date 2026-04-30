@@ -28,9 +28,9 @@
 ## 4. 修改文件清单
 
 - `projects/A_self_baseline/src/robot_baseline/model_loader.py`
-- `projects/A_self_baseline/scripts/01_inspect_urdf.py`
+- `projects/A_self_baseline/scripts/01_model_inspect.py`
 - `projects/A_self_baseline/configs/robot.yaml`
-- `projects/A_self_baseline/docs/01_inspect_urdf.md`
+- `projects/A_self_baseline/docs/01_model_inspect.md`
 - `projects/A_self_baseline/README.md`
 - `docs/00_project_management/step9A_A01_inspect_urdf_todo_skeleton.md`
 

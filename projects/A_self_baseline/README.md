@@ -31,7 +31,7 @@ A 项目不是完整复刻 mink 库，也不是直接调用 mink 替代自己的
 - `docs/A_mink_alignment_plan.md`：A 项目对齐 mink UR5e 的阶段计划。
 - `docs/legacy_script_mapping.md`：历史 legacy 脚本到标准学习脚本的映射。
 - `docs/self_baseline_learning_scripts_plan.md`：标准 TODO 学习脚本规划。
-- `docs/01_inspect_urdf.md`：A01 旧 URDF inspect 学习说明，后续会适配为 model inspect / MJCF inspect。
+- `docs/01_model_inspect.md`：A01 model inspect / MJCF inspect 学习说明。
 - `docs/legacy_imported/`：旧项目导入文档，仅作历史参考。
 
 ## A00-A10 Pipeline 总览
@@ -50,7 +50,7 @@ A00 reference and assets
   -> A10 demo showcase / video recording
 ```
 
-当前标准入口仍放在 `scripts/` 下的 A01-A07。A08/A09/A10 先作为文档、对照报告和展示交付管理，不在本步骤新增算法代码。
+当前标准入口统一放在 `scripts/` 下的 A00-A10。所有入口当前仍是 TODO learning skeleton，不在 Step 9C 实现算法。
 
 ## mink capability vs A requirements
 
@@ -66,13 +66,17 @@ outputs/videos/A07_ur5e_actuator_tracking_demo.mp4
 
 ## 标准入口
 
-- `scripts/01_inspect_urdf.py`：A01 model inspect / MJCF inspect。文件名暂时保留，主线改为检查 UR5e `scene.xml` 的 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe。
-- `scripts/02_fk_frame_pose.py`：A02 configuration / site pose。对标 mink `Configuration`，学习从 `q` 查询 site/body pose。
-- `scripts/03_jacobian_fd_check.py`：A03 site Jacobian check。学习 `site velocity = J(q) dq` 和有限差分验证。
-- `scripts/04_dls_ik_demo.py`：A04 DLS differential IK。学习最小无约束 differential IK。
-- `scripts/05_qp_ik_joint_limit_demo.py`：A05 task + limit + QP-IK。学习 task、limit 和最小 QP-IK。
-- `scripts/06_mujoco_pd_tracking.py`：A06 target / mocap-style tracking。学习 fixed target 与后续 mocap-style target。
-- `scripts/07_mini_wbc_qp_demo.py`：A07 MuJoCo actuator tracking / mini task-space QP 过渡。文件名暂时保留，但当前不承诺完整 humanoid WBC。
+- `scripts/00_reference_and_assets.py`：A00 reference and assets。审计 mink reference、UR5e assets、许可证和最小复制边界。
+- `scripts/01_model_inspect.py`：A01 model inspect / MJCF inspect。检查 UR5e `scene.xml` 的 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe。
+- `scripts/02_configuration_site_pose.py`：A02 configuration / site pose。对标 mink `Configuration`，学习从 `q` 查询 site/body pose。
+- `scripts/03_site_jacobian_check.py`：A03 site Jacobian check。学习 `site velocity = J(q) dq` 和有限差分验证。
+- `scripts/04_dls_differential_ik.py`：A04 DLS differential IK。学习最小无约束 differential IK。
+- `scripts/05_task_limit_qp_ik.py`：A05 task + limit + QP-IK。学习 task、limit 和最小 QP-IK。
+- `scripts/06_target_mocap_tracking.py`：A06 target / mocap-style tracking。学习 fixed target 与后续 mocap-style target。
+- `scripts/07_mujoco_actuator_tracking.py`：A07 MuJoCo actuator tracking。学习把 A04/A05 的 `q_des` 或 `dq_des` 送入 `data.ctrl`。
+- `scripts/08_collision_avoidance_todo.py`：A08 collision avoidance TODO。只记录概念、输入输出和未来接入 QP-IK 的方式。
+- `scripts/09_comparison_report.py`：A09 comparison report。规划如何比较“自己实现”和“mink 抽象”。
+- `scripts/10_demo_showcase_video.py`：A10 demo showcase / video recording。规划最终展示文档和主 demo 视频路径。
 
 ## 代码与配置边界
 
@@ -133,7 +137,7 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 ## 当前实现入口
 
 ```bash
-python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
+python projects/A_self_baseline/scripts/01_model_inspect.py --help
 ```
 
 下一步进入 A01 最小可运行 MJCF inspect。实现时只补 A01 相关 TODO，不扩展到 FK、Jacobian、IK 或 QP。
@@ -142,9 +146,8 @@ python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
 
 当前 A01 是 TODO learning skeleton，不是完整 model inspect 实现。
 
-- 标准入口是 `scripts/01_inspect_urdf.py`。
+- 标准入口是 `scripts/01_model_inspect.py`。
 - 模块骨架是 `src/robot_baseline/model_loader.py`。
 - 配置是 `configs/robot.yaml`。
-- 文档是 `docs/01_inspect_urdf.md`。
+- 文档是 `docs/01_model_inspect.md`。
 - 下一步 Step 9B 才做最小可运行实现。
-

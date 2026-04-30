@@ -49,13 +49,13 @@ See `outputs/README.md` for output-directory conventions.
 The current scripts still stop at `NotImplementedError`. When implementation starts, the intended order is:
 
 ```bash
-python projects/A_self_baseline/scripts/01_inspect_urdf.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf
-python projects/A_self_baseline/scripts/02_fk_frame_pose.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/03_jacobian_fd_check.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/04_dls_ik_demo.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/05_qp_ik_joint_limit_demo.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/06_mujoco_pd_tracking.py --model-xml shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml
-python projects/A_self_baseline/scripts/07_mini_wbc_qp_demo.py --config projects/A_self_baseline/configs/mini_wbc.yaml
+python projects/A_self_baseline/scripts/01_model_inspect.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf
+python projects/A_self_baseline/scripts/02_configuration_site_pose.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
+python projects/A_self_baseline/scripts/03_site_jacobian_check.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
+python projects/A_self_baseline/scripts/04_dls_differential_ik.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
+python projects/A_self_baseline/scripts/05_task_limit_qp_ik.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
+python projects/A_self_baseline/scripts/06_target_mocap_tracking.py --model-xml shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml
+python projects/A_self_baseline/scripts/07_mujoco_actuator_tracking.py --config projects/A_self_baseline/configs/mini_wbc.yaml
 ```
 
 `scripts/` contains CLI entry points. `src/robot_baseline/` contains reusable components.

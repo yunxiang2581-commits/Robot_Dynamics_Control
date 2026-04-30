@@ -54,13 +54,13 @@ A00 reference and assets
 - `projects/A_self_baseline/docs/reference_mink_ur5e.md`
 - `projects/A_self_baseline/docs/A_mink_alignment_plan.md`
 - `projects/A_self_baseline/configs/robot.yaml`
-- `projects/A_self_baseline/scripts/01_inspect_urdf.py`
-- `projects/A_self_baseline/scripts/02_fk_frame_pose.py`
-- `projects/A_self_baseline/scripts/03_jacobian_fd_check.py`
-- `projects/A_self_baseline/scripts/04_dls_ik_demo.py`
-- `projects/A_self_baseline/scripts/05_qp_ik_joint_limit_demo.py`
-- `projects/A_self_baseline/scripts/06_mujoco_pd_tracking.py`
-- `projects/A_self_baseline/scripts/07_mini_wbc_qp_demo.py`
+- `projects/A_self_baseline/scripts/01_model_inspect.py`
+- `projects/A_self_baseline/scripts/02_configuration_site_pose.py`
+- `projects/A_self_baseline/scripts/03_site_jacobian_check.py`
+- `projects/A_self_baseline/scripts/04_dls_differential_ik.py`
+- `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+- `projects/A_self_baseline/scripts/06_target_mocap_tracking.py`
+- `projects/A_self_baseline/scripts/07_mujoco_actuator_tracking.py`
 - `docs/00_project_management/step8_9_align_A_with_mink_ur5e.md`
 
 ## 6. 未实现算法说明

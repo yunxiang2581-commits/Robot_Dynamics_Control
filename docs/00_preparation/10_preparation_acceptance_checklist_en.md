@@ -46,7 +46,7 @@ This checklist is used to decide whether the preparation phase is complete and w
 - [x] `tools/export/` stores export scripts
 - [x] root-level A code has been relocated out of the repository root
 - [x] `.gitignore` contains large-file rules
-- [x] the next step points to `projects/A_self_baseline/scripts/01_inspect_urdf.py`
+- [x] the next step points to `projects/A_self_baseline/scripts/01_model_inspect.py`
 
 ## Conditions To Start Development
 

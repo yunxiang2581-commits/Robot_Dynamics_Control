@@ -22,13 +22,13 @@ URDF -> FK -> Jacobian -> DLS-IK -> QP-IK -> MuJoCo PD -> Mini-WBC
 更新：
 
 - `projects/A_self_baseline/README.md`
-- `projects/A_self_baseline/scripts/01_inspect_urdf.py`
-- `projects/A_self_baseline/scripts/02_fk_frame_pose.py`
-- `projects/A_self_baseline/scripts/03_jacobian_fd_check.py`
-- `projects/A_self_baseline/scripts/04_dls_ik_demo.py`
-- `projects/A_self_baseline/scripts/05_qp_ik_joint_limit_demo.py`
-- `projects/A_self_baseline/scripts/06_mujoco_pd_tracking.py`
-- `projects/A_self_baseline/scripts/07_mini_wbc_qp_demo.py`
+- `projects/A_self_baseline/scripts/01_model_inspect.py`
+- `projects/A_self_baseline/scripts/02_configuration_site_pose.py`
+- `projects/A_self_baseline/scripts/03_site_jacobian_check.py`
+- `projects/A_self_baseline/scripts/04_dls_differential_ik.py`
+- `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+- `projects/A_self_baseline/scripts/06_target_mocap_tracking.py`
+- `projects/A_self_baseline/scripts/07_mujoco_actuator_tracking.py`
 
 新增输出占位目录：
 
@@ -70,6 +70,6 @@ URDF -> FK -> Jacobian -> DLS-IK -> QP-IK -> MuJoCo PD -> Mini-WBC
 下一步进入 A-01 inspect URDF 实现：
 
 - 先实现 `model_loader.py` 中的模型加载和摘要；
-- 再实现 `01_inspect_urdf.py` 的 CLI 调用；
-- 输出 `A01_inspect_urdf.md` 和 `A01_model_summary.json`；
+- 再实现 `01_model_inspect.py` 的 CLI 调用；
+- 输出 `A01_model_inspect.md` 和 `A01_model_summary.json`；
 - 用实际 URDF 验证 `nq`、`nv`、joint 和 frame 列表。

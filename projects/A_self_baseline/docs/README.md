@@ -14,7 +14,7 @@
 | `A_pipeline_contract.md` | A00-A10 pipeline 契约 | 每一步输入、输出、对标 mink 概念和验收标准清楚 |
 | `reference_mink_ur5e.md` | 为什么选 mink UR5e | 明确 reference 与 copied assets 的边界 |
 | `A_mink_alignment_plan.md` | 分阶段实现计划 | 明确从 A01 到 A10 的推进顺序 |
-| `01_inspect_urdf.md` | A01 历史 URDF inspect 说明 | 后续适配为 A01 model inspect / MJCF inspect |
+| `01_model_inspect.md` | A01 历史 URDF inspect 说明 | 后续适配为 A01 model inspect / MJCF inspect |
 
 ## 当前下一步
 

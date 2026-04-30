@@ -72,7 +72,7 @@ outputs/videos/A07_ur5e_actuator_tracking_demo.mp4
 
 ## 8. 下一步
 
-下一步进入 A01 model inspect：先做 TODO 骨架或直接进入最小可运行 MJCF inspect，读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml` 并输出模型对象摘要。
+Step 9C 先统一 A00-A10 脚本入口命名和 TODO 骨架。之后进入 A01 model inspect 最小实现，读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml` 并输出模型对象摘要。
 
 ## 9. 验收清单
 
@@ -89,7 +89,7 @@ outputs/videos/A07_ur5e_actuator_tracking_demo.mp4
 Step 8.11 已完成。A 项目已具备进入实现阶段的文档条件：
 
 - A 当前主线：mink-style UR5e 6-DOF manipulator control baseline；
-- 当前实现入口：A01 model inspect；
+- 当前实现入口：A00-A10 mink-style TODO pipeline，其中下一步实现入口是 A01 model inspect；
 - 当前模型资产：`shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`；
 - 下一步任务：实现 A01 最小可运行 MJCF inspect，输出模型维度和对象清单；
 - 仍不做：FK、Jacobian、IK、QP、WBC、RL 的跨阶段实现。
