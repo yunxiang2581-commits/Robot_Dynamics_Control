@@ -19,7 +19,7 @@ A 项目不是完整复刻 mink 库，也不是直接调用 mink 替代自己的
 
 当前状态：A 项目已完成 mink/UR5e 对标需求、最小参考资产、A00-A10 pipeline 文档整理，以及 A01 `model inspect` 最小可运行实现。
 
-A01 已能读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，输出 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe 摘要。后续仍按“先 TODO 骨架，再最小可运行实现”的方式推进 A02。
+A01 已能读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，输出 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe 摘要。A02 已能基于 `keyframe:home` 查询 `attachment_site` 和 `wrist_3_link` 的世界系 pose。
 
 ## 文档入口
 
@@ -32,7 +32,7 @@ A01 已能读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xm
 - `docs/legacy_script_mapping.md`：历史 legacy 脚本到标准学习脚本的映射。
 - `docs/self_baseline_learning_scripts_plan.md`：标准 TODO 学习脚本规划。
 - `docs/01_model_inspect.md`：A01 model inspect / MJCF inspect 学习说明。
-- `docs/02_configuration_site_pose.md`：A02 configuration / site pose TODO skeleton 说明。
+- `docs/02_configuration_site_pose.md`：A02 configuration / site pose 状态说明。
 - `docs/legacy_imported/`：旧项目导入文档，仅作历史参考。
 
 ## A00-A10 Pipeline 总览
@@ -51,7 +51,7 @@ A00 reference and assets
   -> A10 demo showcase / video recording
 ```
 
-当前标准入口统一放在 `scripts/` 下的 A00-A10。A01 已完成最小 model inspect；A02-A10 仍按 TODO learning skeleton 逐步推进。
+当前标准入口统一放在 `scripts/` 下的 A00-A10。A01 已完成最小 model inspect，A02 已完成最小 site/body pose；A03-A10 仍按 TODO learning skeleton 逐步推进。
 
 ## mink capability vs A requirements
 
@@ -123,8 +123,8 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 
 1. A00：确认 mink UR5e 参考范围和模型资产路径。当前状态：已完成。
 2. A01：检查 MuJoCo MJCF 模型维度和对象名称。当前状态：最小实现已完成。
-3. A02：实现 configuration / site pose 查询。当前状态：下一步。
-4. A03：实现 site Jacobian 并做有限差分验证。
+3. A02：实现 configuration / site pose 查询。当前状态：最小实现已完成。
+4. A03：实现 site Jacobian 并做有限差分验证。当前状态：下一步。
 5. A04：实现 DLS differential IK。
 6. A05：实现 task + limit + QP-IK。
 7. A06：实现 target / mocap-style tracking。
@@ -138,10 +138,10 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 ## 当前实现入口
 
 ```bash
-python projects/A_self_baseline/scripts/01_model_inspect.py
+python projects/A_self_baseline/scripts/02_configuration_site_pose.py
 ```
 
-下一步进入 A02 configuration / site pose。实现时只补 A02 相关 TODO，不扩展到 Jacobian、IK 或 QP。
+下一步进入 A03 site Jacobian check。实现时只补 A03 相关 TODO，不扩展到 IK 或 QP。
 
 ## A01 model inspect status
 
@@ -154,10 +154,10 @@ python projects/A_self_baseline/scripts/01_model_inspect.py
 - 输出报告是 `outputs/reports/A01_model_inspect_report.md`。
 - 输出缓存是 `outputs/cache/A01_model_summary.json`。
 - 当前检查结果：`nq=6`、`nv=6`、`nu=6`，末端候选中 `attachment_site` 和 `wrist_3_link` 命中。
-- 下一步进入 A02 configuration / site pose。
+- 下一步进入 A03 site Jacobian check。
 
 ## A02 configuration / site pose status
 
-当前 A02 是 TODO learning skeleton，依赖 A01 的 `outputs/cache/A01_model_summary.json` 和已确认的 `attachment_site` / `wrist_3_link`。
+当前 A02 已完成最小可运行 site/body pose 查询，依赖 A01 的 `outputs/cache/A01_model_summary.json` 和已确认的 `attachment_site` / `wrist_3_link`。
 
-A02 未来输出是 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。A02 最小可运行 site pose 会在 Step 10C 完成；当前 Step 10B 不实现 site pose 查询、Jacobian、IK 或 QP。
+A02 输出是 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。当前 q source 为 `keyframe:home`，目标 site/body 为 `attachment_site` / `wrist_3_link`。A02 仍不实现 Jacobian、finite difference、IK 或 QP。

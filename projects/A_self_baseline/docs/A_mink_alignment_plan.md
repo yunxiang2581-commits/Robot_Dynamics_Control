@@ -10,7 +10,7 @@
 - 对标 mink 的概念：MuJoCo model loading、`Configuration`、site Jacobian。
 - 本地参考：`projects/A_self_baseline/external/mink/examples/arm_ur5e.py`。
 
-A02 当前状态：configuration / site pose TODO learning skeleton 已规划，依赖 A01 的 model summary 和已确认的 `attachment_site` / `wrist_3_link`。未来输出为 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`，最小实现将在 Step 10C 完成。
+A02 当前状态：configuration / site pose 最小可运行实现已完成，依赖 A01 的 model summary 和已确认的 `attachment_site` / `wrist_3_link`。当前输出为 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。下一步进入 A03 site Jacobian check。
 
 ## 阶段 2：DLS differential IK
 

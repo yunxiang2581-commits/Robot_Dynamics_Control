@@ -1,10 +1,12 @@
-# A02 Configuration / Site Pose TODO Skeleton
+# A02 Configuration / Site Pose Status
 
 ## 1. A02 当前定位
 
 A02 是 A00-A10 pipeline 的第二个学习入口：configuration / site pose。
 
-当前状态是 TODO learning skeleton。本步骤只规划 `q -> MuJoCo data -> site/body pose` 的数据流，不实现真实 site pose 查询。
+当前状态：**A02 最小可运行 site/body pose 已完成**。
+
+本步骤已经实现 `q -> MuJoCo data -> site/body pose` 的最小数据流，并写出 JSON cache 与 Markdown report。当前仍不实现 Jacobian、finite difference、IK 或 QP。
 
 ## 2. 为什么 A02 在 A01 之后
 
@@ -70,10 +72,19 @@ A02 同时规划 site pose 和 body pose，是为了让后续 A03/A04 能明确�
 - target body: `wrist_3_link`
 - q source: `keyframe:home`、zero/default q、文件轨迹或 CLI joint values
 
-## 8. A02 未来输出
+## 8. A02 当前输出
 
 - `outputs/cache/A02_site_pose.json`
 - `outputs/reports/A02_site_pose_report.md`
+
+当前检查结果摘要：
+
+- q source: `keyframe:home`
+- target site: `attachment_site`
+- site position: `[0.49199929841248197, 0.1339978254660598, 0.48800036731899227]`
+- target body: `wrist_3_link`
+- body position: `[0.4919989310933209, 0.13399819278791936, 0.5880003673176429]`
+- model dimensions: `nq=6`, `nv=6`, `nu=6`
 
 JSON 字段至少包括：
 
@@ -90,27 +101,26 @@ JSON 字段至少包括：
 - `model_nu`
 - `source_mjcf`
 
-## 9. TODO 1-11 任务表
+## 9. TODO 1-11 状态表
 
 | TODO | 任务 | 验证重点 |
 |---|---|---|
-| TODO 1 | 读取 A01 model summary | `nq=6, nv=6, nu=6` 且 `attachment_site` 存在 |
-| TODO 2 | 读取 robot.yaml 和解析 scene.xml | scene.xml exists=True |
-| TODO 3 | 加载 MuJoCo model 并创建 data | `data.qpos` 对齐 `nq`，`data.qvel` 对齐 `nv` |
-| TODO 4 | 选择 q source | `q.shape == (model.nq,)` |
-| TODO 5 | 执行 forward kinematics 数据刷新 | `data.site_xpos` / `data.xpos` 不含 NaN |
-| TODO 6 | 查询 site pose | position=(3,), rotation=(3,3) |
-| TODO 7 | 查询 body pose | position=(3,), rotation=(3,3) |
-| TODO 8 | 组织 pose summary | summary 可 `json.dumps` |
-| TODO 9 | 规划 JSON 输出 | JSON 可读取，字段完整 |
-| TODO 10 | 规划 Markdown report 输出 | 报告可读，明确 target site/body |
-| TODO 11 | 说明 A02 不进入 A03/A04 | 日志和文档明确不做 Jacobian/IK/QP |
+| TODO 1 | 读取 A01 model summary | 已完成：`nq=6, nv=6, nu=6` 且 `attachment_site` 存在 |
+| TODO 2 | 读取 robot.yaml 和解析 scene.xml | 已完成：scene.xml exists=True |
+| TODO 3 | 加载 MuJoCo model 并创建 data | 已完成：`data.qpos` 对齐 `nq`，`data.qvel` 对齐 `nv` |
+| TODO 4 | 选择 q source | 已完成第一版：`keyframe:home`，`q.shape == (model.nq,)` |
+| TODO 5 | 执行 forward kinematics 数据刷新 | 已完成：调用 `mujoco.mj_forward` |
+| TODO 6 | 查询 site pose | 已完成：position=(3,), rotation=(3,3) |
+| TODO 7 | 查询 body pose | 已完成：position=(3,), rotation=(3,3) |
+| TODO 8 | 组织 pose summary | 已完成：summary 可 `json.dumps` |
+| TODO 9 | 规划 JSON 输出 | 已完成：JSON 可读取，字段完整 |
+| TODO 10 | 规划 Markdown report 输出 | 已完成：报告可读，明确 target site/body |
+| TODO 11 | 说明 A02 不进入 A03/A04 | 已完成：日志和文档明确不做 Jacobian/IK/QP |
 
 ## 10. 当前不做什么
 
-本步骤不做：
+当前 A02 不做：
 
-- 真实 site pose 查询实现
 - Jacobian
 - finite difference
 - IK

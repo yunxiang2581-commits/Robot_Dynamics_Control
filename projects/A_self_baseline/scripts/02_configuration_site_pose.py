@@ -1,4 +1,4 @@
-"""A02 configuration / site pose TODO learning skeleton.
+"""A02 configuration / site pose minimal runnable script.
 
 Pipeline 步骤：
 - A02 configuration / site pose。
@@ -21,13 +21,13 @@ Pipeline 步骤：
 - target site/body，例如 `attachment_site` / `wrist_3_link`。
 - q source，例如 keyframe `home`、zero/default q、文件轨迹或 CLI joint values。
 
-本脚本未来输出：
+本脚本当前输出：
 - `outputs/reports/A02_site_pose_report.md`。
 - `outputs/cache/A02_site_pose.json`。
 
 当前状态：
-- TODO learning skeleton。
-- 不实现真实 MuJoCo site/body pose 查询逻辑。
+- A02 最小可运行 site/body pose 查询已补齐。
+- 中文 TODO 注释继续保留，用于解释每段实现的学习目的。
 - 不调用 mink 替代自己的实现。
 - 不做 Jacobian / finite difference / IK / QP / WBC / MuJoCo 控制 / video recording。
 """
@@ -35,9 +35,12 @@ Pipeline 步骤：
 from __future__ import annotations
 
 import argparse
+import json
 import logging
+import sys
 from pathlib import Path
 
+import mujoco
 
 A_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = A_ROOT / "configs" / "robot.yaml"
@@ -46,7 +49,10 @@ DEFAULT_OUTPUT_DIR = A_ROOT / "outputs"
 DEFAULT_SITE_NAME = "attachment_site"
 DEFAULT_BODY_NAME = "wrist_3_link"
 DEFAULT_Q_SOURCE = "keyframe:home"
-
+SRC_ROOT = A_ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.append(str(SRC_ROOT))
+from robot_baseline import model_loader  # noqa: E402, F401
 
 PRINCIPLE_NOTES = [
     "configuration 表示机器人当前广义坐标 q；在 MuJoCo 中，q 通常写入 data.qpos。",
@@ -74,24 +80,24 @@ TODO_TITLES = [
 
 
 def parse_args() -> argparse.Namespace:
-    """解析 A02 TODO skeleton 的 CLI 参数。"""
+    """解析 A02 site/body pose 查询的 CLI 参数。"""
     parser = argparse.ArgumentParser(
         description="A02 TODO skeleton: configuration / site pose data flow."
     )
     parser.add_argument(
         "--config",
         default=str(DEFAULT_CONFIG),
-        help="robot.yaml 配置路径。TODO 2 未来读取。",
+        help="robot.yaml 配置路径。",
     )
     parser.add_argument(
         "--a01-summary",
         default=str(DEFAULT_A01_SUMMARY),
-        help="A01_model_summary.json 路径。TODO 1 未来读取。",
+        help="A01_model_summary.json 路径。",
     )
     parser.add_argument(
         "--mjcf",
         default=None,
-        help="可选：覆盖 robot.yaml 中的 scene.xml 路径。TODO 2 未来解析。",
+        help="可选：覆盖 robot.yaml 中的 scene.xml 路径。",
     )
     parser.add_argument(
         "--site",
@@ -111,7 +117,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         default=str(DEFAULT_OUTPUT_DIR),
-        help="未来输出根目录。TODO 9/10 规划 cache/report 路径。",
+        help="输出根目录。用于写入 A02 cache/report。",
     )
     parser.add_argument("--log-level", default="INFO", help="日志级别，例如 INFO / DEBUG。")
     return parser.parse_args()
@@ -132,10 +138,21 @@ def log_todo_titles() -> None:
 
 
 def main() -> None:
-    """A02 TODO learning skeleton 主流程。
+    """A02 最小可运行 configuration / site pose 主流程。
 
-    当前只打印 A02 的未来输入、未来输出、原理说明和 TODO 清单。
-    核心 site/body pose 查询逻辑继续保留为 NotImplementedError。
+    输入：
+    - A01 model summary；
+    - robot.yaml / scene.xml；
+    - target site/body；
+    - q source。
+
+    输出：
+    - A02_site_pose.json；
+    - A02_site_pose_report.md。
+
+    数学逻辑：
+    - 本步骤只做 `q -> data -> site/body pose`；
+    - 不计算 Jacobian，不做 finite difference，不做 IK，不做 QP。
     """
     args = parse_args()
     logging.basicConfig(
@@ -147,20 +164,20 @@ def main() -> None:
     if not output_root.is_absolute():
         output_root = A_ROOT / output_root
 
-    future_cache = output_root / "cache" / "A02_site_pose.json"
-    future_report = output_root / "reports" / "A02_site_pose_report.md"
+    cache_path = output_root / "cache" / "A02_site_pose.json"
+    report_path = output_root / "reports" / "A02_site_pose_report.md"
 
-    logging.info("A02 当前状态: TODO learning skeleton")
-    logging.info("本步骤不实现 site/body pose 查询，只规划 q -> data -> pose 数据流。")
-    logging.info("未来输入:")
+    logging.info("A02 当前状态: minimal runnable configuration / site pose")
+    logging.info("本步骤只实现 q -> data -> site/body pose；不进入 Jacobian/IK/QP。")
+    logging.info("输入:")
     logging.info("- config: %s", args.config)
     logging.info("- A01 summary: %s", args.a01_summary)
     logging.info("- mjcf override: %s", args.mjcf)
     logging.info("- target site/body: %s / %s", args.site, args.body)
     logging.info("- q source: %s", args.q_source)
-    logging.info("未来输出:")
-    logging.info("- cache: %s", future_cache)
-    logging.info("- report: %s", future_report)
+    logging.info("输出:")
+    logging.info("- cache: %s", cache_path)
+    logging.info("- report: %s", report_path)
 
     log_principles()
     log_todo_titles()
@@ -195,7 +212,26 @@ def main() -> None:
     # - `attachment_site` 存在于 site_names。
     # - `wrist_3_link` 存在于 body_names。
     # model_summary = json.loads(Path(args.a01_summary).read_text(encoding="utf-8"))
-
+    summary_path = Path(args.a01_summary).expanduser()
+    if not summary_path.is_absolute():
+        summary_path = A_ROOT / summary_path
+    if not summary_path.exists():
+        logging.warning("A01 summary not found at %s.", summary_path)
+        raise FileNotFoundError(f"A01 summary not found at {summary_path}.")
+    model_summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    required_keys = ["nq", "nv", "nu", "site_names", "body_names", "keyframe_names"]
+    for key in required_keys:
+        if key not in model_summary:
+            logging.warning("A01 summary missing required key '%s'.", key)
+            raise KeyError(f"A01 summary missing required key '{key}'.")
+    if args.site not in model_summary["site_names"]:
+        logging.warning("Target site '%s' not found in A01 summary site_names.", args.site)
+        raise ValueError(f"Target site '{args.site}' not found in A01 summary site_names.")
+    if args.body not in model_summary["body_names"]:
+        logging.warning("Target body '%s' not found in A01 summary body_names.", args.body)
+        raise ValueError(f"Target body '{args.body}' not found in A01 summary body_names.")
+    logging.info("Loaded A01 summary from %s", summary_path)
+    logging.info("A01 summary confirms nq=%d, nv=%d, nu=%d", model_summary["nq"], model_summary["nv"], model_summary["nu"])
     # =============================
     # TODO 2: 读取 robot.yaml 和解析 scene.xml
     # =============================
@@ -224,7 +260,13 @@ def main() -> None:
     # - scene.xml exists=True。
     # config = model_loader.load_yaml_config(args.config)
     # mjcf_path = model_loader.resolve_path(args.mjcf or config["mjcf_path"], A_ROOT)
-
+    config_path = Path(args.config).expanduser()
+    config = model_loader.load_yaml_config(config_path)
+    mjcf_path = model_loader.resolve_path(args.mjcf or config["mjcf_path"], A_ROOT)
+    if not mjcf_path.exists():
+        logging.warning("MJCF file not found at %s.", mjcf_path)
+        raise FileNotFoundError(f"MJCF file not found at {mjcf_path}.")
+    logging.info("Using MJCF file at %s", mjcf_path)
     # =============================
     # TODO 3: 加载 MuJoCo model 并创建 data
     # =============================
@@ -252,9 +294,14 @@ def main() -> None:
     # 如何验证：
     # - data.qpos shape 与 nq 对齐。
     # - data.qvel shape 与 nv 对齐。
-    # model = model_loader.load_mujoco_model(mjcf_path)
-    # data = mujoco.MjData(model)
 
+    model = model_loader.load_mujoco_model(mjcf_path)
+    data = mujoco.MjData(model)
+
+    logging.info("Loaded MuJoCo model with nq=%d, nv=%d, nu=%d", model.nq, model.nv, model.nu)
+    logging.info("Created MuJoCo data: qpos shape=%s, qvel shape=%s", data.qpos.shape, data.qvel.shape)
+
+    
     # =============================
     # TODO 4: 选择 q source
     # =============================
@@ -282,7 +329,27 @@ def main() -> None:
     # 如何验证：
     # - q.shape == (model.nq,)。
     # q = ...
+    if args.q_source == "zero":
+        q = data.qpos.copy()  # zero q
+    elif args.q_source.startswith("keyframe:"):
+        key_name = args.q_source.split(":", 1)[1]
+        key_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, key_name)
+        if key_id == -1:
+            logging.warning("Keyframe '%s' not found in model.", key_name)
+            raise ValueError(f"Keyframe '{key_name}' not found in model.")
+        q = model.key_qpos[key_id].copy()
+    else:
+        logging.warning("Unsupported q source '%s'.", args.q_source)
+        raise ValueError(f"Unsupported q source '{args.q_source}'.")
 
+    if q.shape != data.qpos.shape:
+        raise ValueError(f"q shape {q.shape} does not match data.qpos shape {data.qpos.shape}.")
+    
+    logging.info("Selected q from source '%s': shape=%s", args.q_source, q.shape)
+    logging.info("Selected q shape: %s", q.shape)
+    logging.info("Selected q: %s", q)
+
+    
     # =============================
     # TODO 5: 执行 forward kinematics 数据刷新
     # =============================
@@ -307,9 +374,12 @@ def main() -> None:
     #
     # 如何验证：
     # - data.site_xpos / data.xpos 不含 NaN。
-    # data.qpos[:] = q
-    # mujoco.mj_forward(model, data)
-
+    data.qpos[:] = q
+    mujoco.mj_forward(model, data)
+    
+    logging.info("Forward kinematics updated.")
+    logging.info("site_xpos shape: %s", data.site_xpos.shape)
+    logging.info("body xpos shape: %s", data.xpos.shape)
     # =============================
     # TODO 6: 查询 site pose
     # =============================
@@ -341,7 +411,16 @@ def main() -> None:
     # - site pose shape 为 position=(3,), rotation=(3,3)。
     # site_position = ...
     # site_rotation_matrix = ...
-
+    site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, args.site)
+    if site_id == -1:
+        logging.warning("Target site '%s' not found in model.", args.site)
+        raise ValueError(f"Target site '{args.site}' not found in model.")
+    site_position = data.site_xpos[site_id].copy()
+    site_rotation_matrix = data.site_xmat[site_id].copy().reshape(3, 3)
+    logging.info("Queried site '%s' pose: position shape=%s, rotation shape=%s", args.site, site_position.shape, site_rotation_matrix.shape)
+    logging.info("Selected site '%s' site_id: %s", args.site, site_id)
+    logging.info("Selected position: %s", site_position)
+    logging.info("Selected rotation matrix: %s", site_rotation_matrix)
     # =============================
     # TODO 7: 查询 body pose
     # =============================
@@ -370,7 +449,16 @@ def main() -> None:
     # - body pose shape 为 position=(3,), rotation=(3,3)。
     # body_position = ...
     # body_rotation_matrix = ...
-
+    body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, args.body)
+    if body_id == -1:
+        logging.warning("Target body '%s' not found in model.", args.body)
+        raise ValueError(f"Target body '{args.body}' not found in model.")
+    body_position = data.xpos[body_id].copy()
+    body_rotation_matrix = data.xmat[body_id].copy().reshape(3, 3)
+    logging.info("Queried body '%s' pose: position shape=%s, rotation shape=%s", args.body, body_position.shape, body_rotation_matrix.shape)
+    logging.info("Selected body '%s' body_id: %s", args.body, body_id)
+    logging.info("Selected position: %s", body_position)
+    logging.info("Selected rotation matrix: %s", body_rotation_matrix)
     # =============================
     # TODO 8: 组织 pose summary
     # =============================
@@ -401,12 +489,26 @@ def main() -> None:
     # 如何验证：
     # - summary 可 json.dumps。
     # pose_summary = {...}
+    pose_summary = {
+        "q_source": args.q_source,
+        "q": q.tolist(),
+        "site_name": args.site,
+        "site_position": site_position.tolist(),
+        "site_rotation_matrix": site_rotation_matrix.tolist(),
+        "body_name": args.body,
+        "body_position": body_position.tolist(),
+        "body_rotation_matrix": body_rotation_matrix.tolist(),
+        "model_nq": model.nq,
+        "model_nv": model.nv,
+        "model_nu": model.nu,
+        "source_mjcf": str(mjcf_path),
+    }
 
     # =============================
     # TODO 9: 规划 JSON 输出
     # =============================
     # 要做什么：
-    # - 未来输出 `outputs/cache/A02_site_pose.json`。
+    # - 输出 `outputs/cache/A02_site_pose.json`。
     # - 字段至少包括 q_source、q、site_name、site_position、site_rotation_matrix、
     #   body_name、body_position、body_rotation_matrix、model_nq/nv/nu、source_mjcf。
     #
@@ -429,12 +531,15 @@ def main() -> None:
     # 如何验证：
     # - JSON 可读取，字段完整。
     # Path(...).write_text(...)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
 
+    json_text = json.dumps(pose_summary, indent=2, ensure_ascii=False)
+    cache_path.write_text(json_text, encoding="utf-8")
     # =============================
     # TODO 10: 规划 Markdown report 输出
     # =============================
     # 要做什么：
-    # - 未来输出 `outputs/reports/A02_site_pose_report.md`。
+    # - 输出 `outputs/reports/A02_site_pose_report.md`。
     # - 内容至少包括 A02 目标、输入模型、q source、site pose、body pose、
     #   与 A03 Jacobian 的关系、当前不做什么。
     #
@@ -457,37 +562,39 @@ def main() -> None:
     # 如何验证：
     # - 报告可读，能明确 target site/body。
     # report_path.write_text(...)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # =============================
-    # TODO 11: 说明 A02 不进入 A03/A04
-    # =============================
-    # 要做什么：
-    # - 明确不计算 Jacobian。
-    # - 明确不做 finite difference。
-    # - 明确不做 IK。
-    # - 明确不做 QP。
-    #
-    # 为什么这一步存在：
-    # - A02 只负责 pose 数据流，A03 才验证 velocity mapping；边界清楚才能逐步学习。
-    #
-    # 对标 mink 的哪个概念：
-    # - 对标 Configuration 和 solver/task 的职责分离：A02 只学 configuration 状态查询。
-    #
-    # 推荐 API：
-    # - logging.info
-    # - Markdown 边界说明。
-    #
-    # 输入是什么：
-    # - 当前 pipeline 阶段说明。
-    #
-    # 输出是什么：
-    # - 日志和文档中的边界说明。
-    #
-    # 如何验证：
-    # - 运行脚本只打印 TODO skeleton 状态，并继续 raise NotImplementedError。
-    logging.info("A02 边界: 不计算 Jacobian，不做 finite difference，不做 IK，不做 QP。")
-    raise NotImplementedError("TODO: A02 remains a configuration / site pose learning skeleton.")
-
+    report_lines = [
+        "# A02 Site Pose Report",
+        "",
+        "## 目标",
+        "确认在给定 configuration q 下，MuJoCo 中 target site 和 body 的世界坐标系位姿。",
+        "",
+        "## 输入模型",
+        f"- MJCF: {mjcf_path}",
+        f"- model nq/nv/nu: {model.nq}/{model.nv}/{model.nu}",
+        "",
+        "## q 来源",
+        f"- {args.q_source}",
+        "",
+        "## 查询结果",
+        f"- target site: {args.site}",
+        f"  - position: {site_position}",
+        f"  - rotation matrix:\n```\n{site_rotation_matrix}\n```",
+        f"- target body: {args.body}",
+        f"  - position: {body_position}",
+        f"  - rotation matrix:\n```\n{body_rotation_matrix}\n```",
+        "",
+        "## 与 A03 Jacobian 的关系",
+        "- A03 将基于同样的 q 和 target site 验证 Jacobian 的正确性。",
+        "",
+        "## 当前不做什么",
+        "- 不验证 Jacobian，不做 IK，不做控制，不录视频。",
+    ]
+    report_text = "\n".join(report_lines)
+    report_path.write_text(report_text, encoding="utf-8")
+    logging.info("Written pose summary to %s", cache_path)
+    logging.info("Written Markdown report to %s", report_path)
 
 if __name__ == "__main__":
     main()

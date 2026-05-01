@@ -52,8 +52,8 @@ A00 reference and assets
 - 输入：A01 确认的 MJCF 模型、配置 `q`、末端 site 名称。
 - 输出：目标 site/body 的位置、旋转矩阵和可复盘的 JSON/Markdown 摘要。
 - 对标 mink 的概念：`mink.Configuration` 中从 `q` 到当前 frame/site pose 的查询能力。
-- 当前状态：TODO learning skeleton，依赖 A01 的 `outputs/cache/A01_model_summary.json` 和已确认的 `attachment_site` / `wrist_3_link`。
-- 未来输出：`outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`；最小实现将在 Step 10C 完成。
+- 当前状态：最小可运行实现已完成，依赖 A01 的 `outputs/cache/A01_model_summary.json` 和已确认的 `attachment_site` / `wrist_3_link`。
+- 当前输出：`outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。
 - 验收标准：能说明 `q -> MuJoCo data -> site pose` 的数据流，并记录目标 site 的 pose。
 
 ### A03 - Site Jacobian Check

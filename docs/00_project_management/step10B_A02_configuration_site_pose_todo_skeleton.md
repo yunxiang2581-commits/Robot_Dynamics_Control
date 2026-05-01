@@ -90,11 +90,11 @@ A04 才负责 DLS differential IK。
 
 本步骤未下载外部仓库。
 
-## 8. 下一步 Step 10C
+## 8. 原计划 Step 10C
 
-下一步 Step 10C：A02 最小可运行 site pose。
+原计划 Step 10C：A02 最小可运行 site pose。
 
-Step 10C 才补：
+这些内容已在后续状态更新中完成：
 
 - 读取 A01 summary。
 - 读取 robot.yaml。
@@ -114,3 +114,37 @@ Step 10C 才补：
 - [x] 未修改 external/mink_upstream；
 - [x] 未修改 legacy_imported；
 - [x] py_compile 通过。
+
+## 10. 后续状态更新
+
+A02 已从 TODO skeleton 推进到最小可运行 configuration / site pose：
+
+- 已读取 `outputs/cache/A01_model_summary.json`。
+- 已读取 `configs/robot.yaml` 并解析同一个 `scene.xml`。
+- 已加载 MuJoCo model 并创建 `mujoco.MjData(model)`。
+- 已使用 `keyframe:home` 作为第一版 q source。
+- 已调用 `mujoco.mj_forward(model, data)`。
+- 已读取 `attachment_site` 的 position 和 rotation matrix。
+- 已读取 `wrist_3_link` 的 position 和 rotation matrix。
+- 已写出 `outputs/cache/A02_site_pose.json`。
+- 已写出 `outputs/reports/A02_site_pose_report.md`。
+
+当前 A02 检查结果：
+
+- q source: `keyframe:home`
+- target site: `attachment_site`
+- site position: `[0.49199929841248197, 0.1339978254660598, 0.48800036731899227]`
+- target body: `wrist_3_link`
+- body position: `[0.4919989310933209, 0.13399819278791936, 0.5880003673176429]`
+
+当前仍不做：
+
+- Jacobian
+- finite difference
+- IK
+- QP
+- WBC
+- MuJoCo 控制
+- video recording
+
+下一步进入 A03 site Jacobian check。
