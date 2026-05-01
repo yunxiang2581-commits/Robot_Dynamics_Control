@@ -32,6 +32,7 @@ A01 已能读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xm
 - `docs/legacy_script_mapping.md`：历史 legacy 脚本到标准学习脚本的映射。
 - `docs/self_baseline_learning_scripts_plan.md`：标准 TODO 学习脚本规划。
 - `docs/01_model_inspect.md`：A01 model inspect / MJCF inspect 学习说明。
+- `docs/02_configuration_site_pose.md`：A02 configuration / site pose TODO skeleton 说明。
 - `docs/legacy_imported/`：旧项目导入文档，仅作历史参考。
 
 ## A00-A10 Pipeline 总览
@@ -154,3 +155,9 @@ python projects/A_self_baseline/scripts/01_model_inspect.py
 - 输出缓存是 `outputs/cache/A01_model_summary.json`。
 - 当前检查结果：`nq=6`、`nv=6`、`nu=6`，末端候选中 `attachment_site` 和 `wrist_3_link` 命中。
 - 下一步进入 A02 configuration / site pose。
+
+## A02 configuration / site pose status
+
+当前 A02 是 TODO learning skeleton，依赖 A01 的 `outputs/cache/A01_model_summary.json` 和已确认的 `attachment_site` / `wrist_3_link`。
+
+A02 未来输出是 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。A02 最小可运行 site pose 会在 Step 10C 完成；当前 Step 10B 不实现 site pose 查询、Jacobian、IK 或 QP。
