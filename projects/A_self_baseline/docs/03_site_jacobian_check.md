@@ -2,7 +2,7 @@
 
 ## 1. A03 当前定位
 
-A03 是 `site Jacobian check` 的 TODO learning skeleton。当前阶段只整理学习任务、输入输出边界、推荐 API 和验证方式，不实现真实 Jacobian 计算，也不实现 finite difference 验证。
+A03 是 `site Jacobian check` 的最小可运行实现。当前阶段已经基于 A01/A02 的输出读取 MuJoCo model、恢复 `keyframe:home` 下的 `q`，并针对 `attachment_site` 计算 site Jacobian 与有限差分速度。
 
 A03 要学习的核心关系是：
 
@@ -45,7 +45,7 @@ A02 已经确认了 `q -> MuJoCo data -> site/body pose` 的数据流，并输�
 
 mink 的 `solve_ik` 会在任务空间误差和关节速度之间建立映射。A03 不调用 mink，也不实现 IK，只学习这个映射背后的基础对象：site Jacobian。
 
-在 A 项目中，A03 只规划如何得到 `J(q)`，并用有限差分检查 `J(q) dq` 是否能预测 site position 的瞬时速度。
+在 A 项目中，A03 不调用 mink，而是自己用 MuJoCo API 得到 `J(q)`，并用有限差分检查 `J(q) dq` 是否能预测 site position 的瞬时速度。
 
 ## 5. `site velocity = J(q) dq`
 
@@ -55,7 +55,7 @@ Jacobian 可以理解成 configuration 变化到 site 速度的局部线性映�
 J(q): dq -> site velocity
 ```
 
-未来 A03 会分别关注：
+A03 当前分别关注：
 
 | 对象 | 含义 |
 | --- | --- |
@@ -97,15 +97,32 @@ v_fd = (site_position(q_next) - site_position(q)) / dt
 | dq | 用于测试的关节速度扰动 |
 | dt | finite difference 时间步长 |
 
-## 9. A03 未来输出
+## 9. A03 当前输出
 
 | 输出 | 说明 |
 | --- | --- |
 | `outputs/cache/A03_jacobian_check.json` | JSON-serializable Jacobian check 摘要 |
 | `outputs/reports/A03_jacobian_check_report.md` | 可复盘的 Markdown 报告 |
-| `outputs/figures/A03_jacobian_fd_error.png` | 不同 `dt` 下的有限差分误差图 |
+| `outputs/figures/A03_jacobian_fd_error.png` | Jacobian velocity 与 finite difference velocity 的误差图 |
+| `outputs/cache/A03_multi_step_trace.json` | 当前 `fd_steps` 内每一步的 `q_k`、site pose 和 `J(q_k)` |
+| `outputs/figures/A03_multi_step_linearization_error.png` | 误差随总位移变化的 sweep 曲线 |
 
-## 10. TODO 1-14 任务表
+当前默认运行结果：
+
+| 指标 | 当前值 |
+| --- | --- |
+| q source | `keyframe:home` |
+| target site | `attachment_site` |
+| dq source | `unit:shoulder_pan` |
+| dt | `1e-6` |
+| fd steps | `1000` |
+| finite difference total time | `0.001` |
+| `J_pos` shape | `[3, 6]` |
+| `J_rot` shape | `[3, 6]` |
+| linear velocity error norm | 约 `2.55e-4` |
+| angular velocity error norm | 约 `8.26e-11` |
+
+## 10. TODO 1-14 完成状态表
 
 | TODO | 要做什么 | 为什么 | 对标 mink | 推荐 API | 输入 | 输出 | 验证 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -124,12 +141,26 @@ v_fd = (site_position(q_next) - site_position(q)) / dt
 | 13 | 规划误差图输出 | 观察 finite difference 随 `dt` 的收敛趋势 | numerical validation plot | `matplotlib` | dt list, error norm list | `A03_jacobian_fd_error.png` | 图能显示误差趋势 |
 | 14 | 说明 A03 不进入 A04/A05 | 保持学习边界清晰 | pipeline boundary | logging, docs | A03 边界说明 | 日志和文档说明 | 不出现 IK/QP/tracking 实现 |
 
+## 10.1 循环有限差分与误差-位移曲线
+
+当前实现已从单次 `q + dq * dt` 改为循环有限差分：用 `mujoco.mj_integratePos` 执行 `fd_steps` 个小步，最终用总时间 `dt * fd_steps` 计算平均 finite-difference velocity。这样可以在保持每一步积分方式正确的同时，观察一个更大的总位姿变化下，初始 `J(q0) dq` 的局部线性化误差。
+
+这个结果的解释边界是：大位姿变化下误差增大是正常现象，不能把它直接理解为 Jacobian 计算错误。A03 仍用小步误差验证 Jacobian API 和索引是否正确；循环差分用于帮助理解为什么 A04/A05 需要迭代更新 q、forward data 并重新计算 Jacobian。
+
+当前已实现：
+
+| 功能 | 做了什么 | 为什么 | 对标 mink | 推荐 API | 输入 | 输出 | 验证 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 多组步数 sweep | 增加不同 `fd_steps` 的 sweep，画误差随总位移变化的曲线 | 判断初始 Jacobian 的局部线性化有效范围 | `solve_ik` 每次小步更新而不是一次大步 | `numpy.linalg.norm`, `matplotlib` | sweep steps, q0, dq | `outputs/figures/A03_multi_step_linearization_error.png` | 图中可观察误差随总位移变化 |
+| 逐步日志 | 保存当前 `fd_steps` 内每一步的 q、site pose、`J(q_k)` | 对照 A04 迭代 IK 的每步状态更新 | iterative differential update | `mujoco.mj_integratePos`, `mujoco.mj_forward`, `mujoco.mj_jacSite` | q0, dq, dt, fd_steps | `outputs/cache/A03_multi_step_trace.json` | 每步 pose 无 NaN，维度正确 |
+| 误差口径拆分 | 在 JSON/report 中分开写“小步速度映射误差”和“大位移线性化误差” | 避免把大位移误差误判为 Jacobian API 错误 | solver debug report | Markdown report, JSON fields | single-step error, loop error | `error_interpretation` 和 report 小节 | 报告能说明二者含义不同 |
+
+后续仍可增强：增加多组 `dt` sweep，对比“固定初始 `J(q0)`”和“每步刷新 `J(q_k)`”两种累计预测，并把 trace 另存为 CSV，方便表格检查。
+
 ## 11. 当前不做什么
 
-A03 当前 TODO skeleton 不做以下内容：
+A03 当前最小实现仍不做以下内容：
 
-- 不实现真实 Jacobian 计算。
-- 不实现 finite difference 验证。
 - 不实现 IK。
 - 不实现 QP。
 - 不实现 target tracking。
@@ -138,10 +169,10 @@ A03 当前 TODO skeleton 不做以下内容：
 - 不实现 video recording。
 - 不调用 mink 替代自己的实现。
 
-## 12. 下一步 A03 最小实现
+## 12. 下一步 A04
 
-下一步 Step 11B 将进入 A03 minimal Jacobian finite difference check。届时只实现最小可运行的 `attachment_site` position Jacobian 和有限差分验证，并输出 JSON、Markdown report 和可选误差图。
+下一步进入 A04 DLS differential IK。A04 将使用 A03 验证过的 `J(q)`，根据 task-space error 求解关节速度 `dq`。
 
-## 13. 再下一步 A04
+## 13. 再下一步 A05
 
-A04 是 DLS differential IK。A04 会使用 A03 验证过的 `J(q)`，根据 task-space error 求解关节速度 `dq`。因此 A03 的重点是让 Jacobian 和 finite difference check 足够可信，而不是提前进入 IK。
+A04 完成后，再进入 A05 task + limit + QP-IK。A03 不提前实现 IK 或 QP，只提供可信的 velocity mapping 验证。

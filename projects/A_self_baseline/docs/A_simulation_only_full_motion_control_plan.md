@@ -65,8 +65,8 @@ A00-A10 是第一阶段主线。A11-A18 是第二阶段扩展。不要把 A11-A1
 | A00 | reference and assets | 第一阶段 | 固定 mink UR5e 参考范围和本地资产边界 | `external/mink_upstream`、copied UR5e assets | asset audit、path summary | 路径、来源、许可证、最小复制边界清楚 | 已规划/已完成 |
 | A01 | model inspect | 第一阶段 | 检查 MuJoCo 模型维度和对象名称 | `robot.yaml`、`scene.xml` | A01 report、model summary JSON | `nq=6`、`nv=6`、`nu=6`，关键 site/body/actuator/keyframe 命中 | 最小实现已完成 |
 | A02 | configuration / site pose | 第一阶段 | 学习 `q -> data -> site/body pose` | A01 summary、`keyframe:home`、target site/body | A02 pose JSON、report | 能查询 `attachment_site` 和 `wrist_3_link` pose | 最小实现已完成 |
-| A03 | site Jacobian check | 第一阶段 | 验证 `site velocity = J(q) dq` | A02 pose、target site、`q`、`dq`、`dt` | Jacobian check JSON、report、error figure | `J dq` 与 finite difference velocity 对齐 | 下一步 |
-| A04 | DLS differential IK | 第一阶段 | 实现最小无约束 differential IK | target pose、current pose、J、damping、gain | q trajectory、error log、report | 误差下降，轨迹无 NaN | 待做 |
+| A03 | site Jacobian check | 第一阶段 | 验证 `site velocity = J(q) dq` | A02 pose、target site、`q`、`dq`、`dt` | Jacobian check JSON、report、error figure | `J dq` 与 finite difference velocity 对齐 | 最小实现已完成 |
+| A04 | DLS differential IK | 第一阶段 | 实现最小无约束 differential IK | target pose、current pose、J、damping、gain | q trajectory、error log、report | 误差下降，轨迹无 NaN | 下一步 |
 | A05 | task + limit + QP-IK | 第一阶段 | 加入 task、limit 和最小 QP-IK | task、limit、QP weights | QP-IK trajectory、constraint log | 满足速度/位置限制，误差可解释 | 待做 |
 | A06 | target / mocap-style tracking | 第一阶段 | 管理 fixed target 和后续 mocap-style target | fixed target、site pose、IK output | target tracking log、report | target、site、误差关系清楚 | 待做 |
 | A07 | MuJoCo actuator tracking | 第一阶段 | 把 A04/A05 轨迹送入 MuJoCo actuator | `q_des`/`dq_des`、actuator names | tracking log、error figure、video | actuator 维度正确，tracking error 有界 | 待做 |
@@ -260,11 +260,10 @@ A18 benchmark report 应包含：
 
 ## 8. 当前下一步
 
-尽管本文档规划了 A11-A18，但当前实现顺序不变：
+尽管本文档规划了 A11-A18，但当前实现顺序不变。A03 最小 site Jacobian check 已完成，当前下一步进入 A04：
 
 ```text
-A03 site Jacobian check
-  -> A04 DLS differential IK
+A04 DLS differential IK
   -> A05 task + limit + QP-IK
   -> A06 target / mocap-style tracking
   -> A07 MuJoCo actuator tracking
@@ -272,4 +271,4 @@ A03 site Jacobian check
   -> 再扩展 A11-A18
 ```
 
-不要因为加入 sim2sim 规划而跳过 A03-A07。
+不要因为加入 sim2sim 规划而跳过 A04-A07。

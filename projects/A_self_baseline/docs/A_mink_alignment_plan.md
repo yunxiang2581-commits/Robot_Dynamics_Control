@@ -2,7 +2,7 @@
 
 需求总文档见 `mink_capability_vs_A_requirements.md`。本计划负责把需求拆成阶段，需求总文档负责定义 mink 能力、A 项目边界和最终展示交付物。
 
-simulation-first 全流程规划见 `A_simulation_only_full_motion_control_plan.md`。当前没有实物 UR5e / 机械臂，因此 A 项目用 MuJoCo 主线和后续 sim2sim validation 作为无实物条件下的工程验证策略；这不改变当前下一步 A03 site Jacobian check。
+simulation-first 全流程规划见 `A_simulation_only_full_motion_control_plan.md`。当前没有实物 UR5e / 机械臂，因此 A 项目用 MuJoCo 主线和后续 sim2sim validation 作为无实物条件下的工程验证策略；A03 最小 Jacobian check 已完成，当前下一步进入 A04 DLS differential IK。
 
 ## 阶段 1：model inspect、configuration/site pose、site Jacobian
 
@@ -12,9 +12,9 @@ simulation-first 全流程规划见 `A_simulation_only_full_motion_control_plan.
 - 对标 mink 的概念：MuJoCo model loading、`Configuration`、site Jacobian。
 - 本地参考：`projects/A_self_baseline/external/mink/examples/arm_ur5e.py`。
 
-A02 当前状态：configuration / site pose 最小可运行实现已完成，依赖 A01 的 model summary 和已确认的 `attachment_site` / `wrist_3_link`。当前输出为 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。下一步进入 A03 site Jacobian check。
+A02 当前状态：configuration / site pose 最小可运行实现已完成，依赖 A01 的 model summary 和已确认的 `attachment_site` / `wrist_3_link`。当前输出为 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。A03 已完成最小 site Jacobian check，下一步进入 A04 DLS differential IK。
 
-A03 当前状态：site Jacobian check TODO learning skeleton 已补充，依赖 A01/A02 的 model summary 和 site pose，后续输出规划为 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md` 和 `outputs/figures/A03_jacobian_fd_error.png`。A03 的最小实现将在 Step 11B 完成。
+A03 当前状态：site Jacobian check 最小可运行实现已完成，依赖 A01/A02 的 model summary 和 site pose，已输出 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md`、`outputs/figures/A03_jacobian_fd_error.png`、`outputs/cache/A03_multi_step_trace.json` 和 `outputs/figures/A03_multi_step_linearization_error.png`。默认 `fd_steps=1000` 循环差分下，linear velocity error norm 约为 `2.55e-4`，angular velocity error norm 约为 `8.26e-11`；sweep 图已展示误差随总位移变化的趋势。
 
 ## 阶段 2：DLS differential IK
 

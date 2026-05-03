@@ -1,0 +1,246 @@
+{
+  "q_source": "keyframe:home",
+  "site_name": "attachment_site",
+  "dq_source": "unit:shoulder_pan",
+  "dt": 1e-06,
+  "fd_steps": 1000,
+  "fd_total_time": 0.001,
+  "q": [
+    -1.5708,
+    -1.5708,
+    1.5708,
+    -1.5708,
+    -1.5708,
+    0.0
+  ],
+  "q_final": [
+    -1.5698000000000822,
+    -1.5708,
+    1.5708,
+    -1.5708,
+    -1.5708,
+    0.0
+  ],
+  "dq": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "J_pos_shape": [
+    3,
+    6
+  ],
+  "J_rot_shape": [
+    3,
+    6
+  ],
+  "v_pos": [
+    -0.1339978254660598,
+    0.491999298412482,
+    0.0
+  ],
+  "v_rot": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "predicted_linear_velocity": [
+    -0.1339978254660598,
+    0.491999298412482,
+    0.0
+  ],
+  "predicted_angular_velocity": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "J_pos": [
+    [
+      -0.1339978254660598,
+      0.32500036731679977,
+      -0.09999963267746567,
+      -0.09999963267746567,
+      3.673218595709799e-07,
+      -1.0408340855860843e-16
+    ],
+    [
+      0.491999298412482,
+      -1.1937930078101227e-06,
+      3.673191610813552e-07,
+      3.673191610813552e-07,
+      0.09999999999865064,
+      0.0
+    ],
+    [
+      0.0,
+      -0.4919988062076665,
+      -0.49200036731983543,
+      -0.10000036731983564,
+      -3.673205103416066e-07,
+      -4.235164736271502e-22
+    ]
+  ],
+  "J_rot": [
+    [
+      0.0,
+      3.6732051032988483e-06,
+      3.6732051032988474e-06,
+      3.6732051032988466e-06,
+      0.9999999999865068,
+      3.673191610875648e-06
+    ],
+    [
+      0.0,
+      0.9999999999932537,
+      0.9999999999932537,
+      0.9999999999932537,
+      -3.6732051032740654e-06,
+      -3.673218594624217e-06
+    ],
+    [
+      1.0,
+      0.0,
+      2.1249009778522845e-23,
+      0.0,
+      3.6732051041932223e-06,
+      -0.9999999999865067
+    ]
+  ],
+  "v_pos_fd": [
+    -0.1342438027507331,
+    0.49193221746493543,
+    0.0
+  ],
+  "finite_difference_linear_velocity": [
+    -0.1342438027507331,
+    0.49193221746493543,
+    0.0
+  ],
+  "finite_difference_site_displacement": [
+    -0.0001342438027507331,
+    0.0004919322174649354,
+    0.0
+  ],
+  "v_pos_err": [
+    -0.00024597728467332103,
+    -6.708094754659388e-05,
+    0.0
+  ],
+  "v_rot_fd": [
+    -2.5579578738465883e-14,
+    -3.635869736973811e-14,
+    0.9999999999174406
+  ],
+  "finite_difference_angular_velocity": [
+    -2.5579578738465883e-14,
+    -3.635869736973811e-14,
+    0.9999999999174406
+  ],
+  "v_rot_err": [
+    -2.5579578738465883e-14,
+    -3.635869736973811e-14,
+    -8.255940375789805e-11
+  ],
+  "linear_velocity_error_norm": 0.0002549601500215453,
+  "angular_velocity_error_norm": 8.255941572667138e-11,
+  "angular_check_status": "minimal_rotation_matrix_log_check",
+  "error_interpretation": {
+    "small_step_velocity_mapping_error": "用于检查 mj_jacSite API、site id、dq 维度和速度映射方向是否正确。",
+    "large_displacement_linearization_error": "使用初始 J(q0)dq 预测较大总位移下的平均速度；误差随总位移增大是正常现象。"
+  },
+  "multi_step_trace_path": "/home/ubuntu/Robot_Dynamics_Control/projects/A_self_baseline/outputs/cache/A03_multi_step_trace.json",
+  "multi_step_figure_path": "/home/ubuntu/Robot_Dynamics_Control/projects/A_self_baseline/outputs/figures/A03_multi_step_linearization_error.png",
+  "multi_step_check": {
+    "sweep_steps": [
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      200,
+      500,
+      1000
+    ],
+    "records": [
+      {
+        "fd_steps": 1,
+        "fd_total_time": 1e-06,
+        "final_site_displacement_norm": 5.099203141356328e-07,
+        "linear_velocity_error_norm": 2.548208741719915e-07,
+        "angular_velocity_error_norm": 3.005631947365029e-10
+      },
+      {
+        "fd_steps": 2,
+        "fd_total_time": 2e-06,
+        "final_site_displacement_norm": 1.019840628366838e-06,
+        "linear_velocity_error_norm": 5.099673401076392e-07,
+        "angular_velocity_error_norm": 1.3452687553127028e-10
+      },
+      {
+        "fd_steps": 5,
+        "fd_total_time": 4.9999999999999996e-06,
+        "final_site_displacement_norm": 2.54960157096452e-06,
+        "linear_velocity_error_norm": 1.2747646329124877e-06,
+        "angular_velocity_error_norm": 1.0703837961269294e-10
+      },
+      {
+        "fd_steps": 10,
+        "fd_total_time": 9.999999999999999e-06,
+        "final_site_displacement_norm": 5.099203141952081e-06,
+        "linear_velocity_error_norm": 2.549624858760158e-06,
+        "angular_velocity_error_norm": 1.1328812758044985e-10
+      },
+      {
+        "fd_steps": 20,
+        "fd_total_time": 1.9999999999999998e-05,
+        "final_site_displacement_norm": 1.0198406283696791e-05,
+        "linear_velocity_error_norm": 5.0992024078793856e-06,
+        "angular_velocity_error_norm": 8.23668542114791e-11
+      },
+      {
+        "fd_steps": 50,
+        "fd_total_time": 4.9999999999999996e-05,
+        "final_site_displacement_norm": 2.5496015707062347e-05,
+        "linear_velocity_error_norm": 1.2748007617378252e-05,
+        "angular_velocity_error_norm": 8.038506768299134e-11
+      },
+      {
+        "fd_steps": 100,
+        "fd_total_time": 9.999999999999999e-05,
+        "final_site_displacement_norm": 5.099203139792176e-05,
+        "linear_velocity_error_norm": 2.5496016311725294e-05,
+        "angular_velocity_error_norm": 8.393313049221885e-11
+      },
+      {
+        "fd_steps": 200,
+        "fd_total_time": 0.00019999999999999998,
+        "final_site_displacement_norm": 0.00010198406266835684,
+        "linear_velocity_error_norm": 5.099203058248237e-05,
+        "angular_velocity_error_norm": 8.417466074513405e-11
+      },
+      {
+        "fd_steps": 500,
+        "fd_total_time": 0.0005,
+        "final_site_displacement_norm": 0.0002549601544399021,
+        "linear_velocity_error_norm": 0.000127480077756432,
+        "angular_velocity_error_norm": 8.263163713900873e-11
+      },
+      {
+        "fd_steps": 1000,
+        "fd_total_time": 0.001,
+        "final_site_displacement_norm": 0.0005099202929448349,
+        "linear_velocity_error_norm": 0.0002549601500215453,
+        "angular_velocity_error_norm": 8.255941572667138e-11
+      }
+    ]
+  },
+  "model_nq": 6,
+  "model_nv": 6,
+  "model_nu": 6,
+  "source_mjcf": "/home/ubuntu/Robot_Dynamics_Control/shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml"
+}
