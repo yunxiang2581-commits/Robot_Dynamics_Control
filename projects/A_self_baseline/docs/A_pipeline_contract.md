@@ -78,6 +78,10 @@ A 项目当前没有实物 UR5e / 机械臂，因此采用 simulation-first base
 - 输入：A03 验证过的 site Jacobian、当前 site pose、目标 site 位置/姿态。
 - 输出：`q` 轨迹、误差曲线、收敛报告。
 - 对标 mink 的概念：`solve_ik` 的最小无约束教学版。
+- 当前状态：TODO learning skeleton 已补充，依赖 A03 已验证的 Jacobian。
+- 文档状态：`04_dls_differential_ik.md` 已补充 DLS IK 公式、推导、符号表、物理意义、伪代码、验证标准和常见错误。
+- 后续输出：`outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。
+- 下一步：A04 最小实现将在 Step 12B 完成。
 - 验收标准：TODO 中写清 DLS 数学结构 `dq = J.T @ solve(J @ J.T + lambda I, gain * e)`，但不实现完整算法。
 
 ### A05 - Task + Limit + QP-IK

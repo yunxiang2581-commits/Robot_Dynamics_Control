@@ -173,3 +173,9 @@ A02 输出是 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_p
 当前 A03 已完成最小可运行 site Jacobian finite difference check，依赖 A01/A02 的 model summary 和 site pose，验证了 `site velocity = J(q) dq`、MuJoCo `mj_jacSite` 和 finite difference 之间的一致性。
 
 A03 输出是 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md`、`outputs/figures/A03_jacobian_fd_error.png`、`outputs/cache/A03_multi_step_trace.json` 和 `outputs/figures/A03_multi_step_linearization_error.png`。当前默认 `dq_source=unit:shoulder_pan`、`dt=1e-6`、`fd_steps=1000`，linear velocity error norm 约为 `2.55e-4`，angular velocity error norm 约为 `8.26e-11`。sweep 图已展示误差随总位移变化的趋势；下一步进入 A04 DLS differential IK。
+
+## A04 DLS differential IK status
+
+当前 A04 是 DLS differential IK TODO learning skeleton，依赖 A03 已验证的 site Jacobian。A04 的 Markdown 文档已补充 DLS IK 算法细节，包括公式、符号表、物理意义、伪代码、验证标准和常见错误。
+
+A04 后续输出是 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。A04 的最小实现将在 Step 12B 完成。

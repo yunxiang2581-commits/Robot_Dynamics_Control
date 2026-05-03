@@ -23,6 +23,8 @@ A03 当前状态：site Jacobian check 最小可运行实现已完成，依赖 A
 - 验收标准：TODO 中写清误差定义、DLS 更新公式、输入输出和验证方法；不实现完整算法。
 - 对标 mink 的概念：`solve_ik` 的最小无约束教学版。
 
+A04 当前状态：DLS differential IK TODO learning skeleton 已补充，依赖 A03 已验证的 Jacobian。`04_dls_differential_ik.md` 已补充 DLS IK 算法细节，后续输出规划为 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。A04 的最小实现将在 Step 12B 完成。
+
 ## 阶段 3：task + limit + QP-IK
 
 - 输入：FrameTask/PostureTask 风格任务定义、关节位置/速度限制、QP 权重。

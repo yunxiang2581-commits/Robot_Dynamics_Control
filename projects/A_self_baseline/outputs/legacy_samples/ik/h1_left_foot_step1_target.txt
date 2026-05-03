@@ -1,4 +1,0 @@
-URDF Path: /home/ubuntu/robot_proj/Pinocchio_URDF/unitree_ros/robots/h1_description/urdf/h1_with_hand.urdf
-Left Foot Frame: left_ankle_link
-Current Position: [ 0.039468  0.20286  -0.9742  ]
-Desired Position: [ 0.059468  0.20286  -0.9742  ]
