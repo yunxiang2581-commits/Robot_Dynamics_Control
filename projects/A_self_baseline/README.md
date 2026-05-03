@@ -135,6 +135,12 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 
 每一步都应先输出文本报告，便于复盘和面试讲解。
 
+## Simulation-first validation plan
+
+A 项目当前没有实物 UR5e / 机械臂，因此定位为 simulation-first motion-control baseline。无实物条件下的有效验证依赖可运行脚本、可解释报告、可量化误差、可复现配置和后续 sim2sim validation，而不是伪装成真实机器人验证。
+
+完整规划见 `docs/A_simulation_only_full_motion_control_plan.md`。该文档把当前 A00-A10 主线扩展到 A18，但当前下一步仍保持 A03 site Jacobian check，不跳过 A03-A07。
+
 ## 当前实现入口
 
 ```bash
@@ -161,3 +167,9 @@ python projects/A_self_baseline/scripts/02_configuration_site_pose.py
 当前 A02 已完成最小可运行 site/body pose 查询，依赖 A01 的 `outputs/cache/A01_model_summary.json` 和已确认的 `attachment_site` / `wrist_3_link`。
 
 A02 输出是 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_pose_report.md`。当前 q source 为 `keyframe:home`，目标 site/body 为 `attachment_site` / `wrist_3_link`。A02 仍不实现 Jacobian、finite difference、IK 或 QP。
+
+## A03 site Jacobian check status
+
+当前 A03 是 site Jacobian check TODO learning skeleton，依赖 A01/A02 的 model summary 和 site pose，重点规划 `site velocity = J(q) dq`、MuJoCo `mj_jacSite`、position finite difference 验证和 A04 DLS IK 的输入边界。
+
+A03 后续输出是 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md` 和 `outputs/figures/A03_jacobian_fd_error.png`。A03 的最小实现将在 Step 11B 完成。

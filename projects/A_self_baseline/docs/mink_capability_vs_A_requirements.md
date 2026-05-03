@@ -12,6 +12,8 @@
 
 A 项目当前定位是：对标 `kevinzakka/mink` UR5e 示例的教学版 6-DOF 机械臂控制 baseline。
 
+A 项目同时是 simulation-first baseline：当前没有实物 UR5e / 机械臂，因此验证策略优先放在 MuJoCo 仿真、可量化日志、误差曲线、demo video 和后续 sim2sim validation。完整全流程规划见 `A_simulation_only_full_motion_control_plan.md`。sim2sim 是无实物条件下的工程验证策略，不是“真实机器人替代品”。
+
 ## 2. mink 能力拆解
 
 mink 的核心能力是：
@@ -79,19 +81,19 @@ mink 示例中 viewer target 或 mocap-style target 用于交互式定义任务�
 
 ## 4. A00-A10 任务表
 
-| 步骤 | A 项目目标 | 对标 mink | 需要实现 | 输出物 | 验收标准 |
-|---|---|---|---|---|---|
-| A00 reference and assets | 固定上游参考与 UR5e 资产路径 | examples / model assets | 审计并记录最小参考资产 | reference docs / asset README | 路径、来源、许可证清楚 |
-| A01 model inspect | 检查 MJCF 模型对象 | MuJoCo model loading | 读取 model 并列出 `nq/nv/nu`、joint、body、site、actuator | report / summary JSON | 能确认末端候选和 actuator 名称 |
-| A02 configuration / site pose | 查询 site/body pose | `Configuration` | 从 `q` 更新 data 并读取 pose | report / pose JSON | pose 随 q 变化合理 |
-| A03 site Jacobian check | 验证速度映射 | site Jacobian | 计算 `mj_jacSite` 并有限差分验证 | report / error figure / cache | `J dq` 与有限差分速度一致 |
-| A04 DLS differential IK | 实现无约束 IK baseline | minimal `solve_ik` | 用 DLS 从误差求 `dq` | trajectory / log / figure / report | 误差下降且无 NaN |
-| A05 task + limit + QP-IK | 引入 task 与 limits | `FrameTask` / limits / QP | 最小 QP-IK 与速度限制 | trajectory / constraints log / report | 满足 limit 且误差下降 |
-| A06 target / mocap-style tracking | 管理目标输入 | viewer target / mocap target | fixed target，后续 mocap-style target | tracking log / report | target、site pose、误差可复盘 |
-| A07 MuJoCo actuator tracking | 形成仿真控制展示 | `arm_ur5e_actuators.py` | 将 `q_des/dq_des` 送入 `data.ctrl` | log / figure / video / report | actuator 维度正确且 tracking 有界 |
-| A08 collision avoidance TODO | 记录避障扩展 | collision avoidance constraint | TODO 设计，不做完整实现 | TODO doc / report section | 输入、约束、验证思路明确 |
-| A09 comparison report | 和 mink 逐项对照 | example-level comparison | 汇总 A01-A08 与 mink 差异 | comparison report | 能说明实现、抽象差距和下一步 |
-| A10 demo showcase / video recording | 形成求职展示物 | demo / viewer video | 整理视频、日志、图和 README 展示 | demo video / release notes | GitHub README 或 Release 可展示 |
+| 步骤                                | A 项目目标                   | 对标 mink                      | 需要实现                                                    | 输出物                                | 验收标准                          |
+| ----------------------------------- | ---------------------------- | ------------------------------ | ----------------------------------------------------------- | ------------------------------------- | --------------------------------- |
+| A00 reference and assets            | 固定上游参考与 UR5e 资产路径 | examples / model assets        | 审计并记录最小参考资产                                      | reference docs / asset README         | 路径、来源、许可证清楚            |
+| A01 model inspect                   | 检查 MJCF 模型对象           | MuJoCo model loading           | 读取 model 并列出 `nq/nv/nu`、joint、body、site、actuator | report / summary JSON                 | 能确认末端候选和 actuator 名称    |
+| A02 configuration / site pose       | 查询 site/body pose          | `Configuration`              | 从 `q` 更新 data 并读取 pose                              | report / pose JSON                    | pose 随 q 变化合理                |
+| A03 site Jacobian check             | 验证速度映射                 | site Jacobian                  | 计算 `mj_jacSite` 并有限差分验证                          | report / error figure / cache         | `J dq` 与有限差分速度一致       |
+| A04 DLS differential IK             | 实现无约束 IK baseline       | minimal `solve_ik`           | 用 DLS 从误差求 `dq`                                      | trajectory / log / figure / report    | 误差下降且无 NaN                  |
+| A05 task + limit + QP-IK            | 引入 task 与 limits          | `FrameTask` / limits / QP    | 最小 QP-IK 与速度限制                                       | trajectory / constraints log / report | 满足 limit 且误差下降             |
+| A06 target / mocap-style tracking   | 管理目标输入                 | viewer target / mocap target   | fixed target，后续 mocap-style target                       | tracking log / report                 | target、site pose、误差可复盘     |
+| A07 MuJoCo actuator tracking        | 形成仿真控制展示             | `arm_ur5e_actuators.py`      | 将 `q_des/dq_des` 送入 `data.ctrl`                      | log / figure / video / report         | actuator 维度正确且 tracking 有界 |
+| A08 collision avoidance TODO        | 记录避障扩展                 | collision avoidance constraint | TODO 设计，不做完整实现                                     | TODO doc / report section             | 输入、约束、验证思路明确          |
+| A09 comparison report               | 和 mink 逐项对照             | example-level comparison       | 汇总 A01-A08 与 mink 差异                                   | comparison report                     | 能说明实现、抽象差距和下一步      |
+| A10 demo showcase / video recording | 形成求职展示物               | demo / viewer video            | 整理视频、日志、图和 README 展示                            | demo video / release notes            | GitHub README 或 Release 可展示   |
 
 ## 5. 最终 Demo 定义
 

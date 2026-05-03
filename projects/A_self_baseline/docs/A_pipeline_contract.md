@@ -30,6 +30,12 @@ A00 reference and assets
 
 这条链路以 6-DOF 机械臂为当前学习对象，优先对齐 mink UR5e 示例中的 MuJoCo model、configuration、site、task、limit、QP 和 actuator tracking 概念。
 
+## 2.1 Simulation-first 扩展规划
+
+A 项目当前没有实物 UR5e / 机械臂，因此采用 simulation-first baseline：先在 MuJoCo 中完成可运行、可解释、可量化、可复现的运动控制链路，再用 sim2sim validation 作为无实物条件下的工程验证策略。
+
+完整规划见 `A_simulation_only_full_motion_control_plan.md`。该规划将 A00-A10 扩展到 A18，但不改变当前实现顺序；下一步仍是 A03 site Jacobian check。
+
 ## 3. 每一步契约
 
 ### A00 - Reference and Assets
@@ -61,6 +67,9 @@ A00 reference and assets
 - 输入：A02 确认的 site、配置 `q`、扰动 `dq` 和有限差分步长。
 - 输出：site Jacobian、有限差分速度、误差指标和图像占位。
 - 对标 mink 的概念：differential IK 背后的速度映射 `site velocity = J(q) dq`。
+- 当前状态：TODO learning skeleton 已补充，依赖 A01/A02 的 model summary 和 site pose。
+- 后续输出：`outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md` 和 `outputs/figures/A03_jacobian_fd_error.png`。
+- 下一步：A03 最小实现将在 Step 11B 完成。
 - 验收标准：TODO 中明确解析 Jacobian 与有限差分验证的输入、输出、API 和误差检查方法。
 
 ### A04 - DLS Differential IK
