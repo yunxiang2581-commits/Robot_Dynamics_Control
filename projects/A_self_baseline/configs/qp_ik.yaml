@@ -1,10 +1,10 @@
 # QP-IK 学习配置模板
 
 model:
-  # URDF 路径: 不写死旧项目路径
-  urdf_path: "../../shared/robot_assets/models/your_robot.urdf"
-  # 目标 frame: 后续由模型检查脚本确认
-  target_frame: "left_foot"
+  # A05 沿用 robot.yaml 中的 mjcf_path，不在这里重复写模型路径。
+  # 当前主线是 MuJoCo UR5e scene.xml，而不是旧的 URDF / left_foot 模板。
+  target_site: "attachment_site"
+  task_mode: "position"
 
 weights:
   # task 权重: 越大越重视末端速度/位置任务
