@@ -183,3 +183,9 @@ A04 当前检查结果：`converged=True`、`stop_reason=tolerance_reached`，�
 A04 输出已补齐：`outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。
 
 Step 12A-R 追加了 pose-aware DLS IK 规划，保留现有 A04 代码和 TODO skeleton，不把脚本降级或整体重写。A04 接口现在规划支持 `position` / `pose_6d` 两种设计目标；Markdown 已补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。后续路线保持不变：Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
+
+## A05 task + limit + QP-IK TODO status
+
+当前 A05 是 task + limit + QP-IK TODO learning skeleton，依赖 A04 的 position-mode DLS IK 结果作为无约束对照轨迹。A05 的 Markdown 文档 `docs/05_task_limit_qp_ik.md` 已补充 QP-IK 算法细节，包括 task、limit、QP 目标、约束、验证标准和常见错误。
+
+A05 后续输出规划为 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。A05 的最小可运行实现将在 Step 13B 完成；当前 Step 13A 不实现真实 QP-IK、不进入 actuator tracking、不加入 collision avoidance。

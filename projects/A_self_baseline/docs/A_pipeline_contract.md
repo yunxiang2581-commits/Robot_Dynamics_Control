@@ -170,3 +170,9 @@ A07 学习 actuator tracking：把 A04/A05 产生的期望关节状态送入 MuJ
 Step 12A-R 在保留现有 A04 代码的基础上补充 pose-aware DLS IK 规划。A04 接口规划支持 `position` / `pose_6d` 两种设计目标；`position` mode 使用 `e_pos` 和 `J_pos`，`pose_6d` mode 未来组合 SO(3) orientation error、`J_rot` 和加权 `J_task`。
 
 `04_dls_differential_ik.md` 已补充 SO(3) rotation error、6D pose error、6D task Jacobian 和 pose-aware DLS 公式。后续路线保持不变：Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode。A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
+
+## 10. A05 Task + Limit + QP-IK TODO 状态
+
+A05 当前是 task + limit + QP-IK TODO learning skeleton，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 的 Markdown 文档 `05_task_limit_qp_ik.md` 已补充 QP-IK 算法细节，并明确 A05 后续输出为 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
+
+A05 的最小实现将在 Step 13B 完成。当前 Step 13A 不实现真实 QP-IK，不调用 mink，不进入 actuator tracking，也不加入 collision avoidance。

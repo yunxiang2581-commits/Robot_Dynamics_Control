@@ -71,3 +71,9 @@ Step 12A-R 进一步补充 pose-aware DLS IK 规划，保留已有 A04 代码和
 - 验收标准：视频能展示 UR5e 机械臂在 MuJoCo 中跟踪目标关节轨迹，并能用日志、误差图和报告解释结果。
 - 对标 mink 的概念：example demo、viewer/actuator showcase。
 - 求职展示意义：demo video 是最终可展示交付物，用来把模型、IK、QP、tracking 和报告串成一个可理解成果。
+
+## A05 task + limit + QP-IK TODO 状态
+
+A05 当前是 task + limit + QP-IK TODO learning skeleton，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 已在 `projects/A_self_baseline/docs/05_task_limit_qp_ik.md` 中补充 QP-IK 算法细节，对齐 mink 的 `FrameTask`、`PostureTask`、`ConfigurationLimit`、`VelocityLimit` 和 QP-based differential IK 思想。
+
+A05 后续输出规划为 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。A05 的最小实现将在 Step 13B 完成；当前不调用 mink、不实现 actuator tracking、不实现 collision avoidance。

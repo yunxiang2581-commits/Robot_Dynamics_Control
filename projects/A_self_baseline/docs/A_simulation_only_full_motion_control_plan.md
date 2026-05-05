@@ -275,3 +275,9 @@ A05 task + limit + QP-IK
 A04 当前状态：最小 position-mode DLS differential IK 已完成，依赖 A03 已验证的 Jacobian。脚本语法检查通过，并已生成 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。当前 report 显示 `converged=True`、`stop_reason=tolerance_reached`，初始位置误差约为 `0.03`，最终位置误差约为 `8.45e-4`；q trajectory shape 为 `(17, 6)` 且无 NaN。
 
 Step 12A-R 追加了 pose-aware DLS IK 规划，仍不改变当前实现顺序。A04 在保留现有代码的基础上规划 `position` / `pose_6d` 两种任务目标，并在 Markdown 中补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
+
+## 9. A05 task + limit + QP-IK TODO 状态
+
+A05 当前是 task + limit + QP-IK TODO learning skeleton，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 的 Markdown 文档已经补充 QP-IK 算法细节，并明确后续输出为 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
+
+A05 的最小实现将在 Step 13B 完成。当前 Step 13A 不实现 QP-IK、不进入 actuator tracking、不加入 collision avoidance、不生成 video。
