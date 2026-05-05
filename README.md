@@ -92,8 +92,8 @@ python projects/A_self_baseline/scripts/01_inspect_urdf.py --help
 | --- | --- | --- |
 | PREP | 项目管理文档、目录、模板、规则 | 已完成 |
 | A0 | mink/UR5e 对标需求、资产、pipeline 和 TODO 教学骨架 | 已完成 |
-| A1 | A01 model inspect、A02 site pose、A03 site Jacobian | A01 准备实现 |
-| A2 | A04 DLS IK、A05 QP-IK、A06/A07 tracking | 未开始 |
+| A1 | A01 model inspect、A02 site pose、A03 site Jacobian | 最小实现已完成 |
+| A2 | A04 DLS IK、A05 QP-IK、A06/A07 tracking | A04 最小实现已完成，A05 待做 |
 | B | legged_control 阅读、复现记录、NMPC/WBC 拆解 | 未开始 |
 | C | unitree_rl_mjlab 阅读、Play/Train 记录、RL 拆解 | 未开始 |
 | Compare | 模型控制 vs 强化学习控制对比 | 未开始 |

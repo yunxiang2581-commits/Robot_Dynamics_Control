@@ -66,7 +66,7 @@ A00-A10 是第一阶段主线。A11-A18 是第二阶段扩展。不要把 A11-A1
 | A01 | model inspect | 第一阶段 | 检查 MuJoCo 模型维度和对象名称 | `robot.yaml`、`scene.xml` | A01 report、model summary JSON | `nq=6`、`nv=6`、`nu=6`，关键 site/body/actuator/keyframe 命中 | 最小实现已完成 |
 | A02 | configuration / site pose | 第一阶段 | 学习 `q -> data -> site/body pose` | A01 summary、`keyframe:home`、target site/body | A02 pose JSON、report | 能查询 `attachment_site` 和 `wrist_3_link` pose | 最小实现已完成 |
 | A03 | site Jacobian check | 第一阶段 | 验证 `site velocity = J(q) dq` | A02 pose、target site、`q`、`dq`、`dt` | Jacobian check JSON、report、error figure | `J dq` 与 finite difference velocity 对齐 | 最小实现已完成 |
-| A04 | DLS differential IK | 第一阶段 | 实现最小无约束 differential IK | target pose、current pose、J、damping、gain | q trajectory、error log、report | 误差下降，轨迹无 NaN | 下一步 |
+| A04 | DLS differential IK | 第一阶段 | 实现最小无约束 differential IK | target pose、current pose、J、damping、gain | q trajectory、error log、report | 误差下降，轨迹无 NaN | 最小实现已完成 |
 | A05 | task + limit + QP-IK | 第一阶段 | 加入 task、limit 和最小 QP-IK | task、limit、QP weights | QP-IK trajectory、constraint log | 满足速度/位置限制，误差可解释 | 待做 |
 | A06 | target / mocap-style tracking | 第一阶段 | 管理 fixed target 和后续 mocap-style target | fixed target、site pose、IK output | target tracking log、report | target、site、误差关系清楚 | 待做 |
 | A07 | MuJoCo actuator tracking | 第一阶段 | 把 A04/A05 轨迹送入 MuJoCo actuator | `q_des`/`dq_des`、actuator names | tracking log、error figure、video | actuator 维度正确，tracking error 有界 | 待做 |
@@ -260,11 +260,10 @@ A18 benchmark report 应包含：
 
 ## 8. 当前下一步
 
-尽管本文档规划了 A11-A18，但当前实现顺序不变。A03 最小 site Jacobian check 已完成，当前下一步进入 A04：
+尽管本文档规划了 A11-A18，但当前实现顺序不变。A04 最小 DLS differential IK 已完成，当前下一步进入 A05：
 
 ```text
-A04 DLS differential IK
-  -> A05 task + limit + QP-IK
+A05 task + limit + QP-IK
   -> A06 target / mocap-style tracking
   -> A07 MuJoCo actuator tracking
   -> A10 demo showcase
@@ -273,6 +272,6 @@ A04 DLS differential IK
 
 不要因为加入 sim2sim 规划而跳过 A04-A07。
 
-A04 当前状态：DLS differential IK TODO learning skeleton 已补充，依赖 A03 已验证的 Jacobian。A04 Markdown 文档已补充 DLS IK 公式、推导、符号表、物理意义、伪代码、验证标准和常见错误；后续输出为 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。A04 的最小实现将在 Step 12B 完成。
+A04 当前状态：最小 position-mode DLS differential IK 已完成，依赖 A03 已验证的 Jacobian。脚本语法检查通过，并已生成 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。当前 report 显示 `converged=True`、`stop_reason=tolerance_reached`，初始位置误差约为 `0.03`，最终位置误差约为 `8.45e-4`；q trajectory shape 为 `(17, 6)` 且无 NaN。
 
-Step 12A-R 追加了 pose-aware DLS IK 规划，仍不改变当前实现顺序。A04 在保留现有代码的基础上规划 `position` / `pose_6d` 两种任务目标，并在 Markdown 中补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
+Step 12A-R 追加了 pose-aware DLS IK 规划，仍不改变当前实现顺序。A04 在保留现有代码的基础上规划 `position` / `pose_6d` 两种任务目标，并在 Markdown 中补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。

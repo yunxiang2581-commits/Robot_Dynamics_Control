@@ -17,7 +17,7 @@ A 项目不是完整复刻 mink 库，也不是直接调用 mink 替代自己的
 - comparison with mink
 - 可展示 demo
 
-当前状态：A 项目已完成 mink/UR5e 对标需求、最小参考资产、A00-A10 pipeline 文档整理，以及 A01-A03 最小可运行实现。
+当前状态：A 项目已完成 mink/UR5e 对标需求、最小参考资产、A00-A10 pipeline 文档整理，以及 A01-A04 最小可运行实现。
 
 A01 已能读取 `shared/robot_assets/models/mink_universal_robots_ur5e/scene.xml`，输出 `nq`、`nv`、`nu`、joint、body、site、actuator 和 keyframe 摘要。A02 已能基于 `keyframe:home` 查询 `attachment_site` 和 `wrist_3_link` 的世界系 pose。
 
@@ -51,7 +51,7 @@ A00 reference and assets
   -> A10 demo showcase / video recording
 ```
 
-当前标准入口统一放在 `scripts/` 下的 A00-A10。A01 已完成最小 model inspect，A02 已完成最小 site/body pose，A03 已完成最小 site Jacobian finite difference check；A04-A10 仍按 TODO learning skeleton 逐步推进。
+当前标准入口统一放在 `scripts/` 下的 A00-A10。A01 已完成最小 model inspect，A02 已完成最小 site/body pose，A03 已完成最小 site Jacobian finite difference check，A04 已完成最小 position-mode DLS IK；A05-A10 仍按 TODO learning skeleton 逐步推进。
 
 ## mink capability vs A requirements
 
@@ -125,8 +125,8 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 2. A01：检查 MuJoCo MJCF 模型维度和对象名称。当前状态：最小实现已完成。
 3. A02：实现 configuration / site pose 查询。当前状态：最小实现已完成。
 4. A03：实现 site Jacobian 并做有限差分验证。当前状态：最小实现已完成。
-5. A04：实现 DLS differential IK。当前状态：下一步。
-6. A05：实现 task + limit + QP-IK。
+5. A04：实现 DLS differential IK。当前状态：最小实现已完成。
+6. A05：实现 task + limit + QP-IK。当前状态：待做。
 7. A06：实现 target / mocap-style tracking。
 8. A07：实现 MuJoCo actuator tracking。
 9. A08：记录 collision avoidance TODO。
@@ -139,15 +139,15 @@ H1 legacy 不删除，但不是当前 A 项目主线。当前主线是 UR5e / 6-
 
 A 项目当前没有实物 UR5e / 机械臂，因此定位为 simulation-first motion-control baseline。无实物条件下的有效验证依赖可运行脚本、可解释报告、可量化误差、可复现配置和后续 sim2sim validation，而不是伪装成真实机器人验证。
 
-完整规划见 `docs/A_simulation_only_full_motion_control_plan.md`。该文档把当前 A00-A10 主线扩展到 A18；A03 最小 Jacobian check 已完成，当前下一步进入 A04 DLS differential IK。
+完整规划见 `docs/A_simulation_only_full_motion_control_plan.md`。该文档把当前 A00-A10 主线扩展到 A18；A04 最小 DLS differential IK 已完成，下一步进入 A05 task + limit + QP-IK。
 
 ## 当前实现入口
 
 ```bash
-python projects/A_self_baseline/scripts/03_site_jacobian_check.py
+python projects/A_self_baseline/scripts/04_dls_differential_ik.py
 ```
 
-当前 A03 已完成最小 site Jacobian finite difference check。下一步进入 A04 DLS differential IK，仍不扩展到 QP 或控制。
+当前 A04 仍限定为 position-mode DLS differential IK，不扩展到 QP 或控制。A04 已输出 `q_traj.npy`、`error.csv`、误差图和报告；下一步进入 A05 task + limit + QP-IK。
 
 ## A01 model inspect status
 
@@ -160,7 +160,7 @@ python projects/A_self_baseline/scripts/03_site_jacobian_check.py
 - 输出报告是 `outputs/reports/A01_model_inspect_report.md`。
 - 输出缓存是 `outputs/cache/A01_model_summary.json`。
 - 当前检查结果：`nq=6`、`nv=6`、`nu=6`，末端候选中 `attachment_site` 和 `wrist_3_link` 命中。
-- 下一步进入 A04 DLS differential IK。
+- 下一步进入 A05 task + limit + QP-IK。
 
 ## A02 configuration / site pose status
 
@@ -172,12 +172,14 @@ A02 输出是 `outputs/cache/A02_site_pose.json` 和 `outputs/reports/A02_site_p
 
 当前 A03 已完成最小可运行 site Jacobian finite difference check，依赖 A01/A02 的 model summary 和 site pose，验证了 `site velocity = J(q) dq`、MuJoCo `mj_jacSite` 和 finite difference 之间的一致性。
 
-A03 输出是 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md`、`outputs/figures/A03_jacobian_fd_error.png`、`outputs/cache/A03_multi_step_trace.json` 和 `outputs/figures/A03_multi_step_linearization_error.png`。当前默认 `dq_source=unit:shoulder_pan`、`dt=1e-6`、`fd_steps=1000`，linear velocity error norm 约为 `2.55e-4`，angular velocity error norm 约为 `8.26e-11`。sweep 图已展示误差随总位移变化的趋势；下一步进入 A04 DLS differential IK。
+A03 输出是 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md`、`outputs/figures/A03_jacobian_fd_error.png`、`outputs/cache/A03_multi_step_trace.json` 和 `outputs/figures/A03_multi_step_linearization_error.png`。当前默认 `dq_source=unit:shoulder_pan`、`dt=1e-6`、`fd_steps=1000`，linear velocity error norm 约为 `2.55e-4`，angular velocity error norm 约为 `8.26e-11`。sweep 图已展示误差随总位移变化的趋势。
 
 ## A04 DLS differential IK status
 
-当前 A04 是 DLS differential IK TODO learning skeleton，依赖 A03 已验证的 site Jacobian。A04 的 Markdown 文档已补充 DLS IK 算法细节，包括公式、符号表、物理意义、伪代码、验证标准和常见错误。
+当前 A04 已完成最小 position-mode DLS differential IK，依赖 A03 已验证的 site Jacobian。脚本从 A02 的 `q` 出发，用 A03 验证过的 MuJoCo site Jacobian 构造 `J_task`，通过 DLS 求 `dq`，再用 `mujoco.mj_integratePos` 更新 `q`。
 
-A04 后续输出是 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。A04 的最小实现将在 Step 12B 完成。
+A04 当前检查结果：`converged=True`、`stop_reason=tolerance_reached`，初始位置误差约为 `0.03`，最终位置误差约为 `8.45e-4`，小于 `tolerance=0.001`。q trajectory shape 为 `(17, 6)`，且无 NaN。
 
-Step 12A-R 追加了 pose-aware DLS IK 规划，保留现有 A04 代码和 TODO skeleton，不把脚本降级或整体重写。A04 接口现在规划支持 `position` / `pose_6d` 两种设计目标；Markdown 已补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。后续路线是 Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
+A04 输出已补齐：`outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。
+
+Step 12A-R 追加了 pose-aware DLS IK 规划，保留现有 A04 代码和 TODO skeleton，不把脚本降级或整体重写。A04 接口现在规划支持 `position` / `pose_6d` 两种设计目标；Markdown 已补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。后续路线保持不变：Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。

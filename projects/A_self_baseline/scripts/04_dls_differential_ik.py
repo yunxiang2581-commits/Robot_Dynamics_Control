@@ -53,6 +53,7 @@ pose-aware 规划补充：
 from __future__ import annotations
 
 import argparse
+import csv
 import logging
 from pathlib import Path
 import sys
@@ -1073,6 +1074,11 @@ def main() -> None:
             "gain": gain,
             "dt": dt,
         })
+
+        # 把本轮积分得到的新 configuration 接回下一轮。
+        # 这是 differential IK loop 的关键：下一轮必须从 q_next 继续 forward，
+        # 否则每次都会从同一个 q0 重新计算，误差曲线就不会下降。
+        q = q_next.copy()
    
 
     # =============================
@@ -1108,6 +1114,22 @@ def main() -> None:
     position_errors = [row["position_error_norm"] for row in error_log]
     orientation_errors = [row["orientation_error_norm"] for row in error_log]
     task_errors = [row["task_error_norm"] for row in error_log]
+
+    trajectory_dir = output_root / "trajectories"
+    trajectory_dir.mkdir(parents=True, exist_ok=True)
+    np.save(A04_traj, np.asarray(q_traj, dtype=np.float64))
+    logging.info("已写出 A04 q 轨迹: %s", A04_traj)
+
+    log_dir = output_root / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    if error_log:
+        with A04_log.open("w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=list(error_log[0].keys()))
+            writer.writeheader()
+            writer.writerows(error_log)
+        logging.info("已写出 A04 误差日志: %s", A04_log)
+    else:
+        raise RuntimeError("A04 error_log 为空，无法写出误差日志。")
 
     plt.figure(figsize=(8, 5))
     plt.plot(iterations, position_errors, marker="o", label="position error")
@@ -1154,7 +1176,13 @@ def main() -> None:
     A04_report.parent.mkdir(parents=True, exist_ok=True)
 
     initial_error = error_log[0]["position_error_norm"] if error_log else None
-    final_error = error_log[-1]["position_error_norm"] if error_log else None
+    data.qpos[:] = q
+    mujoco.mj_forward(model, data)
+    final_site_position = data.site_xpos[site_id].copy()
+    final_error = float(np.linalg.norm(x_target - final_site_position))
+    if final_error < tolerance and stop_reason == "max_iter_reached":
+        converged = True
+        stop_reason = "tolerance_reached_after_update"
 
     report_lines = [
         "# A04 DLS 差分逆运动学报告",
