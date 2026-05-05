@@ -48,7 +48,10 @@ from __future__ import annotations
 import argparse
 import logging
 from pathlib import Path
-
+import json
+import numpy as np
+import sys
+import mujoco
 
 A_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ROBOT_CONFIG = A_ROOT / "configs" / "robot.yaml"
@@ -59,6 +62,11 @@ DEFAULT_A03_JACOBIAN = A_ROOT / "outputs" / "cache" / "A03_jacobian_check.json"
 DEFAULT_A04_TRAJECTORY = A_ROOT / "outputs" / "trajectories" / "A04_dls_ik_q_traj.npy"
 DEFAULT_OUTPUT_DIR = A_ROOT / "outputs"
 DEFAULT_SITE_NAME = "attachment_site"
+SRC_ROOT = A_ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.append(str(SRC_ROOT))
+
+from robot_baseline import model_loader  # noqa: E402
 
 
 PRINCIPLE_NOTES = [
@@ -186,7 +194,39 @@ def main() -> None:
     # - nq=6, nv=6, nu=6。
     # - target site == attachment_site。
     # - A04 q trajectory shape = (N, 6)。
+    a01_summary_path = Path(args.a01_summary)
+    a02_pose_path = Path(args.a02_pose)
+    a03_jacobian_path = Path(args.a03_jacobian)
+    a04_trajectory_path = Path(args.a04_trajectory)
+    required_paths = [
+        a01_summary_path,
+        a02_pose_path,
+        a03_jacobian_path,
+        a04_trajectory_path,
+    ]
+    missing_paths = [path for path in required_paths if not path.exists()]
+    if missing_paths:
+        raise FileNotFoundError(
+            "TODO 1 缺少 A01/A02/A03/A04 前置产物：\n"
+            + "\n".join(str(path) for path in missing_paths)
+        )
+    
+    model_summary = json.loads(a01_summary_path.read_text(encoding="utf-8"))
+    pose_summary = json.loads(a02_pose_path.read_text(encoding="utf-8"))
+    jacobian_summary = json.loads(a03_jacobian_path.read_text(encoding="utf-8"))
+    a04_q_traj = np.load(a04_trajectory_path)
+    
+    nq = model_summary["nq"]
+    nv = model_summary["nv"]
+    nu = model_summary["nu"]
 
+    if a04_q_traj.ndim != 2 or a04_q_traj.shape[1] != nq:
+        raise ValueError(f"A04 轨迹 shape 不对: {a04_q_traj.shape}, 期望第二维为 nq={nq}")
+
+    logging.info("A01 model: nq=%s, nv=%s, nu=%s", nq, nv, nu)
+    logging.info("A02 target site: %s", pose_summary.get("site_name", "unknown"))
+    logging.info("A03 Jacobian summary 已读取")
+    logging.info("A04 q trajectory shape: %s", a04_q_traj.shape)
     # =============================
     # TODO 2: 读取 robot.yaml / qp_ik.yaml
     # =============================
@@ -215,7 +255,34 @@ def main() -> None:
     # - scene.xml 存在。
     # - damping >= 0。
     # - velocity limit / position limit 维度与 nv 一致。
+    robot_config_path = Path(args.robot_config)
+    qp_ik_config_path = Path(args.qp_ik_config)
 
+    robot_config = model_loader.load_yaml_config(robot_config_path)
+    qp_ik_config = model_loader.load_yaml_config(qp_ik_config_path)
+
+    mjcf_path = model_loader.resolve_path(robot_config["mjcf_path"], A_ROOT)
+    if args.mjcf is not None:
+        mjcf_path = Path(args.mjcf).expanduser().resolve()
+
+    weights = qp_ik_config["weights"]
+    limits = qp_ik_config["limits"]
+    damping = qp_ik_config["damping"]
+    solver = qp_ik_config["solver"]
+    qp_model_config = qp_ik_config.get("model", {})
+
+    target_site = qp_model_config.get("target_site", args.site)
+    task_mode = qp_model_config.get("task_mode", args.task_mode)
+
+    task_weight = float(weights.get("task", 1.0))
+    regularization = float(weights.get("regularization", 1e-4))
+    position_margin = float(limits.get("position_margin", 0.05))
+    solver_max_iter = int(solver.get("max_iter", 1000))
+
+    if not mjcf_path.exists():
+        raise FileNotFoundError(f"TODO 2 中指定的 MJCF 文件不存在: {mjcf_path}")
+    
+    logging.info("MJCF path: %s", mjcf_path)
     # =============================
     # TODO 3: 加载 MuJoCo model / data
     # =============================
@@ -243,7 +310,22 @@ def main() -> None:
     # 如何验证：
     # - model.nq/model.nv/model.nu 与 A01 summary 一致。
     # - target site 能被 mj_name2id 找到。
+    model = model_loader.load_mujoco_model(mjcf_path)
+    data = mujoco.MjData(model)
 
+    site_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, target_site)
+    if site_id == -1:
+        raise ValueError(f"TODO 3 中指定的 target site 在 MJCF 中未找到: {target_site}")
+    
+    if model.nq != nq or model.nv != nv or model.nu != nu:
+        raise ValueError(
+            f"TODO 3 中加载的 MJCF model 维度与 A01 summary 不一致: "
+            f"model.nq={model.nq}, model.nv={model.nv}, model.nu={model.nu}, "
+            f"但 A01 summary 是 nq={nq}, nv={nv}, nu={nu}"
+        )
+    
+    logging.info("MuJoCo model loaded: nq=%s, nv=%s, nu=%s", model.nq, model.nv, model.nu)  
+    
     # =============================
     # TODO 4: 定义 FrameTask
     # =============================
@@ -276,7 +358,22 @@ def main() -> None:
     # - J_frame 行数为 3 或 6。
     # - J_frame 列数为 nv。
     # - e_frame 行数与 J_frame 行数一致。
+    q = a04_q_traj[0].copy()  # 使用 A04 轨迹的初始 q 作为起点
+    data.qpos[:] = q
+    mujoco.mj_forward(model, data)
 
+    current_pos = data.site_xpos[site_id].copy()
+    target_pos = current_pos + np.array([0.05, 0.0, 0.0])
+
+    e_frame = task_weight * (target_pos - current_pos)
+
+    jacp = np.zeros((3, nv))
+    jacr = np.zeros((3, nv))
+    mujoco.mj_jacSite(model, data, jacp, jacr, site_id)
+    J_frame = task_weight * jacp  # 这里只做 position task，orientation task 留到未来扩展
+
+    logging.info("FrameTask 定义完成: e_frame shape=%s, J_frame shape=%s", e_frame.shape, J_frame.shape)
+    logging.info("TODO 4 中的 target pose 和 weights 只是示例，未来可以从配置读取并支持 orientation task")
     # =============================
     # TODO 5: 定义 PostureTask
     # =============================
@@ -307,6 +404,13 @@ def main() -> None:
     # 如何验证：
     # - e_posture.shape == (nv,)。
     # - J_posture.shape == (nv, nv)。
+    posture_weight = 0.1
+
+    q_ref = a04_q_traj[0].copy()  # 使用 A04 轨迹的初始 q 作为 posture reference
+    e_posture = posture_weight * (q_ref - q)
+    J_posture = posture_weight * np.eye(model.nv)
+
+    logging.info("PostureTask 定义完成: e_posture shape=%s, J_posture shape=%s", e_posture.shape, J_posture.shape)
 
     # =============================
     # TODO 6: 组合任务目标
@@ -335,6 +439,15 @@ def main() -> None:
     # 如何验证：
     # - J_task.shape[0] == v_task.shape[0]。
     # - J_task.shape[1] == nv。
+    J_task = np.vstack([J_frame, J_posture])
+    v_task = np.concatenate([e_frame, e_posture])
+    if J_task.shape[0] != v_task.shape[0]:
+        raise ValueError(f"TODO 6 中 J_task 和 v_task 行数不匹配: J_task.shape={J_task.shape}, v_task.shape={v_task.shape}")
+    if J_task.shape[1] != nv:
+        raise ValueError(f"TODO 6 中 J_task 列数不等于 nv={nv}: J_task.shape={J_task.shape}")
+    logging.info("Combined task")
+    logging.info("J_task shape=%s", J_task.shape)
+    logging.info("v_task shape=%s", v_task.shape)
 
     # =============================
     # TODO 7: 构造 QP 目标函数
