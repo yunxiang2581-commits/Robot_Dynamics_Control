@@ -145,6 +145,214 @@ dq = J.T @ solve(J @ J.T + lambda * I, gain * e)
 q_next = integrate(q, dq, dt)
 ```
 
+## 7A. Pose-aware DLS IK 扩展规划
+
+### 为什么 A04 要考虑旋转
+
+机械臂末端任务通常不只是到达某个点，还包括以正确姿态到达。抓取、插入、对接和工具操作都需要 orientation；如果只跟踪 position，末端可能已经到点，但工具方向仍然错误。
+
+A05 对标 mink 的 `FrameTask`，而 `FrameTask` 天然包含 position + orientation。因此 A04 先把 pose-aware DLS 的接口和数学边界写清楚：Step 12B 继续保留并验证 position mode，Step 12C 再扩展 pose_6d mode。
+
+### position-only IK
+
+第一版 position-only IK 使用三维位置误差：
+
+```text
+e_pos = p_target - p_current
+```
+
+其中：
+
+```text
+J_pos in R^{3 x nv}
+```
+
+DLS 更新为：
+
+```text
+dq = J_pos.T @ solve(J_pos J_pos.T + lambda I, gain e_pos)
+```
+
+### 为什么不能用欧拉角直接相减
+
+orientation error 不建议直接用欧拉角相减，原因包括：
+
+- 欧拉角存在奇异性。
+- 欧拉角顺序相关，例如 xyz 和 zyx 表达的含义不同。
+- 角度存在 wrap-around，例如 `179 deg` 和 `-179 deg` 的直接差值会误导误差大小。
+- 小角度下欧拉角差可以近似使用，但不适合作为统一实现。
+
+### SO(3) rotation error
+
+pose-aware IK 应使用旋转矩阵误差：
+
+```text
+R_err = R_target R_current^T
+```
+
+再用 SO(3) log map 得到三维旋转向量：
+
+```text
+e_rot = log(R_err)
+```
+
+其中：
+
+- `R_current` 是当前 `attachment_site` 的 rotation matrix。
+- `R_target` 是目标 rotation matrix。
+- `e_rot` 是 rotation vector。
+- `e_rot` 的方向是旋转轴。
+- `e_rot` 的模长是旋转角。
+- `e_rot` 的单位是 rad。
+
+注意 `R_err` 的顺序必须和后续 `J_rot` 使用的角速度坐标系保持一致。顺序写反会让姿态误差方向反过来。
+
+### 6D pose error
+
+position 和 rotation 的单位不同，不能不加权直接拼接。A04 规划使用：
+
+```text
+e_task = [w_pos e_pos;
+          w_rot e_rot]
+```
+
+其中：
+
+- `w_pos` 是 position weight。
+- `w_rot` 是 orientation weight。
+- 位置单位是 m。
+- 旋转单位是 rad。
+- 权重用于平衡数值尺度和任务优先级。
+
+position mode 是这个公式的三维特例：
+
+```text
+e_task = w_pos e_pos
+```
+
+### 6D task Jacobian
+
+MuJoCo `mj_jacSite` 可以提供 site 的 linear Jacobian 和 angular Jacobian：
+
+```text
+J_task = [w_pos J_pos;
+          w_rot J_rot]
+```
+
+其中：
+
+- `J_pos` 映射关节速度到 site linear velocity。
+- `J_rot` 映射关节速度到 site angular velocity。
+- position mode 中 `J_task shape = (3, nv)`。
+- pose_6d mode 中 `J_task shape = (6, nv)`。
+
+position mode 的三维形式是：
+
+```text
+J_task = w_pos J_pos
+```
+
+### Pose-aware DLS
+
+统一的 DLS 公式写成：
+
+```text
+dq = J_task.T @ solve(J_task J_task.T + lambda I, gain e_task)
+```
+
+实现时必须检查：
+
+- `e_task` 维度是 3 或 6。
+- `I` 的维度必须匹配 task dimension。
+- `dq` 的维度必须是 `nv`。
+- `lambda / damping` 控制奇异附近和大误差时的稳定性。
+
+### pose-aware 符号含义表
+
+| 符号 | 含义 | 维度 | 单位 | 来源 |
+|---|---|---|---|---|
+| `q` | 当前 MuJoCo configuration | `(nq,) = (6,)` | rad | A02 `keyframe:home` 或迭代后的 q |
+| `dq` | DLS 求出的关节速度 / 更新方向 | `(nv,) = (6,)` | rad/s 或 rad/update | DLS 公式 |
+| `p_current` | 当前 site position | `(3,)` | m | `data.site_xpos[site_id]` |
+| `p_target` | 目标 site position | `(3,)` | m | current position + target position offset |
+| `R_current` | 当前 site rotation matrix | `(3, 3)` | 无量纲 | `data.site_xmat[site_id]` reshape |
+| `R_target` | 目标 site rotation matrix | `(3, 3)` | 无量纲 | keep_current / fixed_rpy / fixed_quat |
+| `e_pos` | position error | `(3,)` | m | `p_target - p_current` |
+| `e_rot` | SO(3) rotation error vector | `(3,)` | rad | `log(R_target R_current^T)` |
+| `e_task` | 加权任务误差 | `(3,)` 或 `(6,)` | 加权后混合单位 | position / pose_6d 分支 |
+| `J_pos` | site linear Jacobian | `(3, nv)` | m/rad | `mujoco.mj_jacSite` |
+| `J_rot` | site angular Jacobian | `(3, nv)` | rad/rad | `mujoco.mj_jacSite` |
+| `J_task` | 加权任务 Jacobian | `(3, nv)` 或 `(6, nv)` | 加权后混合单位 | `J_pos` / `J_rot` 组合 |
+| `w_pos` | position weight | 标量 | 1/m 或调参权重 | CLI / `ik.yaml` |
+| `w_rot` | orientation weight | 标量 | 1/rad 或调参权重 | CLI / `ik.yaml` |
+| `lambda / damping` | DLS 阻尼权重 | 标量 | 调参权重 | CLI / `ik.yaml` |
+| `gain` | task error 缩放系数 | 标量 | 调参权重 | CLI / `ik.yaml` |
+| `dt` | q 积分步长 | 标量 | s 或 update scale | CLI / `ik.yaml` |
+
+### 未来实现伪代码
+
+```text
+load model and data
+q = keyframe home
+forward q
+p_current, R_current = current site pose
+p_target = p_current + target_position_offset
+
+if target_orientation_mode == keep_current:
+    R_target = R_current
+elif target_orientation_mode == fixed_rpy:
+    R_target = rotation_from_rpy(...)
+elif target_orientation_mode == fixed_quat:
+    R_target = rotation_from_quat(...)
+
+for iter in max_iter:
+    forward q
+    p_current, R_current = current site pose
+    e_pos = p_target - p_current
+    J_pos, J_rot = site Jacobian
+
+    if task_mode == position:
+        e_task = w_pos * e_pos
+        J_task = w_pos * J_pos
+        orientation_error_norm = 0
+    elif task_mode == pose_6d:
+        R_err = R_target R_current^T
+        e_rot = log(R_err)
+        e_task = concat(w_pos * e_pos, w_rot * e_rot)
+        J_task = stack(w_pos * J_pos, w_rot * J_rot)
+
+    if norm(e_task) < tolerance:
+        break
+
+    dq = J_task.T @ solve(J_task J_task.T + lambda I, gain e_task)
+    q = integrate(q, dq, dt)
+    log position_error_norm, orientation_error_norm, task_error_norm, dq_norm
+```
+
+### pose-aware 验证标准
+
+- position mode 下 position error 下降。
+- pose_6d mode 下 position error 和 orientation error 都应下降。
+- keep_current 时 orientation error 初始应接近 0。
+- `J_task` shape 正确：position mode 为 `(3, nv)`，pose_6d mode 为 `(6, nv)`。
+- `dq shape = (nv,)`。
+- `dq`、`e_task`、`J_task` 没有 NaN。
+- 不进入 QP 或 actuator tracking。
+
+### pose-aware 常见错误
+
+- 欧拉角直接相减。
+- `R_err` 顺序写反。
+- `J_rot` 和 `e_rot` 坐标系不一致。
+- position 和 rotation 不加权直接拼接。
+- damping 太小导致 `dq` 爆炸。
+- gain 太大导致震荡。
+- dt 太大导致不稳定。
+- `J_task` 行数和 `I` 维度不一致。
+- `dq` 用 `nq` 维度而不是 `nv`。
+- 忘记每轮 `mj_forward`。
+- 误把 body rotation 当 site rotation。
+
 ## 8. 符号含义表
 
 | 符号 | 含义 | 维度 | 在本项目中的来源 |

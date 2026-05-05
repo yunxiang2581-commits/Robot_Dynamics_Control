@@ -179,3 +179,5 @@ A03 输出是 `outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jac
 当前 A04 是 DLS differential IK TODO learning skeleton，依赖 A03 已验证的 site Jacobian。A04 的 Markdown 文档已补充 DLS IK 算法细节，包括公式、符号表、物理意义、伪代码、验证标准和常见错误。
 
 A04 后续输出是 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。A04 的最小实现将在 Step 12B 完成。
+
+Step 12A-R 追加了 pose-aware DLS IK 规划，保留现有 A04 代码和 TODO skeleton，不把脚本降级或整体重写。A04 接口现在规划支持 `position` / `pose_6d` 两种设计目标；Markdown 已补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。后续路线是 Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。

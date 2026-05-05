@@ -163,3 +163,9 @@ A07 学习 actuator tracking：把 A04/A05 产生的期望关节状态送入 MuJ
 - H1 legacy 被明确标记为历史参考，而不是当前主线。
 - 不调用 mink 替代自己的实现。
 - 不实现 FK、Jacobian、IK、QP、WBC、MuJoCo 控制算法。
+
+## 9. A04 Pose-Aware DLS IK 状态补充
+
+Step 12A-R 在保留现有 A04 代码的基础上补充 pose-aware DLS IK 规划。A04 接口规划支持 `position` / `pose_6d` 两种设计目标；`position` mode 使用 `e_pos` 和 `J_pos`，`pose_6d` mode 未来组合 SO(3) orientation error、`J_rot` 和加权 `J_task`。
+
+`04_dls_differential_ik.md` 已补充 SO(3) rotation error、6D pose error、6D task Jacobian 和 pose-aware DLS 公式。后续路线保持不变：Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode。A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。

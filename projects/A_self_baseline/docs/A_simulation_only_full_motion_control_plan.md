@@ -274,3 +274,5 @@ A04 DLS differential IK
 不要因为加入 sim2sim 规划而跳过 A04-A07。
 
 A04 当前状态：DLS differential IK TODO learning skeleton 已补充，依赖 A03 已验证的 Jacobian。A04 Markdown 文档已补充 DLS IK 公式、推导、符号表、物理意义、伪代码、验证标准和常见错误；后续输出为 `outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。A04 的最小实现将在 Step 12B 完成。
+
+Step 12A-R 追加了 pose-aware DLS IK 规划，仍不改变当前实现顺序。A04 在保留现有代码的基础上规划 `position` / `pose_6d` 两种任务目标，并在 Markdown 中补充 SO(3) rotation error、6D pose error、`J_task` 和 pose-aware DLS 公式。Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode；A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
