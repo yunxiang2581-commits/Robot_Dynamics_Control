@@ -1,5 +1,7 @@
 # Step 12A-R A04 Pose-Aware DLS IK TODO Update
 
+当前状态更新：A04 已完成最小 position-mode DLS differential IK。本文档记录的是 pose-aware 接口规划的历史补充。
+
 ## 1. 为什么 A04 要从 position-only 规划扩展到 pose-aware
 
 A04 的第一版学习目标仍然是 position-only DLS differential IK。这个版本足够验证 A03 已确认的 `site velocity = J(q) dq`，并学习误差、Jacobian、damping、gain 和迭代更新之间的关系。
@@ -19,7 +21,7 @@ A04 的第一版学习目标仍然是 position-only DLS differential IK。这个
 - TODO 1-14 教学注释。
 - `NotImplementedError` 边界。
 
-当前脚本仍是 TODO learning skeleton，尚未实现完整 position-only DLS IK。
+当前 A04 已完成最小 position-mode DLS IK；pose_6d 仍作为后续扩展边界保留。
 
 ## 3. 本次只做了哪些增量修改
 
@@ -106,7 +108,7 @@ A07 后续仍然只消费 A04/A05 生成的 `q_traj` 或 `q_des`，但 report �
 
 建议继续按顺序推进：
 
-1. Step 12B：保留并验证 A04 position mode 最小实现。
+1. Step 12B：A04 position mode 最小实现已完成并验证。
 2. Step 12C：在 position mode 稳定后扩展 pose_6d mode。
 3. A05：在 A04 task 定义基础上加入 task + limit + QP-IK。
 4. A06/A07：同步 target pose / orientation task / trajectory_source。

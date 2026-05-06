@@ -56,8 +56,8 @@ UR5e 是固定基 6-DOF 机械臂，比 H1 人形机器人更适合作为第一�
 | A01 | 检查 MJCF 模型维度与对象名称 | MuJoCo model loading |
 | A02 | 查询 configuration / site pose | `Configuration` |
 | A03 | 检查 site Jacobian | differential IK velocity mapping |
-| A04 | 实现 DLS differential IK TODO | minimal `solve_ik` 思路 |
-| A05 | 引入 task、limit、QP-IK TODO | `FrameTask` / `PostureTask` / limits |
+| A04 | 已完成最小 position-mode DLS differential IK | minimal `solve_ik` 思路 |
+| A05 | 已完成最小 box-constrained QP-IK | `FrameTask` / `PostureTask` / limits |
 | A06 | target / mocap-style tracking TODO | viewer target / mocap target |
 | A07 | actuator tracking TODO | `arm_ur5e_actuators.py` |
 | A08 | collision avoidance TODO | collision avoidance constraint |

@@ -56,8 +56,8 @@ tools/codex_skills/pinocchio-learning/SKILL.md
 - 核心算法位置只写中文教学 TODO，不写完整实现。
 - TODO 说明要实现什么、为什么需要、对标 mink/机器人概念、推荐 API、输入、输出和验证方式。
 - 关键步骤保留 `NotImplementedError`，避免误以为已有完整实现。
-- A04 保留 DLS 公式 TODO。
-- A05 保留最小 QP 形式 TODO。
+- A04 已完成最小 position-mode DLS differential IK。
+- A05 已完成最小 box-constrained QP-IK。
 - A08 说明 collision avoidance 为什么放在 QP-IK 之后。
 
 ## 5. 修改文件清单
@@ -104,7 +104,7 @@ tools/codex_skills/pinocchio-learning/SKILL.md
 
 ## 7. 下一步
 
-下一步进入 A01 model inspect 最小实现，只补 A01 相关 TODO：
+后续 Step 9B 已完成 A01 model inspect 最小实现；当前 A01-A05 最小主线已完成。
 
 - 读取 `configs/robot.yaml`。
 - 解析 `scene.xml` 路径。
@@ -117,9 +117,9 @@ tools/codex_skills/pinocchio-learning/SKILL.md
 - [x] 旧 A01-A07 入口已重命名。
 - [x] A00/A08/A09/A10 TODO skeleton 已新增。
 - [x] A00-A10 pipeline 已写入 README 和核心文档。
-- [x] 所有标准脚本仍为 TODO learning skeleton。
+- [x] 当时所有标准脚本为 TODO learning skeleton；当前 A01-A05 已推进到最小实现。
 - [x] 所有核心 TODO 为中文教学型 TODO。
 - [x] 未实现算法。
 - [x] 未修改 `external/mink_upstream`。
 - [x] 未修改 `legacy_imported`。
-- [x] 下一步明确进入 A01 model inspect 最小实现。
+- [x] 后续已进入并完成 A01 model inspect 最小实现。

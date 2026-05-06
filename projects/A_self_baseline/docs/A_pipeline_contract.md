@@ -34,7 +34,7 @@ A00 reference and assets
 
 A 项目当前没有实物 UR5e / 机械臂，因此采用 simulation-first baseline：先在 MuJoCo 中完成可运行、可解释、可量化、可复现的运动控制链路，再用 sim2sim validation 作为无实物条件下的工程验证策略。
 
-完整规划见 `A_simulation_only_full_motion_control_plan.md`。该规划将 A00-A10 扩展到 A18，但不改变当前实现顺序；A04 最小 DLS differential IK 已完成，下一步进入 A05 task + limit + QP-IK。
+完整规划见 `A_simulation_only_full_motion_control_plan.md`。该规划将 A00-A10 扩展到 A18，但不改变当前实现顺序；A05 已完成最小 box-constrained QP-IK，下一步进入 A06 target / mocap-style tracking。
 
 ## 3. 每一步契约
 
@@ -70,7 +70,7 @@ A 项目当前没有实物 UR5e / 机械臂，因此采用 simulation-first base
 - 当前状态：最小可运行实现已完成，依赖 A01/A02 的 model summary 和 site pose。
 - 当前输出：`outputs/cache/A03_jacobian_check.json`、`outputs/reports/A03_jacobian_check_report.md`、`outputs/figures/A03_jacobian_fd_error.png`、`outputs/cache/A03_multi_step_trace.json` 和 `outputs/figures/A03_multi_step_linearization_error.png`。
 - 当前结果：默认 `dq_source=unit:shoulder_pan`、`dt=1e-6`、`fd_steps=1000`；linear velocity error norm 约为 `2.55e-4`，angular velocity error norm 约为 `8.26e-11`；sweep 图已展示误差随总位移变化的趋势。
-- 下一步：进入 A05 task + limit + QP-IK。
+- A05 已完成最小 box-constrained QP-IK；下一步进入 A06 target / mocap-style tracking。
 - 验收标准：能说明 `site velocity = J(q) dq`，并用 finite difference 验证 MuJoCo site Jacobian 的线速度和角速度映射。
 
 ### A04 - DLS Differential IK
@@ -82,7 +82,7 @@ A 项目当前没有实物 UR5e / 机械臂，因此采用 simulation-first base
 - 文档状态：`04_dls_differential_ik.md` 已补充 DLS IK 公式、推导、符号表、物理意义、伪代码、验证标准和常见错误。
 - 当前输出：`outputs/trajectories/A04_dls_ik_q_traj.npy`、`outputs/logs/A04_dls_ik_error.csv`、`outputs/figures/A04_dls_ik_error.png` 和 `outputs/reports/A04_dls_ik_report.md`。
 - 当前结果：`converged=True`、`stop_reason=tolerance_reached`；初始位置误差约为 `0.03`，最终位置误差约为 `8.45e-4`；q trajectory shape 为 `(17, 6)` 且无 NaN。
-- 下一步：进入 A05 task + limit + QP-IK。
+- A05 已完成最小 box-constrained QP-IK；下一步进入 A06 target / mocap-style tracking。
 - 验收标准：已满足 position-mode 最小验收；A04 不进入 QP、joint limit、actuator tracking 或 MuJoCo 控制。
 
 ### A05 - Task + Limit + QP-IK
@@ -90,7 +90,9 @@ A 项目当前没有实物 UR5e / 机械臂，因此采用 simulation-first base
 - 输入：A04 的任务误差、A03 的 site Jacobian、关节速度/位置限制、QP 权重。
 - 输出：QP-IK 轨迹、约束日志和求解报告。
 - 对标 mink 的概念：`FrameTask`、`PostureTask`、`ConfigurationLimit`、`VelocityLimit`。
-- 验收标准：TODO 中说明最小 QP 形式和 `scipy.optimize`/`osqp` 可选实现方向；暂不做完整 collision avoidance。
+- 当前状态：已完成最小 box-constrained QP-IK。
+- 当前输出：`outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
+- 验收标准：默认 `scipy.optimize` 后端收敛，最终位置误差约 `9.96e-4`，max constraint violation 为 `0.0`；暂不做完整 collision avoidance。
 
 ### A06 - Target / Mocap-Style Tracking
 
@@ -171,8 +173,8 @@ Step 12A-R 在保留现有 A04 代码的基础上补充 pose-aware DLS IK 规划
 
 `04_dls_differential_ik.md` 已补充 SO(3) rotation error、6D pose error、6D task Jacobian 和 pose-aware DLS 公式。后续路线保持不变：Step 12B 先保留并验证 position mode，Step 12C 再扩展 pose_6d mode。A05/A06/A07 后续需要同步 target pose、orientation task 和 trajectory_source。
 
-## 10. A05 Task + Limit + QP-IK TODO 状态
+## 10. A05 Task + Limit + QP-IK 状态
 
-A05 当前是 task + limit + QP-IK TODO learning skeleton，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 的 Markdown 文档 `05_task_limit_qp_ik.md` 已补充 QP-IK 算法细节，并明确 A05 后续输出为 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
+A05 当前已完成最小 box-constrained QP-IK，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 的 Markdown 文档 `05_task_limit_qp_ik.md` 已补充 QP-IK 算法细节，并已输出 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
 
-A05 的最小实现将在 Step 13B 完成。当前 Step 13A 不实现真实 QP-IK，不调用 mink，不进入 actuator tracking，也不加入 collision avoidance。
+当前默认 `scipy.optimize` 后端收敛：初始位置误差约 `0.03`，最终位置误差约 `9.96e-4`，q trajectory shape 为 `(176, 6)`，max constraint violation 为 `0.0`。A05 不调用 mink，不进入 actuator tracking，也不加入 collision avoidance。

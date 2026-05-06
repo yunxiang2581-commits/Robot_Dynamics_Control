@@ -12,7 +12,7 @@ Pipeline 步骤：
 - A01 已完成 model inspect，确认 `nq=6`、`nv=6`、`nu=6`。
 - A01 已确认目标 site `attachment_site` 存在。
 - A01 已确认目标 body `wrist_3_link` 存在。
-- A02 未来应读取 A01 的 `A01_model_summary.json`，避免靠猜测写 site/body 名称。
+- A02 读取 A01 的 `A01_model_summary.json`，避免靠猜测写 site/body 名称。
 
 本脚本输入：
 - `projects/A_self_baseline/configs/robot.yaml`。
@@ -82,7 +82,7 @@ TODO_TITLES = [
 def parse_args() -> argparse.Namespace:
     """解析 A02 site/body pose 查询的 CLI 参数。"""
     parser = argparse.ArgumentParser(
-        description="A02 TODO skeleton: configuration / site pose data flow."
+        description="A02 completed minimal configuration / site pose data flow."
     )
     parser.add_argument(
         "--config",

@@ -1,5 +1,7 @@
 # Step 12A - A04 DLS Differential IK TODO Skeleton
 
+当前状态更新：A04 已完成最小 position-mode DLS differential IK。本文档记录的是早期规划步骤。
+
 ## 1. 为什么 A04 先做 TODO skeleton
 
 A04 是从已验证 Jacobian 进入 IK 的第一步。DLS differential IK 涉及误差定义、Jacobian、阻尼、gain、积分更新、收敛判断和日志输出。先做 TODO skeleton 可以把算法边界讲清楚，避免在还没有统一符号和验证标准前直接写完整 IK。
@@ -76,7 +78,7 @@ A04 只做无约束 DLS differential IK 的学习骨架。A05 才加入 task、l
 
 ## 7. 未实现算法说明
 
-本步骤只补充 TODO skeleton 和算法学习文档，未在 Python 中实现 DLS IK。核心逻辑仍保留 `NotImplementedError`。
+Step 12A 当时只补充 TODO skeleton 和算法学习文档；当前 A04 已完成最小 position-mode DLS IK，并可以生成 q trajectory、error log、error figure 和 report。
 
 未实现：
 
@@ -94,13 +96,13 @@ A04 只做无约束 DLS differential IK 的学习骨架。A05 才加入 task、l
 - `external/mink_upstream/`
 - `legacy_imported/`
 
-## 9. 下一步 Step 12B
+## 9. 后续 Step 12B 状态
 
-下一步 Step 12B：A04 minimal DLS differential IK。届时只实现 position-only DLS IK，并输出 q trajectory、error log、error figure 和 report。
+Step 12B 已完成 A04 minimal DLS differential IK。当前实现为 position-only DLS IK，并已输出 q trajectory、error log、error figure 和 report。
 
 ## 10. 验收清单
 
-- [x] 只补充 TODO skeleton。
+- [x] 当时只补充 TODO skeleton；当前 A04 已完成最小 position-mode DLS IK。
 - [x] Markdown 文档包含 DLS IK 算法细节。
 - [x] Markdown 文档包含公式、符号、物理意义、伪代码、验证标准和常见错误。
 - [x] 未在 Python 中实现 DLS IK。

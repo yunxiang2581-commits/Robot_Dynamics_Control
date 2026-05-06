@@ -1,15 +1,15 @@
-"""A04 DLS differential IK TODO learning skeleton.
+"""A04 DLS differential IK minimal runnable implementation.
 
 Pipeline 步骤：
 - A04 DLS differential IK。
 
 对标 mink 的概念：
 - `mink.solve_ik` 的最小无约束教学版。
-- 本脚本只规划如何从 task-space error 和 A03 已验证的 Jacobian 求关节速度 `dq`。
+- 本脚本实现从 task-space error 和 A03 已验证的 Jacobian 求关节速度 `dq`。
 
 与 A03 的关系：
 - A03 已验证 target site 的速度映射 `site velocity = J(q) dq`。
-- A04 未来会复用 A03 的 target site、初始 q、site Jacobian 验证结果和误差解释。
+- A04 复用 A03 的 target site、初始 q、site Jacobian 验证结果和误差解释。
 - 如果 A03 的 Jacobian 方向、site id 或维度错误，A04 的 IK 会朝错误方向更新。
 
 本脚本输入：
@@ -24,7 +24,7 @@ Pipeline 步骤：
 - gain。
 - max_iter。
 
-本脚本未来输出：
+本脚本输出：
 - `outputs/trajectories/A04_dls_ik_q_traj.npy`。
 - `outputs/logs/A04_dls_ik_error.csv`。
 - `outputs/figures/A04_dls_ik_error.png`。
@@ -42,10 +42,11 @@ pose-aware 规划补充：
 - orientation error 未来使用 SO(3) log map:
   R_err = R_target R_current^T
   e_rot = log(R_err)
-- 本次只补充接口、TODO 和文档说明，不强制完整实现 rotation log map。
+- position mode 已完成最小实现；pose_6d 接口保留为后续扩展边界。
 
 当前状态：
-- TODO learning skeleton。
+- A04 已完成最小 position-mode DLS differential IK。
+- 已输出 q trajectory、error log、error figure 和 report。
 - 不调用 mink 替代自己的实现。
 - 不做 QP / actuator tracking / MuJoCo 控制 / collision avoidance / video recording。
 """
@@ -119,9 +120,9 @@ TODO_TITLES = [
 
 
 def parse_args() -> argparse.Namespace:
-    """解析 A04 TODO skeleton 的 CLI 参数。"""
-    parser = argparse.ArgumentParser(description="A04 TODO skeleton: DLS differential IK.")
-    parser.add_argument("--ik-config", default=str(DEFAULT_IK_CONFIG), help="未来 ik.yaml 路径。")
+    """解析 A04 DLS differential IK 的 CLI 参数。"""
+    parser = argparse.ArgumentParser(description="A04 completed minimal DLS differential IK.")
+    parser.add_argument("--ik-config", default=str(DEFAULT_IK_CONFIG), help="ik.yaml 路径。")
     parser.add_argument("--robot-config", default=str(DEFAULT_ROBOT_CONFIG), help="robot.yaml 路径。")
     parser.add_argument("--a01-summary", default=str(DEFAULT_A01_SUMMARY), help="A01 model summary。")
     parser.add_argument("--a02-pose", default=str(DEFAULT_A02_POSE), help="A02 site pose cache。")
@@ -132,29 +133,29 @@ def parse_args() -> argparse.Namespace:
         "--task-mode",
         choices=("position", "pose_6d"),
         default="position",
-        help="A04 任务模式：position 只用 J_pos；pose_6d 未来组合 J_pos/J_rot。",
+        help="A04 任务模式：position 只用 J_pos；pose_6d 后续组合 J_pos/J_rot。",
     )
-    parser.add_argument("--target-pose", default=None, help="TODO：未来目标 pose 输入。")
+    parser.add_argument("--target-pose", default=None, help="后续目标 pose 输入。")
     parser.add_argument("--target-offset", default="0.03,0.00,0.00", help="TODO：第一版 position target offset。")
     parser.add_argument(
         "--target-position-offset",
         default="0.05,0.00,0.00",
-        help="TODO：pose-aware 规划中的目标位置偏移，格式 dx,dy,dz。",
+        help="pose-aware 规划中的目标位置偏移，格式 dx,dy,dz。",
     )
     parser.add_argument(
         "--target-orientation-mode",
         choices=("keep_current", "fixed_rpy", "fixed_quat"),
         default="keep_current",
-        help="TODO：目标姿态来源；第一版 keep_current，后续支持 fixed_rpy / fixed_quat。",
+        help="目标姿态来源；第一版 keep_current，后续支持 fixed_rpy / fixed_quat。",
     )
-    parser.add_argument("--position-weight", type=float, default=1.0, help="TODO：position error 权重。")
-    parser.add_argument("--orientation-weight", type=float, default=0.2, help="TODO：orientation error 权重。")
+    parser.add_argument("--position-weight", type=float, default=1.0, help="position error 权重。")
+    parser.add_argument("--orientation-weight", type=float, default=0.2, help="orientation error 权重。")
     parser.add_argument("--damping", type=float, default=1e-3, help="DLS damping 占位参数。")
     parser.add_argument("--gain", type=float, default=1.0, help="误差缩放占位参数。")
-    parser.add_argument("--dt", type=float, default=1e-2, help="未来 q 积分步长。")
-    parser.add_argument("--max-iter", type=int, default=50, help="未来最大迭代次数。")
-    parser.add_argument("--tolerance", type=float, default=1e-4, help="未来收敛阈值。")
-    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR), help="未来输出根目录。")
+    parser.add_argument("--dt", type=float, default=1e-2, help="q 积分步长。")
+    parser.add_argument("--max-iter", type=int, default=50, help="最大迭代次数。")
+    parser.add_argument("--tolerance", type=float, default=1e-4, help="收敛阈值。")
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR), help="输出根目录。")
     parser.add_argument("--log-level", default="INFO", help="日志级别，例如 INFO / DEBUG。")
     return parser.parse_args()
 
@@ -174,11 +175,7 @@ def log_todo_titles() -> None:
 
 
 def main() -> None:
-    """A04 TODO learning skeleton 主流程。
-
-    当前只打印 A04 的未来输入、未来输出、原理说明和 TODO 清单。
-    核心 DLS differential IK 逻辑继续保留为 NotImplementedError。
-    """
+    """A04 DLS differential IK 主流程。"""
     args = parse_args()
     logging.basicConfig(
         level=getattr(logging, args.log_level.upper(), logging.INFO),
@@ -194,9 +191,9 @@ def main() -> None:
     A04_figure = output_root / "figures" / "A04_dls_ik_error.png"
     A04_report = output_root / "reports" / "A04_dls_ik_report.md"
 
-    logging.info("A04 当前状态: TODO learning skeleton")
-    logging.info("本步骤不实现 DLS IK，只规划从误差和 Jacobian 求 dq 的学习结构。")
-    logging.info("未来输入:")
+    logging.info("A04 当前状态: 最小 position-mode DLS differential IK 已完成")
+    logging.info("本步骤实现从误差和 Jacobian 求 dq，并输出轨迹、误差日志、图和报告。")
+    logging.info("当前输入:")
     logging.info("- ik config: %s", args.ik_config)
     logging.info("- robot config: %s", args.robot_config)
     logging.info("- A01 summary: %s", args.a01_summary)
@@ -212,7 +209,7 @@ def main() -> None:
     logging.info("- position/orientation weight: %s / %s", args.position_weight, args.orientation_weight)
     logging.info("- damping/gain/dt/max_iter/tolerance: %s / %s / %s / %s / %s",
                  args.damping, args.gain, args.dt, args.max_iter, args.tolerance)
-    logging.info("未来输出:")
+    logging.info("当前输出:")
     logging.info("- trajectory: %s", A04_traj)
     logging.info("- error log: %s", A04_log)
     logging.info("- error figure: %s", A04_figure)

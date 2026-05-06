@@ -1,5 +1,7 @@
 # Step 10B - A02 Configuration Site Pose TODO Skeleton
 
+当前状态更新：A02 已完成最小可运行 configuration / site pose。本文档记录的是早期规划步骤。
+
 ## 1. 为什么 A02 先做 TODO skeleton
 
 A02 是从 A01 model inspect 进入 configuration / site pose 的第一步。它看起来像 FK，但当前重点不是完整实现算法，而是先把 `q -> MuJoCo data -> site/body pose` 的数据流、输入输出和边界写清楚。
@@ -147,4 +149,4 @@ A02 已从 TODO skeleton 推进到最小可运行 configuration / site pose：
 - MuJoCo 控制
 - video recording
 
-下一步进入 A03 site Jacobian check。
+A02 已完成最小可运行 configuration / site pose；后续 A03 site Jacobian check 也已完成最小实现。

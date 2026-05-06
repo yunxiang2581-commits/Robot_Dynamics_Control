@@ -12,7 +12,7 @@ Pipeline 步骤：
 - A02 已确认 q source 为 `keyframe:home`。
 - A02 已确认 target site 为 `attachment_site`。
 - A02 已输出 `outputs/cache/A02_site_pose.json`，记录 q、site pose 和 body pose。
-- A03 未来应读取 A02 的 q 和 target site，在同一个 configuration 下验证 Jacobian。
+- A03 读取 A02 的 q 和 target site，在同一个 configuration 下验证 Jacobian。
 
 本脚本输入：
 - `projects/A_self_baseline/configs/robot.yaml`。
@@ -101,17 +101,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--a01-summary",
         default=str(DEFAULT_A01_SUMMARY),
-        help="A01_model_summary.json 路径。TODO 1 未来读取。",
+        help="A01_model_summary.json 路径。",
     )
     parser.add_argument(
         "--a02-pose",
         default=str(DEFAULT_A02_POSE),
-        help="A02_site_pose.json 路径。TODO 1 未来读取。",
+        help="A02_site_pose.json 路径。",
     )
     parser.add_argument(
         "--mjcf",
         default=None,
-        help="可选：覆盖 robot.yaml 中的 scene.xml 路径。TODO 2 未来解析。",
+        help="可选：覆盖 robot.yaml 中的 scene.xml 路径。",
     )
     parser.add_argument(
         "--site",
@@ -121,7 +121,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dq-source",
         default=DEFAULT_DQ_SOURCE,
-        help="未来 dq 来源，例如 unit:shoulder_pan / unit-index:0 / file:path。",
+        help="dq 来源，例如 unit:shoulder_pan / unit-index:0 / file:path。",
     )
     parser.add_argument("--dt", type=float, default=DEFAULT_DT, help="有限差分步长。")
     parser.add_argument(
@@ -135,7 +135,7 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_SWEEP_STEPS,
         help="逗号分隔的 fd_steps sweep 列表，用来画误差随总位移变化的曲线。",
     )
-    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR), help="未来输出根目录。")
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR), help="输出根目录。")
     parser.add_argument("--log-level", default="INFO", help="日志级别，例如 INFO / DEBUG。")
     return parser.parse_args()
 
@@ -288,7 +288,7 @@ def main() -> None:
 
     logging.info("A03 当前状态: minimal site Jacobian finite difference check")
     logging.info("本步骤只验证 velocity mapping，不进入 IK / QP / 控制。")
-    logging.info("未来输入:")
+    logging.info("当前输入:")
     logging.info("- config: %s", args.config)
     logging.info("- A01 summary: %s", args.a01_summary)
     logging.info("- A02 pose: %s", args.a02_pose)

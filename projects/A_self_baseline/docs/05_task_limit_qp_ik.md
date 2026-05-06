@@ -2,9 +2,9 @@
 
 ## 1. A05 当前定位
 
-A05 是从 A04 DLS IK 到 mink-style QP-IK 的过渡步骤。A04 已经完成 position-only 的无约束 DLS differential IK，证明 `attachment_site` 的位置误差可以被 Jacobian 驱动收敛；A05 则开始引入 task、weight、velocity limit、joint position limit 和 posture preference。
+A05 是从 A04 DLS IK 到 mink-style QP-IK 的过渡步骤。A04 已经完成 position-only 的无约束 DLS differential IK，证明 `attachment_site` 的位置误差可以被 Jacobian 驱动收敛；A05 在此基础上引入 task、weight、velocity limit、joint position limit 和 posture preference。
 
-当前 A05 仍是 TODO learning skeleton，不实现真实 QP 求解器，不生成轨迹输出，也不调用 mink 替代自己的实现。
+当前 A05 已完成最小 box-constrained QP-IK 实现。默认配置使用 position-only FrameTask、PostureTask、VelocityLimit、JointPositionLimit 和 `scipy.optimize` QP solver；脚本也支持通过 `--solver osqp` 使用 OSQP 后端。A05 不调用 mink 替代自己的实现，也不进入 actuator tracking、MuJoCo 控制、collision avoidance 或 video。
 
 ## 2. 为什么 A05 在 A04 之后
 
@@ -286,12 +286,13 @@ A06 使用 A05 的 `q_traj` 做 target tracking；A07 用 actuator tracking 执�
 
 ## 19. 当前不做什么
 
-- 不实现真实 QP。
 - 不做 actuator tracking。
 - 不做 collision avoidance。
 - 不做 video。
 - 不调用 mink 替代实现。
+- 不做 A06 target tracking。
+- 不做 A07 actuator tracking 执行。
 
 ## 20. 下一步
 
-Step 13B 将进入 A05 minimal box-constrained QP-IK。第一版可先做 position-only FrameTask + VelocityLimit，再扩展 PostureTask、JointPositionLimit 和 pose_6d task。
+A05 最小 box-constrained QP-IK 已完成。下一步可进入 A06 target / mocap-style tracking，或在 A05 内继续扩展 pose_6d FrameTask、更多 task weight 调参和更完整的 solver 对比。

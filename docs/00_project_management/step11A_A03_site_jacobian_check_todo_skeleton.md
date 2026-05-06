@@ -1,5 +1,7 @@
 # Step 11A - A03 Site Jacobian Check TODO Skeleton
 
+当前状态更新：A03 已完成最小可运行 site Jacobian finite difference check。本文档记录的是早期规划步骤。
+
 ## 1. 为什么 A03 先做 TODO skeleton
 
 A03 是从 pose 查询进入 differential kinematics 的第一步。它要学习的不是直接写出 IK，而是先弄清楚 `site velocity = J(q) dq` 的输入、输出、API、验证方式和边界。
@@ -80,13 +82,13 @@ A04 才会使用 `J(q)` 和 task-space error 求解 DLS differential IK。A05 �
 - `external/mink_upstream/`
 - `legacy_imported/`
 
-## 8. 下一步 Step 11B
+## 8. 后续 Step 11B 状态
 
-下一步 Step 11B 是 A03 minimal Jacobian finite difference check。它应只实现最小可运行的 `attachment_site` linear Jacobian 和 position finite difference 验证，并生成 A03 cache/report/figure 输出。
+Step 11B 已完成 A03 minimal Jacobian finite difference check。当前已实现最小可运行的 `attachment_site` linear Jacobian 和 finite difference 验证，并生成 A03 cache/report/figure 输出。
 
 ## 9. 验收清单
 
-- [x] 只补充 TODO skeleton。
+- [x] 当时只补充 TODO skeleton；当前 A03 已完成最小实现。
 - [x] 未实现 Jacobian。
 - [x] 未实现 finite difference。
 - [x] 未实现 IK / QP。

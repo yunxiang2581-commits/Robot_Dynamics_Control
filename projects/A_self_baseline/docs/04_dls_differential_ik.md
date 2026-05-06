@@ -2,9 +2,9 @@
 
 ## 1. A04 当前定位
 
-A04 是 DLS differential IK，位于 A03 site Jacobian check 之后，A05 task + limit + QP-IK 之前。当前仍是 TODO skeleton 阶段：Python 脚本只规划学习骨架，不实现完整 IK。
+A04 是 DLS differential IK，位于 A03 site Jacobian check 之后，A05 task + limit + QP-IK 之前。当前 A04 已完成最小 position-mode DLS differential IK。
 
-本步骤不实现 QP、actuator tracking、MuJoCo 控制、collision avoidance 或 video recording，也不调用 mink 替代自己的实现。
+本步骤不实现 QP、actuator tracking、MuJoCo 控制、collision avoidance 或 video recording，也不调用 mink 替代自己的实现。A04 已输出 q trajectory、error log、error figure 和 report。
 
 ## 2. 为什么 A04 在 A03 之后
 
@@ -137,7 +137,7 @@ lambda = damping
 lambda = damping^2
 ```
 
-A04 TODO skeleton 保留数学结构：
+A04 最小实现使用的数学结构：
 
 ```text
 e = target - current
@@ -485,6 +485,4 @@ A04 的 `q_traj` 可以作为 A05/A06/A07 的参考：A05 对同样目标加入�
 
 ## 17. 下一步
 
-Step 12B：A04 minimal DLS differential IK。
-
-再下一步 A05：task + limit + QP-IK。
+A04 minimal DLS differential IK 已完成。A05 task + limit + QP-IK 也已完成最小 box-constrained QP-IK；下一步进入 A06 target / mocap-style tracking。

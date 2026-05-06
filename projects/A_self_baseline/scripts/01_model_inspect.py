@@ -158,7 +158,7 @@ def parse_args() -> argparse.Namespace:
     - 运行 `python projects/A_self_baseline/scripts/01_model_inspect.py --help`。
     """
     parser = argparse.ArgumentParser(
-        description="A01 TODO skeleton: model inspect / MJCF inspect for UR5e-style baseline."
+        description="A01 completed minimal model inspect / MJCF inspect for UR5e-style baseline."
     )
     parser.add_argument(
         "--config",

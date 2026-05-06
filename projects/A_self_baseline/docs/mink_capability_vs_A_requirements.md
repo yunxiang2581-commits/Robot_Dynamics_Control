@@ -147,16 +147,16 @@ projects/A_self_baseline/
 
 ## 7. 后续实现顺序
 
-- Step 9A：A01 model inspect TODO 骨架
+- Step 9A：A01 model inspect 算法规划（历史规划步骤）
 - Step 9B：A01 最小可运行 MJCF inspect
-- Step 10A：A02 configuration / site pose TODO
+- Step 10A：A02 configuration / site pose 算法规划（历史规划步骤）
 - Step 10B：A02 最小可运行 site pose
-- Step 11A：A03 site Jacobian TODO
+- Step 11A：A03 site Jacobian 算法规划（历史规划步骤）
 - Step 11B：A03 Jacobian finite difference
-- Step 12A：A04 DLS differential IK TODO
-- Step 12B：A04 最小可运行 DLS IK
-- Step 13A：A05 task + limit + QP-IK TODO
-- Step 13B：A05 最小 QP-IK
+- Step 12A：A04 DLS differential IK 算法规划（历史规划步骤）
+- Step 12B：A04 已完成最小 position-mode DLS IK
+- Step 13A：A05 task + limit + QP-IK 算法规划（历史规划步骤）
+- Step 13B：A05 已完成最小 box-constrained QP-IK
 - Step 14：A06 target / mocap-style tracking
 - Step 15：A07 actuator tracking
 - Step 16：A08 collision avoidance TODO

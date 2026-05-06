@@ -1,5 +1,7 @@
 # Step 9A - A01 model inspect TODO skeleton
 
+当前状态更新：A01 已完成最小可运行 model inspect。本文档记录的是早期规划步骤。
+
 ## 1. 为什么先做 TODO 骨架
 
 A_self_baseline 的目标是学习并复现 mink UR5e 示例背后的机器人控制链路，而不是一次性写完整工程代码。A01 是后续 A02-A07 的模型基础信息入口，因此先写 TODO 骨架可以明确输入、输出、边界和学习顺序。
@@ -119,4 +121,4 @@ Step 9B 已把 A01 从 TODO skeleton 推进到最小可运行 model inspect：
 - `attachment_site=True`
 - `wrist_3_link=True`
 
-下一步进入 A02 configuration / site pose，不扩展到 Jacobian、IK 或 QP。
+A01 已完成最小可运行 model inspect；后续 A02 configuration / site pose 也已完成最小实现。
