@@ -34,8 +34,12 @@ outputs/exp_pd_joint_control/*/meta/
 outputs/exp_pd_joint_control/*/*.csv
 outputs/exp_pd_joint_control/*/*.log
 
-projects/*/outputs/videos/
-projects/*/outputs/logs/
+# Ignore generated project videos/logs, but keep directory placeholders
+projects/*/outputs/videos/*
+!projects/*/outputs/videos/.gitkeep
+
+projects/*/outputs/logs/*
+!projects/*/outputs/logs/.gitkeep
 projects/*/outputs/runs/
 projects/*/reproduce_logs/*.log
 
@@ -85,3 +89,6 @@ translated-pdfs/
 
 # Full upstream mirrors kept locally for reference only
 external/mink_upstream/
+
+# External open-source repositories used only for source reading/reference
+external/open_source_repos/
