@@ -1,4 +1,4 @@
-# A Self Baseline
+﻿# A Self Baseline
 
 > Chinese version: [README.md](README.md)
 
@@ -52,10 +52,10 @@ The current scripts still stop at `NotImplementedError`. When implementation sta
 python projects/A_self_baseline/scripts/01_model_inspect.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf
 python projects/A_self_baseline/scripts/02_configuration_site_pose.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
 python projects/A_self_baseline/scripts/03_site_jacobian_check.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/04_dls_differential_ik.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/05_task_limit_qp_ik.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
-python projects/A_self_baseline/scripts/06_target_mocap_tracking.py --model-xml shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml
-python projects/A_self_baseline/scripts/07_mujoco_actuator_tracking.py --config projects/A_self_baseline/configs/mini_wbc.yaml
+python projects/A_self_baseline/scripts/04_ik_dls_wrapper.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
+python projects/A_self_baseline/scripts/05_ik_qp_wrapper.py --urdf shared/robot_assets/models/h1_description/urdf/h1_with_hand.urdf --frame left_foot
+python projects/A_self_baseline/scripts/06_target_viewer_wrapper.py --model-xml shared/robot_assets/models/h1_description/mjcf/scene_with_hand_bright.xml
+python projects/A_self_baseline/scripts/07_actuator_wrapper.py --config projects/A_self_baseline/configs/mini_wbc.yaml
 ```
 
 `scripts/` contains CLI entry points. `src/robot_baseline/` contains reusable components.
@@ -86,3 +86,4 @@ python projects/A_self_baseline/scripts/07_mujoco_actuator_tracking.py --config 
 5. Implement constrained QP-IK.
 6. Implement MuJoCo PD tracking.
 7. Implement Mini-WBC QP structure.
+

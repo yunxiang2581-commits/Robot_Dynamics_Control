@@ -1,22 +1,28 @@
-# A 自研机器人运动控制基础系统
+# A Project Documentation
 
-## 当前状态
+This directory is the documentation entry for Project A.
 
-本目录是 A 项目的文档入口。
+## Current Main Documents
 
-当前 A 项目已从准备阶段进入实现阶段，主线是对标 mink UR5e 示例的教学版 6-DOF 机械臂控制 baseline。A01 `model inspect` 和 A02 `configuration / site pose` 最小实现已完成。
+| Document | Purpose |
+|---|---|
+| `A_four_interface_refactor_plan.md` | Step R-C architecture summary |
+| `A_target_interface.md` | TargetDefinition and target source rules |
+| `A_ik_interface.md` | A04/A05 unified IK interface |
+| `A_viewer_interface.md` | viewer target / mocap target TODO |
+| `A_actuator_interface.md` | A07 actuator tracking TODO |
+| `A_pipeline_contract.md` | Updated A pipeline contract |
+| `A_mink_alignment_plan.md` | How A maps to mink concepts without calling mink |
+| `A_simulation_only_full_motion_control_plan.md` | simulation-only full motion-control roadmap |
 
-## 后续内容
+## Foundation Validation Docs
 
-| 文档 | 目标 | 验收标准 |
-| --- | --- | --- |
-| `mink_capability_vs_A_requirements.md` | mink 能力与 A 项目需求总表 | 明确 A00-A10、最终 demo 和实现边界 |
-| `A_pipeline_contract.md` | A00-A10 pipeline 契约 | 每一步输入、输出、对标 mink 概念和验收标准清楚 |
-| `reference_mink_ur5e.md` | 为什么选 mink UR5e | 明确 reference 与 copied assets 的边界 |
-| `A_mink_alignment_plan.md` | 分阶段实现计划 | 明确从 A01 到 A10 的推进顺序 |
-| `01_model_inspect.md` | A01 model inspect / MJCF inspect 说明 | 记录当前最小实现、输出和下一步 |
-| `02_configuration_site_pose.md` | A02 configuration / site pose 说明 | 记录当前最小实现、输出和下一步 |
+- `01_model_inspect.md`
+- `02_configuration_site_pose.md`
+- `03_site_jacobian_check.md`
 
-## 当前下一步
+These remain valid because A01-A03 are the foundation validation layer.
 
-进入 A03 site Jacobian check，只补 A03 相关 `site velocity = J(q) dq` 和 finite difference 验证，不实现后续 IK 或 QP。
+## Current Next Step
+
+R1: finish TargetDefinition load/save/validate.

@@ -1,4 +1,4 @@
-# Doc Migration Candidates
+﻿# Doc Migration Candidates
 
 本文只列出文档迁移候选。本轮不移动、不重命名、不删除任何文件。所有迁移都需要在单独任务中人工确认后执行。
 
@@ -63,3 +63,4 @@
 | `legacy_imported/` | 后续 archive 目录 | 可能是历史导入内容，不能直接删除 | 高 | 是 |
 | `root_imported/` | 后续 archive 目录 | 可能包含历史根目录导入内容 | 高 | 是 |
 | `root_imported_src/` | 后续 archive 目录 | 可能包含历史源码导入内容 | 高 | 是 |
+

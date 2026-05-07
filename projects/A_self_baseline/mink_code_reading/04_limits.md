@@ -1,4 +1,4 @@
-# 04 - Limit 源码拆解
+﻿# 04 - Limit 源码拆解
 
 ## 本节目标
 
@@ -144,9 +144,10 @@ A 项目当前 A05 的重点是最小 box-constrained QP-IK：
 ### 任务 4.5: 对照 A05
 
 - 阅读 A 项目:
-  - `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+  - `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
   - `projects/A_self_baseline/configs/qp_ik.yaml`
 - 学习目标:
   - 明确 A05 只做最小 box-constrained QP-IK。
 - 验收:
   - 写出 A05 当前实现了哪些 limit，暂缓了哪些 limit。
+

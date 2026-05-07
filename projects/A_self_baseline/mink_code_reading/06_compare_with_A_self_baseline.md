@@ -1,4 +1,4 @@
-# 06 - mink 与 A_self_baseline 对照学习
+﻿# 06 - mink 与 A_self_baseline 对照学习
 
 ## 本节目标
 
@@ -25,8 +25,8 @@
 
 - `projects/A_self_baseline/scripts/02_configuration_site_pose.py`
 - `projects/A_self_baseline/scripts/03_site_jacobian_check.py`
-- `projects/A_self_baseline/scripts/04_dls_differential_ik.py`
-- `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+- `projects/A_self_baseline/scripts/04_ik_dls_wrapper.py`
+- `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
 - `projects/A_self_baseline/configs/ik.yaml`
 - `projects/A_self_baseline/configs/qp_ik.yaml`
 
@@ -112,8 +112,8 @@ mink 把状态、任务、限制和 solver 抽象成库接口。
   - `source_annotated/src/mink/tasks/frame_task.py`
   - `source_annotated/src/mink/tasks/posture_task.py`
 - 阅读 A 项目:
-  - `projects/A_self_baseline/scripts/04_dls_differential_ik.py`
-  - `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+  - `projects/A_self_baseline/scripts/04_ik_dls_wrapper.py`
+  - `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
 - 对照问题:
   - A04 的 DLS IK 和 FrameTask 有什么关系？
   - A05 的 task 权重和 mink cost 有什么关系？
@@ -127,7 +127,7 @@ mink 把状态、任务、限制和 solver 抽象成库接口。
   - `source_annotated/src/mink/limits/velocity_limit.py`
   - `source_annotated/src/mink/limits/configuration_limit.py`
 - 阅读 A 项目:
-  - `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+  - `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
   - `projects/A_self_baseline/configs/qp_ik.yaml`
 - 对照问题:
   - A05 的 velocity bound 是否和 mink 的 `VelocityLimit` 一致？
@@ -140,7 +140,7 @@ mink 把状态、任务、限制和 solver 抽象成库接口。
 - 阅读 mink:
   - `source_annotated/src/mink/solve_ik.py`
 - 阅读 A 项目:
-  - `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+  - `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
   - `projects/A_self_baseline/src/robot_baseline/qp_ik.py`
 - 对照问题:
   - 两边 QP 变量是否都是 `nv` 维？
@@ -161,3 +161,4 @@ mink 把状态、任务、限制和 solver 抽象成库接口。
   - 暂时不补: 完整 collision avoidance、完整 mink API 复刻、复杂多任务优先级系统。
 - 验收:
   - 能说明下一步为什么仍然服务 `URDF/MJCF -> FK -> Jacobian -> IK -> QP-IK -> control` 主线。
+

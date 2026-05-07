@@ -1,4 +1,4 @@
-# 03 - Task 源码拆解
+﻿# 03 - Task 源码拆解
 
 ## 本节目标
 
@@ -68,7 +68,7 @@ minimize || J(q) * dq - desired_task_velocity ||^2
 
 ## 和 A 项目的关系
 
-A 项目的 `05_task_limit_qp_ik.py` 已经有教学版 task 结构：
+A 项目的 `05_ik_qp_wrapper.py` 已经有教学版 task 结构：
 
 - position-only 或 pose-aware FrameTask。
 - PostureTask。
@@ -159,3 +159,4 @@ mink 的 task 抽象更完整，适合阅读它如何把不同任务统一成 so
   - 只理解用途，不深入推导。
 - 验收:
   - 能给每个 task 写一句 “它解决什么控制目标”。
+

@@ -1,4 +1,4 @@
-# 01 - UR5e 示例入口拆解
+﻿# 01 - UR5e 示例入口拆解
 
 ## 本节目标
 
@@ -82,7 +82,7 @@ limit 让 IK 不只是“尽快追目标”，还要满足物理和数值边界�
 - TODO 1: 记录 `arm_ur5e.py` 的主循环伪代码。
 - TODO 2: 列出示例中所有 task 和 limit。
 - TODO 3: 写出 `dq` 从求解到应用的完整路径。
-- TODO 4: 和 A 项目的 `06_target_mocap_tracking.py`、`07_mujoco_actuator_tracking.py` 做对应。
+- TODO 4: 和 A 项目的 `06_target_viewer_wrapper.py`、`07_actuator_wrapper.py` 做对应。
 
 ## 详细学习任务与路径
 
@@ -138,3 +138,4 @@ limit 让 IK 不只是“尽快追目标”，还要满足物理和数值边界�
   - 和普通 `arm_ur5e.py` 对比末尾执行部分。
 - 验收:
   - 能说清楚 A06 target tracking 和 A07 actuator tracking 的区别。
+

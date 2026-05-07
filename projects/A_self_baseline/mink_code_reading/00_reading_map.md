@@ -1,4 +1,4 @@
-# 00 - mink 源码阅读地图
+﻿# 00 - mink 源码阅读地图
 
 ## 本节目标
 
@@ -57,17 +57,17 @@ solve_ik
 
 ## 和 A 项目的关系
 
-A 项目当前已经在 `scripts/04_dls_differential_ik.py` 和 `scripts/05_task_limit_qp_ik.py` 中做了教学版实现。
+A 项目当前已经在 `scripts/04_ik_dls_wrapper.py` 和 `scripts/05_ik_qp_wrapper.py` 中做了教学版实现。
 
 可以先建立这个对应关系：
 
 | mink 概念 | A 项目对应位置 |
 | --- | --- |
 | `Configuration` | `02_configuration_site_pose.py`、`03_site_jacobian_check.py` |
-| `FrameTask` | `04_dls_differential_ik.py`、`05_task_limit_qp_ik.py` |
-| `PostureTask` | `05_task_limit_qp_ik.py` |
-| `ConfigurationLimit` / `VelocityLimit` | `05_task_limit_qp_ik.py`、`configs/qp_ik.yaml` |
-| `solve_ik` | `04_dls_differential_ik.py`、`05_task_limit_qp_ik.py` |
+| `FrameTask` | `04_ik_dls_wrapper.py`、`05_ik_qp_wrapper.py` |
+| `PostureTask` | `05_ik_qp_wrapper.py` |
+| `ConfigurationLimit` / `VelocityLimit` | `05_ik_qp_wrapper.py`、`configs/qp_ik.yaml` |
+| `solve_ik` | `04_ik_dls_wrapper.py`、`05_ik_qp_wrapper.py` |
 
 ## TODO 学习笔记
 
@@ -122,3 +122,4 @@ A 项目当前已经在 `scripts/04_dls_differential_ik.py` 和 `scripts/05_task
   - `lie/so3.py`
 - 验收:
   - 不会一上来陷入 collision avoidance 或 Lie group 细节。
+

@@ -1,4 +1,4 @@
-# mink 源码阅读学习区
+﻿# mink 源码阅读学习区
 
 本目录用于完整拆解和阅读 `external/mink_upstream` 中的 mink 源码。
 
@@ -146,8 +146,8 @@ MuJoCo model inspect
 - 对应 A 项目文件:
   - `projects/A_self_baseline/scripts/02_configuration_site_pose.py`
   - `projects/A_self_baseline/scripts/03_site_jacobian_check.py`
-  - `projects/A_self_baseline/scripts/04_dls_differential_ik.py`
-  - `projects/A_self_baseline/scripts/05_task_limit_qp_ik.py`
+  - `projects/A_self_baseline/scripts/04_ik_dls_wrapper.py`
+  - `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
 - 学习任务:
   - 标出 A 项目已经手写实现的 mink 概念。
   - 标出暂时不应该照搬的 mink 抽象。
@@ -164,3 +164,4 @@ MuJoCo model inspect
 - 第 5 天: 读 `05_solve_ik.md` 和 `solve_ik.py`。
 - 第 6 天: 读 `06_compare_with_A_self_baseline.md`，补对照表。
 - 第 7 天: 回头重读 `arm_ur5e.py`，确认整个闭环能从头讲出来。
+

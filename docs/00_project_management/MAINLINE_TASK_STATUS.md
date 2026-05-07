@@ -1,4 +1,4 @@
-# Mainline Task Status
+﻿# Mainline Task Status
 
 # 主线任务状态
 
@@ -89,10 +89,10 @@ projects/A_self_baseline/
 | `01_model_inspect.py` | MuJoCo 模型检查 |
 | `02_configuration_site_pose.py` | configuration 与 site pose 查询 |
 | `03_site_jacobian_check.py` | site Jacobian 检查 |
-| `04_dls_differential_ik.py` | DLS differential IK |
-| `05_task_limit_qp_ik.py` | task/limit QP-IK |
-| `06_target_mocap_tracking.py` | target mocap tracking |
-| `07_mujoco_actuator_tracking.py` | MuJoCo actuator tracking |
+| `04_ik_dls_wrapper.py` | DLS differential IK |
+| `05_ik_qp_wrapper.py` | task/limit QP-IK |
+| `06_target_viewer_wrapper.py` | target mocap tracking |
+| `07_actuator_wrapper.py` | MuJoCo actuator tracking |
 | `08_collision_avoidance_todo.py` | collision avoidance TODO |
 | `09_comparison_report.py` | 对比报告 |
 | `10_demo_showcase_video.py` | demo showcase video |
@@ -163,3 +163,4 @@ docs/archive/project_history/
 4. 实现 B01 最小 MuJoCo 单关节 MPC 仿真。
 5. 导出 B01 MP4 视频和 metrics。
 6. 再进入 B02 二连杆 MPC 或 C01/D01 的简化 QP demo。
+

@@ -1,4 +1,4 @@
-# 05 - solve_ik 源码拆解
+﻿# 05 - solve_ik 源码拆解
 
 ## 本节目标
 
@@ -88,7 +88,7 @@ mink 的 differential IK 返回的是速度 `dq`，然后由 configuration 或�
 
 ## 和 A 项目的关系
 
-A 项目的 `05_task_limit_qp_ik.py` 已经实现了最小 QP-IK 教学版。
+A 项目的 `05_ik_qp_wrapper.py` 已经实现了最小 QP-IK 教学版。
 
 阅读 mink 的 `solve_ik.py` 时，可以重点比较：
 
@@ -171,3 +171,4 @@ A 项目的 `05_task_limit_qp_ik.py` 已经实现了最小 QP-IK 教学版。
   - 记录 `v = delta_q / dt`。
 - 验收:
   - 能解释为什么 `configuration.integrate_inplace(vel, dt)` 能和 `solve_ik` 接上。
+

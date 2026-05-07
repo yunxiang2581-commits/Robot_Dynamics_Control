@@ -1,4 +1,4 @@
-# 07 - mink 文件作用与阅读顺序总索引
+﻿# 07 - mink 文件作用与阅读顺序总索引
 
 ## 本文件目标
 
@@ -152,8 +152,9 @@
 - 对照:
   - `scripts/02_configuration_site_pose.py`
   - `scripts/03_site_jacobian_check.py`
-  - `scripts/04_dls_differential_ik.py`
-  - `scripts/05_task_limit_qp_ik.py`
+  - `scripts/04_ik_dls_wrapper.py`
+  - `scripts/05_ik_qp_wrapper.py`
 - 产出: 补全对照表。
 - 标准: 能说清楚 A 项目当前是在复现 mink 的哪些核心概念。
+
 

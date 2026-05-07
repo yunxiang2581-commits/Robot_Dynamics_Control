@@ -1,4 +1,4 @@
-# 02 - Configuration 源码拆解
+﻿# 02 - Configuration 源码拆解
 
 ## 本节目标
 
@@ -66,7 +66,7 @@ A 项目里目前把 Configuration 的功能拆散在几个学习脚本里：
 
 - `02_configuration_site_pose.py`: 学习从 q 更新 MuJoCo data 并查询 site pose。
 - `03_site_jacobian_check.py`: 学习 site Jacobian 和有限差分验证。
-- `04_dls_differential_ik.py`: 学习用 Jacobian 生成 `dq` 并更新状态。
+- `04_ik_dls_wrapper.py`: 学习用 Jacobian 生成 `dq` 并更新状态。
 
 mink 把这些能力收敛到一个类里。A 项目先拆开学，是为了看清每一步的数学意义。
 
@@ -138,3 +138,4 @@ mink 把这些能力收敛到一个类里。A 项目先拆开学，是为了看�
   - 找出 `mujoco.mj_integratePos` 的调用位置。
 - 验收:
   - 能说明 `nq` 和 `nv` 为什么可能不同。
+
