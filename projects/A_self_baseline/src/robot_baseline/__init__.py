@@ -1,16 +1,9 @@
 """A self baseline robotics learning package.
 
-The package currently contains TODO skeletons only. Implement modules in the
-learning order documented in `docs/self_baseline_learning_scripts_plan.md`.
+当前最小化保留：只暴露 A01-A03 已实际使用的 model_loader。
+后续如果重新需要 kinematics / IK / control helper，再按学习步骤增量创建。
 """
 
 __all__ = [
     "model_loader",
-    "kinematics",
-    "jacobian_check",
-    "ik",
-    "qp_ik",
-    "pd_controller",
-    "mini_wbc",
-    "metrics",
 ]

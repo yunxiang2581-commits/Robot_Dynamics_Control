@@ -178,3 +178,17 @@ Step 12A-R 在保留现有 A04 代码的基础上补充 pose-aware DLS IK 规划
 A05 当前已完成最小 box-constrained QP-IK，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 的 Markdown 文档 `05_task_limit_qp_ik.md` 已补充 QP-IK 算法细节，并已输出 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
 
 当前默认 `scipy.optimize` 后端收敛：初始位置误差约 `0.03`，最终位置误差约 `9.96e-4`，q trajectory shape 为 `(176, 6)`，max constraint violation 为 `0.0`。A05 不调用 mink，不进入 actuator tracking，也不加入 collision avoidance。
+
+## 11. A06 Target / Mocap-Style Tracking TODO Skeleton 状态
+
+Step 14A 已将 A06 更新为 target / mocap-style tracking TODO learning skeleton。A06 依赖 A04/A05 的 trajectory，负责定义和记录 target pose、target mode、selected IK backend 和 `trajectory_source`，不重新实现 A05，也不执行 A07 actuator tracking。
+
+A06 Markdown 文档 `06_target_mocap_tracking.md` 已补充 target pose、fixed target、pose sequence、mocap-style target、误差公式、符号表、物理意义、伪代码、验证标准和常见错误。后续规划输出为 `outputs/cache/A06_target_definition.json`、`outputs/logs/A06_target_tracking.csv`、`outputs/figures/A06_target_path_preview.png` 和 `outputs/reports/A06_target_tracking_report.md`。
+
+A06 的最小实现将在 Step 14B 完成。下一步仍是 A06，不跳到 A07。
+
+## 12. Step R-A Unified Motion Interface 状态
+
+Step R-A 将 A04/A05/A06/A07 规划为统一 motion interface：`TargetDefinition -> IkRequest -> IkResult / trajectory -> ViewerTarget TODO -> ActuatorTrackingSpec`。A06 负责定义 target，A04/A05 负责根据 target 求 IK，A07 负责 actuator tracking。viewer target / mocap target 只是 target 来源，不是 actuator control。
+
+当前只完成接口和 TODO skeleton，不调用 mink、不写 `data.ctrl`、不启动 viewer、不生成 video。A04/A05 旧的完整脚本逻辑已折叠为后续迁移到 `ik_interface.py` 的 TODO，已生成的 A04/A05 outputs 不删除。

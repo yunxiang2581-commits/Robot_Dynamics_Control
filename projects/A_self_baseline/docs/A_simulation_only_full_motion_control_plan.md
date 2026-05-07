@@ -68,7 +68,7 @@ A00-A10 是第一阶段主线。A11-A18 是第二阶段扩展。不要把 A11-A1
 | A03 | site Jacobian check | 第一阶段 | 验证 `site velocity = J(q) dq` | A02 pose、target site、`q`、`dq`、`dt` | Jacobian check JSON、report、error figure | `J dq` 与 finite difference velocity 对齐 | 最小实现已完成 |
 | A04 | DLS differential IK | 第一阶段 | 实现最小无约束 differential IK | target pose、current pose、J、damping、gain | q trajectory、error log、report | 误差下降，轨迹无 NaN | 最小实现已完成 |
 | A05 | task + limit + QP-IK | 第一阶段 | 加入 task、limit 和最小 QP-IK | task、limit、QP weights | QP-IK trajectory、constraint log | 满足速度/位置限制，误差可解释 | 已完成最小 box-constrained QP-IK |
-| A06 | target / mocap-style tracking | 第一阶段 | 管理 fixed target 和后续 mocap-style target | fixed target、site pose、IK output | target tracking log、report | target、site、误差关系清楚 | 待做 |
+| A06 | target / mocap-style tracking | 第一阶段 | 管理 fixed target 和后续 mocap-style target | fixed target、site pose、IK output | target tracking log、report | target、site、误差关系清楚 | TODO learning skeleton 已补充 |
 | A07 | MuJoCo actuator tracking | 第一阶段 | 把 A04/A05 轨迹送入 MuJoCo actuator | `q_des`/`dq_des`、actuator names | tracking log、error figure、video | actuator 维度正确，tracking error 有界 | 待做 |
 | A08 | collision avoidance TODO | 第二阶段 | 记录避障约束扩展方式 | A05 QP-IK、collision geometry | collision avoidance TODO doc | 说明为什么在 QP-IK 后接入 | TODO/later |
 | A09 | comparison report | 第一阶段 | 对比自己实现和 mink 抽象 | A01-A08 reports/logs | comparison report | 能说明实现差距和后续补齐顺序 | 待做 |
@@ -280,3 +280,21 @@ Step 12A-R 追加了 pose-aware DLS IK 规划，仍不改变当前实现顺序�
 A05 当前已完成最小 box-constrained QP-IK，依赖 A04 的 position-mode DLS IK 结果作为无约束对照。A05 的 Markdown 文档已经补充 QP-IK 算法细节，并已输出 `outputs/trajectories/A05_qp_ik_q_traj.npy`、`outputs/logs/A05_qp_ik_error.csv`、`outputs/logs/A05_qp_ik_constraints.csv`、`outputs/figures/A05_qp_ik_error.png` 和 `outputs/reports/A05_qp_ik_report.md`。
 
 当前默认 `scipy.optimize` 后端收敛，初始位置误差约 `0.03`，最终位置误差约 `9.96e-4`，q trajectory shape 为 `(176, 6)`，max constraint violation 为 `0.0`。A05 不进入 actuator tracking、不加入 collision avoidance、不生成 video。
+
+## 10. A06 target / mocap-style tracking TODO skeleton 状态
+
+Step 14A 已将 A06 更新为 target / mocap-style tracking TODO learning skeleton。A06 依赖 A04/A05 的 trajectory，负责管理 fixed target、pose sequence、mocap-style target placeholder、selected IK backend 和 `trajectory_source`，不重新实现 IK，也不执行 actuator tracking。
+
+A06 Markdown 文档 `06_target_mocap_tracking.md` 已补充 target pose 和 mocap-style target 算法细节，包括误差公式、符号表、物理意义、伪代码、验证标准和常见错误。A06 后续规划输出为 `outputs/cache/A06_target_definition.json`、`outputs/logs/A06_target_tracking.csv`、`outputs/figures/A06_target_path_preview.png` 和 `outputs/reports/A06_target_tracking_report.md`。
+
+A06 的最小实现将在 Step 14B 完成。下一步仍是 A06，不跳到 A07。
+
+## 11. Step R-A unified motion interface 状态
+
+Step R-A 新增 `motion_task.yaml` 和 `src/robot_baseline/` 下的统一接口 skeleton，用于把 A04/A05/A06/A07 串成：
+
+```text
+TargetDefinition -> IkRequest -> IkResult / trajectory -> ViewerTarget TODO -> ActuatorTrackingSpec
+```
+
+当前只做接口重构和 TODO learning skeleton。A04/A05 旧完整逻辑需要后续迁移到 `ik_interface.py`；A06 继续作为 target manager；A07 才执行 actuator tracking。当前未启动 viewer、未写 `data.ctrl`、未生成 video、未调用 mink。
