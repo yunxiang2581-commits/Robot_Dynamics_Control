@@ -15,4 +15,3 @@
 | `rl_reward_notes.md` | reward 拆解 | 至少拆解 5 类 reward |
 | `rl_termination_notes.md` | termination 拆解 | 能说明 episode 结束条件 |
 | `unitree_sim2real_notes.md` | Sim2Real 分析 | 能说明部署输入和安全限制 |
-
