@@ -14,9 +14,19 @@ external/open_source_repos/legged_control/
 
 ## 1. 项目定位
 
-D 是当前第三优先级项目。
+D 是当前第三优先级项目，用于在 B/C 的 OpenLoong 人形主线之外，补充腿式机器人通用 NMPC-WBC-contact-state-estimation 知识。
 
 目标是从 legged_control 学习四足机器人 NMPC + WBC + state estimation 控制栈，并抽象为 simulation-only 的简化四足仿真 demo。
+
+当前 BCD 路线为：
+
+```text
+B: OpenLoong-oriented humanoid MPC prototype
+C: OpenLoong MPC-WBC-PVT full control-chain study
+D: legged NMPC-WBC-contact-estimation generalization
+```
+
+D 不抢 B/C 的 OpenLoong 人形主线，而是补充 contact schedule、friction cone、contact force QP、NMPC-WBC interface 和 state estimation 等通用腿式控制概念。
 
 ## 2. 当前状态
 

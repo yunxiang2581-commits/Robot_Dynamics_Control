@@ -2,3 +2,6 @@ mujoco
 numpy
 matplotlib
 scipy
+osqp
+PyYAML
+pytest
