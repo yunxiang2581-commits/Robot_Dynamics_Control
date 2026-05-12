@@ -70,6 +70,25 @@
 - horizon：每次优化向未来看多远。
 - receding horizon：每次只执行优化序列的第一个控制量，然后重新观测、重新优化。
 
+### Underactuated Nonlinear Balance
+
+B04 小车倒立二阶摆用于学习欠驱动非线性平衡控制。
+
+学习理解：
+
+- 欠驱动：系统自由度多于直接控制输入，例如小车倒立二阶摆只有小车水平力一个控制输入，却要同时影响小车位置和两节摆杆角度。
+- 非线性：摆杆角度和速度通过三角函数、惯性耦合进入动力学，不能只用简单线性误差理解。
+- 不稳定平衡点：摆杆竖直向上本身不稳定，控制器必须持续修正。
+- terminal cost：horizon 末端状态很重要，尤其是 swing-up 或稳定任务。
+- constraint：小车轨道范围和控制力限制会显著影响可行性。
+
+它连接后续 OpenLoong 站立平衡 MPC：
+
+```text
+cart force -> double pendulum balance
+joint / torque target -> pelvis / torso / foot balance
+```
+
 ## 待源码确认的问题
 
 - MJPC 中 residual 是如何注册和组合的。

@@ -16,13 +16,13 @@ D: legged NMPC-WBC-contact-estimation generalization
 先最小 demo，再升级到 OpenLoong 人形 MPC。
 ```
 
-这个路线的优点是最稳：B01-B03 用小模型把 MPC 闭环拆清楚，B04-B06 才切到 OpenLoong 人形模型。
+这个路线的优点是最稳：B01-B03 用小模型把 MPC 闭环拆清楚，B04 用小车倒立二阶摆学习欠驱动非线性平衡，B05-B07 才切到 OpenLoong 人形模型。
 
 ## 2. Project B：MPC 核心与 OpenLoong 人形原型
 
 B 的任务是把 MPC 的核心概念变成可运行、可解释、可验证的 simulation-only 原型。
 
-### B01-B03：概念验证
+### B01-B03：基础概念验证
 
 ```text
 B01_single_joint_mpc_demo
@@ -38,15 +38,28 @@ MPC 闭环到底如何从 state、rollout、horizon cost、control selection 组
 
 它们不是最终成果，而是给 OpenLoong 人形阶段降维。
 
-### B04-B06：OpenLoong 人形主线
+### B04：欠驱动非线性平衡过渡任务
 
 ```text
-B04_openloong_model_mpc_setup
-B05_openloong_standing_balance_mpc
-B06_openloong_weight_shift_or_stepping_mpc
+B04_cart_double_inverted_pendulum_mpc
 ```
 
-B04 先理解 OpenLoong MuJoCo 模型：
+B04 连接 B03 和 OpenLoong 人形站立平衡：
+
+- 小车倒立二阶摆是欠驱动系统。
+- 两节摆杆的竖直向上姿态是不稳定平衡点。
+- 控制输入只有小车水平力，但任务 residual 同时包含小车位置、摆杆角度、速度和控制力。
+- 它比单关节、二连杆更接近人形平衡问题，但还没有 OpenLoong 的高维 floating-base 和复杂接触。
+
+### B05-B07：OpenLoong 人形主线
+
+```text
+B05_openloong_model_mpc_setup
+B06_openloong_standing_balance_mpc
+B07_openloong_weight_shift_or_stepping_mpc
+```
+
+B05 先理解 OpenLoong MuJoCo 模型：
 
 - `qpos` / `qvel`。
 - actuator。
@@ -54,7 +67,7 @@ B04 先理解 OpenLoong MuJoCo 模型：
 - pelvis / torso / feet。
 - contact candidates。
 
-B05 做第一版人形 MPC 成果：
+B06 做第一版人形 MPC 成果：
 
 - 站立平衡。
 - pelvis 高度 residual。
@@ -63,7 +76,7 @@ B05 做第一版人形 MPC 成果：
 - torque cost。
 - MP4 与 metrics。
 
-B06 再做更接近运动控制的问题：
+B07 再做更接近运动控制的问题：
 
 - 左右重心转移。
 - 或最小小步踏步。
@@ -117,17 +130,19 @@ D 不应抢 B/C 的 OpenLoong 人形主线，而是补充通用腿式控制知�
 2. B01 可运行仿真 + metrics
 3. B02 二连杆 tracking
 4. B03 predictive sampling
-5. B04 OpenLoong 模型状态摘要
-6. B05 OpenLoong 站立平衡 MPC
-7. C01 接触力分配 / WBC-QP 数学整理
-8. B06 OpenLoong 重心转移或小步踏步
-9. D01 四足 contact force QP
+5. B04 小车倒立二阶摆 MPC
+6. B05 OpenLoong 模型状态摘要
+7. B06 OpenLoong 站立平衡 MPC
+8. C01 接触力分配 / WBC-QP 数学整理
+9. B07 OpenLoong 重心转移或小步踏步
+10. D01 四足 contact force QP
 ```
 
 这样安排的原因是：
 
 - B01-B03 先把 MPC 的数学闭环拆小。
-- B04-B06 让 B 的最终成果变成人形 MPC。
+- B04 先引入欠驱动非线性平衡，作为人形站立前的过渡。
+- B05-B07 让 B 的最终成果变成人形 MPC。
 - C 接住 OpenLoong 的完整 MPC-WBC-PVT 控制链。
 - D 把接触、NMPC、WBC、状态估计泛化到腿式机器人。
 

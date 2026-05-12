@@ -1,6 +1,8 @@
 mujoco
 numpy
 matplotlib
+imageio
+imageio-ffmpeg
 scipy
 osqp
 PyYAML

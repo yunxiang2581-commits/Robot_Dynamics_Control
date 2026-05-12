@@ -14,6 +14,20 @@ Project B 不是纯资料阅读项目。最终需要实现一个基于 MuJoCo �
 4. 导出 mp4 视频 demo。
 5. 记录 final error、mean tracking error、max torque、runtime per control step。
 
+## Project B Visual Output Rule
+
+每个 demo 必须输出：
+
+```text
+video + figures + metrics + logs
+```
+
+Project B 不再接受“只有代码”或“只有日志”的任务完成方式。每个任务都必须做到“算法可解释、仿真可观看、误差可量化、结果可复现”。
+
+最低要求见：
+
+- [09_visualization_requirements.md](docs/09_visualization_requirements.md)
+
 ## 当前阶段边界
 
 本次只做目录和 Markdown 计划：
@@ -47,6 +61,9 @@ Project B 不是纯资料阅读项目。最终需要实现一个基于 MuJoCo �
 - [06_next_questions.md](docs/06_next_questions.md)
 - [07_simulator_and_video_demo_plan.md](docs/07_simulator_and_video_demo_plan.md)
 - [08_source_repo_detailed_introduction.md](docs/08_source_repo_detailed_introduction.md)
+- [09_visualization_requirements.md](docs/09_visualization_requirements.md)
+- [B01_config_reference.md](docs/B01_config_reference.md)
+- [B02_learning_notes.md](docs/B02_learning_notes.md)
 - [simulator/README.md](simulator/README.md)
 - [literature_and_links.md](notes/literature_and_links.md)
 
@@ -58,16 +75,24 @@ Project B 不是纯资料阅读项目。最终需要实现一个基于 MuJoCo �
 
 结果目录：
 
-- `outputs/videos/`
-- `outputs/figures/`
-- `outputs/logs/`
-- `outputs/metrics/`
+- `outputs/runs/<task_name>/<run_id>/videos/`
+- `outputs/runs/<task_name>/<run_id>/figures/`
+- `outputs/runs/<task_name>/<run_id>/logs/`
+- `outputs/runs/<task_name>/<run_id>/metrics/`
 
 ## 规范化项目骨架补充
 
 ### 项目定位
 
 Project B 用于学习 MuJoCo MPC / MJPC 的 task、cost、residual、rollout、planner、horizon 和 receding horizon control，并把这些概念抽象成当前仓库内可解释、可复现的 simulation-only MuJoCo MPC 仿真项目。
+
+最新路线采用：
+
+```text
+B01-B03：最小模型 MPC 概念验证。
+B04：小车倒立二阶摆，学习欠驱动非线性平衡。
+B05-B07：切到 OpenLoong 人形模型，服务后续 Project C 的 MPC-WBC-PVT 控制链。
+```
 
 ### 对应开源项目
 
@@ -89,6 +114,8 @@ Project B 只做仿真和离线算法复现：
 - MuJoCo 单关节模型。
 - MuJoCo 二连杆机械臂模型。
 - rollout / predictive sampling 教学 demo。
+- 小车倒立二阶摆欠驱动平衡 demo。
+- OpenLoong 人形模型接入、站立平衡、重心转移或小步踏步 demo。
 - 视频导出和 metrics 记录。
 
 ### 不做实物部署声明
@@ -101,9 +128,33 @@ Project B 只做仿真和离线算法复现：
 
 - runnable simulator。
 - mp4 video demo。
+- figures：tracking、error、torque、cost、runtime 等曲线。
 - 可复现实验命令。
 - metrics 输出。
+- run log。
 - README 运行说明。
+
+没有可视化输出的任务不算完成；没有 metrics 的视频不算完成；没有 README 复现命令的结果不算完成；没有解释图像含义的结果不算完成。
+
+### 配置文件优先
+
+B01 默认实验配置保存在：
+
+```text
+configs/B01_single_joint_mpc.yaml
+```
+
+命令行参数只用于临时覆盖配置项。配置说明见：
+
+```text
+docs/B01_config_reference.md
+```
+
+每次运行结果按任务名和时间单独保存，例如：
+
+```text
+outputs/runs/B01_single_joint_mpc_demo/20260511_153012/
+```
 
 ### 计划 demo 列表
 
@@ -127,6 +178,24 @@ Project B 只做仿真和离线算法复现：
    - receding horizon 执行。
    - 导出轨迹可视化视频。
 
+4. `B04_cart_double_inverted_pendulum_mpc`
+   - 小车倒立二阶摆。
+   - 欠驱动非线性平衡。
+   - 约束小车位置和控制力。
+   - 为 OpenLoong 站立平衡 MPC 做过渡。
+
+5. `B05_openloong_model_mpc_setup`
+   - OpenLoong MuJoCo 模型接入。
+   - 输出 `qpos`、`qvel`、actuator、body、site 和接触候选摘要。
+
+6. `B06_openloong_standing_balance_mpc`
+   - OpenLoong 站立平衡 / 姿态保持。
+   - 输出 pelvis / torso / foot 相关误差、力矩和运行时间指标。
+
+7. `B07_openloong_weight_shift_or_stepping_mpc`
+   - OpenLoong 左右重心转移或小步踏步。
+   - 引入简化 contact schedule 和 foot target residual。
+
 ### simulator/ 目录说明
 
 ```text
@@ -143,10 +212,13 @@ simulator/
 
 ```text
 outputs/
-├── videos/        # mp4 demo
-├── figures/       # tracking error、torque、cost 曲线
-├── logs/          # 控制日志和运行日志
-└── metrics/       # final error、mean error、runtime 等指标
+└── runs/
+    └── <task_name>/
+        └── <run_id>/       # 默认使用当前时间 YYYYMMDD_HHMMSS
+            ├── videos/    # mp4 demo
+            ├── figures/   # tracking error、torque、cost 曲线
+            ├── logs/      # 控制日志和运行日志
+            └── metrics/   # final error、mean error、runtime 等指标
 ```
 
 ### 与 A_self_baseline 的关系
@@ -157,4 +229,6 @@ outputs/
 
 1. 先实现 `B01_single_joint_mpc_demo` 的模型、rollout、cost、metrics 和视频导出。
 2. 再实现 `B02_two_link_mpc_tracking_demo`，连接末端轨迹 tracking。
-3. 最后实现 `B03_rollout_predictive_sampling_demo`，展示多 rollout 选择和 receding horizon。
+3. 实现 `B03_rollout_predictive_sampling_demo`，展示多 rollout 选择和 receding horizon。
+4. 实现 `B04_cart_double_inverted_pendulum_mpc`，学习欠驱动非线性平衡。
+5. 再切到 OpenLoong，完成 B05-B07 的人形 MPC 主线。

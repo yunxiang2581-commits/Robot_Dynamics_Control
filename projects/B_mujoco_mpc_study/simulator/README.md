@@ -10,6 +10,10 @@
 python simulator/run_demo.py --demo B01_single_joint_mpc_demo --export-video
 python simulator/run_demo.py --demo B02_two_link_mpc_tracking_demo --export-video
 python simulator/run_demo.py --demo B03_rollout_predictive_sampling_demo --export-video
+python simulator/run_demo.py --demo B04_cart_double_inverted_pendulum_mpc --export-video
+python simulator/run_demo.py --demo B05_openloong_model_mpc_setup
+python simulator/run_demo.py --demo B06_openloong_standing_balance_mpc --export-video
+python simulator/run_demo.py --demo B07_openloong_weight_shift_or_stepping_mpc --export-video
 ```
 
 当前命令只是后续 TODO skeleton 设计，本次不实现、不执行。
@@ -18,15 +22,15 @@ python simulator/run_demo.py --demo B03_rollout_predictive_sampling_demo --expor
 
 - MuJoCo XML 或最小模型定义。
 - 初始状态。
-- 目标角度、末端轨迹或参考状态。
+- 目标角度、末端轨迹、倒立摆竖直目标、人形 pelvis / torso / foot 参考状态。
 - MPC horizon、采样数量、cost 权重、torque limit。
 
 ## 输出
 
-- 视频：`outputs/videos/`
-- 曲线：`outputs/figures/`
-- 日志：`outputs/logs/`
-- 指标：`outputs/metrics/`
+- 视频：`outputs/runs/<task_name>/<run_id>/videos/`
+- 曲线：`outputs/runs/<task_name>/<run_id>/figures/`
+- 日志：`outputs/runs/<task_name>/<run_id>/logs/`
+- 指标：`outputs/runs/<task_name>/<run_id>/metrics/`
 
 ## 计划文件接口
 

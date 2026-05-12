@@ -26,7 +26,7 @@ B: 当前状态 + 未来目标 -> horizon rollout -> 未来 cost -> 执行第一
 路线 2：B 先最小 demo，再升级到 OpenLoong 人形 MPC。
 ```
 
-B01-B03 用小模型验证 MPC 概念，避免一开始就把模型维度、接触、floating-base、控制约束全部混在一起。B04-B06 再切到 OpenLoong，成为后续 Project C 的前置层。
+B01-B03 用小模型验证 MPC 概念，避免一开始就把模型维度、接触、floating-base、控制约束全部混在一起。B04 加入小车倒立二阶摆，用欠驱动非线性平衡连接到人形站立问题。B05-B07 再切到 OpenLoong，成为后续 Project C 的前置层。
 
 ## 适合借鉴给 A 的内容
 

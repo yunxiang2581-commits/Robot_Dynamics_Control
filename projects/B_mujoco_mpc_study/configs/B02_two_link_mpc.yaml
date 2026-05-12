@@ -1,0 +1,46 @@
+# B02 二连杆 MPC tracking 默认实验配置
+#
+# 设计原则：
+# - 配置文件记录可复现实验参数。
+# - 命令行参数只用于临时覆盖。
+# - 路径相对 Project B 根目录解析。
+
+model:
+  path: simulator/models/B02_two_link.xml
+  end_effector_site: ee_site
+
+target_trajectory:
+  type: circle
+  center: [0.55, 0.25]
+  radius: 0.08
+  angular_speed: 1.0
+
+initial_state:
+  q: [0.3, 0.4]
+  dq: [0.0, 0.0]
+
+simulation:
+  dt: 0.01
+  num_steps: 300
+
+mpc:
+  horizon: 15
+  num_candidates: 256
+  torque_limit: 2.0
+
+cost:
+  ee_weight: 20.0
+  dq_weight: 0.1
+  torque_weight: 0.002
+  terminal_weight: 5.0
+
+outputs:
+  root: outputs/runs
+  run_id:
+  export_video: true
+  save_figures: true
+  save_metrics: true
+
+viewer:
+  show: false
+  real_time: true

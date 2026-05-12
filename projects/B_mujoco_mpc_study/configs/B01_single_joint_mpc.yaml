@@ -1,0 +1,48 @@
+# B01 单关节 MPC 默认实验配置
+#
+# 设计原则：
+# - 配置文件记录可复现实验参数。
+# - 命令行参数只用于临时覆盖。
+# - 路径相对 Project B 根目录解析。
+
+model:
+  path: simulator/models/B01_single_joint.xml
+
+target:
+  angle: 1
+  # profile:
+  # - step: 从第 0 步开始直接使用最终目标角，适合看阶跃响应。
+  # - ramp: 在 ramp_duration 内线性过渡到最终目标角。
+  # - smooth: 在 ramp_duration 内用 smoothstep 平滑过渡到最终目标角，起止速度为 0。
+  profile: smooth
+  ramp_duration: 0.5
+
+initial_state:
+  q: 0.0
+  dq: 0.0
+
+simulation:
+  dt: 0.01
+  num_steps: 300
+
+mpc:
+  horizon: 10
+  num_candidates: 128
+  torque_limit: 1.9
+
+cost:
+  q_weight: 8.0
+  dq_weight: 0.10
+  torque_weight: 0.002
+  terminal_weight: 1.0
+
+outputs:
+  export_video: true
+  save_figures: true
+  save_metrics: true
+
+viewer:
+  # show 为 true 时会打开 MuJoCo 实时窗口；自动调参和批量验收建议保持 false。
+  show: false
+  # real_time 为 true 时，脚本按 simulation.dt 控制播放节奏。
+  real_time: true

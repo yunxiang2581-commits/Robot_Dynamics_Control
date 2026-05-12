@@ -61,7 +61,7 @@ Project B 的最终交付不是“读过 MJPC”，而是自建一个 simulation
 ## 仿真模拟器交付要求
 
 - runnable simulator：后续在 `simulator/` 中实现。
-- simulation video demo：保存到 `outputs/videos/`。
+- simulation video demo：保存到 `outputs/runs/<task_name>/<run_id>/videos/`。
 - video export script：规划为 `simulator/record_video.py`。
 - reproducible command：规划为 `python simulator/run_demo.py --demo <demo_name> --export-video`。
-- demo metrics：保存到 `outputs/metrics/`。
+- demo metrics：保存到 `outputs/runs/<task_name>/<run_id>/metrics/`。
