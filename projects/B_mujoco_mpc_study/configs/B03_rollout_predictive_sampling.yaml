@@ -1,0 +1,55 @@
+# B03 rollout predictive sampling TODO skeleton 配置
+#
+# 本配置只用于 Step B03-A 的学习骨架：
+# - 不替代 B02 benchmark / regression 配置。
+# - 不自动运行长时间 MuJoCo 仿真。
+# - 不生成正式 B03 MP4。
+
+demo:
+  name: B03_rollout_predictive_sampling_demo
+  description: Predictive sampling, rollout ranking, and selected-rollout visualization learning skeleton.
+
+simulation:
+  dt: 0.01
+  num_steps: 120
+  seed: 42
+
+model:
+  source: B02_two_link
+  path: simulator/models/B02_two_link.xml
+  end_effector_site: ee_site
+
+target:
+  type: circle
+  center: [0.58, 0.28]
+  radius: 0.08
+  angular_speed: 0.6
+
+planner:
+  horizon: 12
+  num_candidates: 128
+  control_dim: 2
+  torque_limit: 10.0
+  sampling_std: 2.0
+
+cost:
+  ee_weight: 80.0
+  dq_weight: 0.1
+  torque_weight: 0.002
+  terminal_weight: 10.0
+
+visualization:
+  max_rollouts_to_draw: 24
+  draw_candidate_rollouts: true
+  draw_best_rollout: true
+  draw_actual_trajectory: true
+  draw_current_target: true
+  draw_cost_summary: true
+  export_video: false
+  save_figures: false
+  save_metrics: true
+
+outputs:
+  root: outputs/runs
+  run_group: B03_rollout_predictive_sampling_demo
+  run_id:

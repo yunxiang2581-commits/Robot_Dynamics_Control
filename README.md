@@ -4,6 +4,8 @@
 
 `Robot_Dynamics_Control` is a simulation-only robotics motion-control learning repository. The current main line is Project A, which builds a readable baseline before later B/C/D simulation studies.
 
+Project B is also active as the MuJoCo MPC learning line. B02 already provides the two-link MPC tracking baseline, while B03 has now been redefined as an MPC solver ladder demo covering sampling, CEM, MPPI, iLQG, SQP, and direct multiple shooting NMPC skeletons on simple models. B03 does not replace B02; keep B02 benchmark / regression baselines as the health checks before expanding B03.
+
 Project A is now split into two layers:
 
 - Foundation validation layer: A00-A03.
@@ -52,6 +54,8 @@ A04-A07 are now thin TODO learning wrappers around those interfaces:
 
 R1: finish `TargetDefinition` load/save/validate.
 
+Project B next step: continue B03-R1 by implementing the sampling-family core logic first, especially random shooting, warm-start predictive sampling, CEM-MPC, and MPPI-lite.
+
 ## Project A Wrapper Entries
 
 A04/A05/A06/A07 are now complete-scope TODO learning skeletons:
@@ -79,3 +83,5 @@ The TODO scope is full: DLS, QP-IK, target/viewer, and actuator routes are all p
 - [Project roadmap](docs/00_project_management/PROJECT_ROADMAP.md)
 - [A project README](projects/A_self_baseline/README.md)
 - [A four-interface plan](projects/A_self_baseline/docs/A_four_interface_refactor_plan.md)
+- [Project B README](projects/B_mujoco_mpc_study/README.md)
+- [B03 MPC solver ladder demo](projects/B_mujoco_mpc_study/docs/B03_mpc_solver_ladder/B03_MPC_SOLVER_LADDER.md)

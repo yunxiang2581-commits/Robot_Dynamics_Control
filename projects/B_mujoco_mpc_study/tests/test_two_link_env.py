@@ -34,8 +34,9 @@ def test_two_link_env_reset_set_state_and_step_keep_finite_state() -> None:
     env.set_state((0.2, 0.1, 0.0, 0.0))
     next_state = env.step((100.0, -100.0))
 
-    assert env.data.ctrl[0] == pytest.approx(2.0)
-    assert env.data.ctrl[1] == pytest.approx(-2.0)
+    assert env.data.ctrl[0] == pytest.approx(10.0)
+    assert env.data.ctrl[1] == pytest.approx(-10.0)
+    assert env.get_last_applied_torque() == pytest.approx((10.0, -10.0))
     assert len(next_state) == 4
     assert all(math.isfinite(value) for value in next_state)
 
@@ -53,3 +54,22 @@ def test_two_link_rollout_returns_horizon_plus_one_and_restores_state() -> None:
     assert len(states) == 4
     assert states[0] == (0.0, 0.0, 0.0, 0.0)
     assert env.get_state() == pytest.approx(real_state)
+
+
+def test_render_frame_with_scene_geoms_returns_rgb_array() -> None:
+    env = TwoLinkEnv(dt=0.01)
+    env.reset(q=(0.3, 0.4), dq=(0.0, 0.0))
+
+    frame = env.render_frame_with_scene_geoms(
+        [
+            {
+                "geom_type": "sphere",
+                "pos": (0.4, 0.2, 0.0),
+                "size": (0.02, 0.02, 0.02),
+                "rgba": (1.0, 0.0, 0.0, 1.0),
+            }
+        ]
+    )
+
+    assert frame.ndim == 3
+    assert frame.shape[2] == 3

@@ -43,6 +43,7 @@ projects/*/outputs/videos/*
 projects/*/outputs/logs/*
 !projects/*/outputs/logs/.gitkeep
 projects/*/outputs/runs/
+projects/*/outputs/test_runner_dirs/
 projects/*/reproduce_logs/*.log
 
 third_party/

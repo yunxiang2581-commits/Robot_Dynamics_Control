@@ -44,4 +44,19 @@ class TwoLinkMPCController:
         - 数学意义：从最优序列 `u_0:H-1` 中取 `u_0`。
         - 验证标准：返回值长度为 2，且在 torque limit 内。
         """
-        raise NotImplementedError("TODO: 补全二连杆 MPC 控制器。")
+        plan_result = self.planner.plan(
+            env=env,
+            current_state=current_state,
+            target_sequence=target_sequence,
+        )
+        self.last_plan = plan_result
+
+        if "best_torque" not in plan_result:
+            raise KeyError("planner.plan() 的返回结果缺少 best_torque。")
+
+        best_torque = plan_result["best_torque"]
+        if len(best_torque) != 2:
+            raise ValueError("planner.plan() 返回的 best_torque 必须是 (tau1, tau2)。")
+
+        tau1, tau2 = best_torque
+        return float(tau1), float(tau2)

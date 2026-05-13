@@ -1,0 +1,90 @@
+demo:
+  name: B03_mpc_solver_ladder_demo
+  description: "MPC solver ladder on simple MuJoCo models."
+
+simulation:
+  model_family: two_link
+  num_steps: 200
+  dt: 0.01
+  seed: 0
+
+target:
+  type: circle
+  center: [0.45, 0.10]
+  radius: 0.08
+  frequency: 0.2
+
+benchmark:
+  baseline: B02_two_link_mpc_tracking_demo
+  compare_against_b02: true
+  run_b02_regression_before_b03: true
+
+solvers:
+  enabled:
+    - random_shooting
+    - warm_start_sampling
+    - cem
+    - mppi_lite
+    - ilqg_lite_todo
+    - sqp_mpc_todo
+    - direct_multiple_shooting_todo
+
+sampling:
+  horizon: 16
+  num_candidates: 256
+  control_dim: 2
+  torque_limit: 10.0
+  sampling_std: 2.0
+  seed: 0
+
+cem:
+  horizon: 16
+  num_candidates: 256
+  num_iterations: 3
+  elite_ratio: 0.1
+  initial_std: 2.0
+  min_std: 0.1
+  torque_limit: 10.0
+
+mppi:
+  horizon: 16
+  num_candidates: 256
+  temperature: 1.0
+  noise_std: 2.0
+  torque_limit: 10.0
+
+ilqg_lite:
+  horizon: 32
+  max_iterations: 10
+  line_search: true
+  status: todo_skeleton
+
+sqp_mpc:
+  horizon: 20
+  max_sqp_iterations: 5
+  qp_solver: scipy_or_osqp_todo
+  status: todo_skeleton
+
+direct_multiple_shooting:
+  horizon: 20
+  transcription: multiple_shooting
+  nlp_solver: scipy_or_casadi_todo
+  status: todo_skeleton
+
+cost:
+  ee_weight: 80.0
+  dq_weight: 0.1
+  torque_weight: 0.002
+  terminal_weight: 10.0
+  smoothness_weight: 0.01
+
+visualization:
+  export_video: true
+  render_mode: overlay
+  show_solver_comparison: true
+  show_candidate_rollouts: true
+  show_best_rollout: true
+  show_cost_text: true
+
+outputs:
+  run_group: B03_mpc_solver_ladder_demo

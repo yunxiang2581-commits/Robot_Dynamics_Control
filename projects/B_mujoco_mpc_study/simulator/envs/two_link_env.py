@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import mujoco
+import numpy as np
 
 
 SCRIPT_PATH = Path(__file__).resolve()
@@ -55,6 +56,7 @@ class TwoLinkEnv:
         self.model.opt.timestep = dt
         self.data = mujoco.MjData(self.model)
         self.renderer: Any | None = None
+        self.last_applied_torque: tuple[float, float] = (0.0, 0.0)
 
         if self.model.nq < 2 or self.model.nv < 2:
             raise ValueError("二连杆环境至少需要 2 个 qpos 和 2 个 qvel。")
@@ -124,6 +126,7 @@ class TwoLinkEnv:
         self.data.qvel[self.qvel_ids[0]] = float(dq[0])
         self.data.qvel[self.qvel_ids[1]] = float(dq[1])
         self.data.ctrl[:] = 0.0
+        self.last_applied_torque = (0.0, 0.0)
 
         mujoco.mj_forward(self.model, self.data)
 
@@ -198,9 +201,19 @@ class TwoLinkEnv:
 
         # 清空旧控制输入，避免上一条 rollout 的 torque 影响下一次预测。
         self.data.ctrl[:] = 0.0
+        self.last_applied_torque = (0.0, 0.0)
 
         # 修改 qpos/qvel 后，让 MuJoCo 重新计算 site、body 等派生量。
         mujoco.mj_forward(self.model, self.data)
+
+    def get_last_applied_torque(self) -> tuple[float, float]:
+        """返回上一仿真步真正施加给 actuator 的 torque。
+
+        这个接口用来区分：
+        - controller/planner 给出的原始 torque 命令；
+        - MuJoCo 按 actuator `ctrlrange` 裁剪后的实际执行 torque。
+        """
+        return self.last_applied_torque
 
     def step(self, torque: tuple[float, float] | list[float]) -> tuple[float, float, float, float]:
         """执行一步二连杆仿真。
@@ -217,10 +230,14 @@ class TwoLinkEnv:
         if len(torque) != 2:
             raise ValueError("step 需要 torque=(tau1, tau2)。")
 
+        applied_torque: list[float] = []
         for i, actuator_id in enumerate(self.actuator_ids):
             ctrl_min, ctrl_max = self.model.actuator_ctrlrange[actuator_id]
             clipped_torque = max(float(ctrl_min), min(float(ctrl_max), float(torque[i])))
             self.data.ctrl[actuator_id] = clipped_torque
+            applied_torque.append(clipped_torque)
+
+        self.last_applied_torque = (float(applied_torque[0]), float(applied_torque[1]))
 
         mujoco.mj_step(self.model, self.data)
 
@@ -269,3 +286,66 @@ class TwoLinkEnv:
         frame = self.renderer.render()
 
         return frame
+
+    def render_frame_with_scene_geoms(self, scene_geoms: list[dict[str, Any]]) -> Any:
+        """渲染带 scene marker 的当前帧。
+
+        TODO:
+        - 要实现什么：在 MuJoCo 离屏场景里追加临时 marker 几何体，再输出 RGB 帧。
+        - 为什么需要：第二版 scene marker 和第三版 hybrid render 都需要真实的 3D 场景 marker。
+        - 输入是什么：scene_geoms，列表中每个元素描述一个临时几何体。
+        - 输出是什么：带 scene marker 的 RGB 图像。
+        - 验证标准：至少能渲染 sphere/line 两类临时 geom，且返回 HxWx3 图像。
+        """
+        if self.renderer is None:
+            self.renderer = mujoco.Renderer(self.model, height=480, width=640)
+
+        mujoco.mj_forward(self.model, self.data)
+        self.renderer.update_scene(self.data)
+        scene = self.renderer.scene
+
+        for geom_spec in scene_geoms:
+            if scene.ngeom >= scene.maxgeom:
+                break
+
+            geom = scene.geoms[scene.ngeom]
+            geom_type = geom_spec["geom_type"]
+            size = np.asarray(geom_spec["size"], dtype=np.float64)
+            pos = np.asarray(geom_spec["pos"], dtype=np.float64)
+            rgba = np.asarray(geom_spec["rgba"], dtype=np.float32)
+            mat = np.eye(3, dtype=np.float64).reshape(-1)
+
+            if geom_type == "sphere":
+                mujoco.mjv_initGeom(
+                    geom,
+                    mujoco.mjtGeom.mjGEOM_SPHERE,
+                    size,
+                    pos,
+                    mat,
+                    rgba,
+                )
+            elif geom_type == "line":
+                from_pos = np.asarray(geom_spec["from_pos"], dtype=np.float64)
+                to_pos = np.asarray(geom_spec["to_pos"], dtype=np.float64)
+                mujoco.mjv_initGeom(
+                    geom,
+                    mujoco.mjtGeom.mjGEOM_LINE,
+                    size,
+                    from_pos,
+                    mat,
+                    rgba,
+                )
+                mujoco.mjv_connector(
+                    geom,
+                    mujoco.mjtGeom.mjGEOM_LINE,
+                    float(size[0]),
+                    from_pos,
+                    to_pos,
+                )
+                geom.rgba[:] = rgba
+            else:
+                raise ValueError(f"暂不支持的 scene geom_type: {geom_type}")
+
+            scene.ngeom += 1
+
+        return self.renderer.render()

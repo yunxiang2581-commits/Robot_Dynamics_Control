@@ -1,9 +1,13 @@
-# B02 二连杆 MPC tracking 默认实验配置
+# B02 二连杆 MPC tracking 轻量回归配置
 #
-# 设计原则：
-# - 配置文件记录可复现实验参数。
-# - 命令行参数只用于临时覆盖。
-# - 路径相对 Project B 根目录解析。
+# 目的：
+# - 作为日常 regression baseline
+# - 保留 video + figures + metrics + log 全链路
+# - 控制运行时长，方便频繁回归
+#
+# 注意：
+# - 这个文件不替代正式验收配置 `B02_two_link_mpc.yaml`
+# - 正式 benchmark 仍使用 1000 steps / 768 candidates 的 10Nm 配置
 
 model:
   path: simulator/models/B02_two_link.xml
@@ -23,11 +27,11 @@ initial_state:
 
 simulation:
   dt: 0.01
-  num_steps: 1000
+  num_steps: 100
 
 mpc:
-  horizon: 16
-  num_candidates: 768
+  horizon: 8
+  num_candidates: 64
   torque_limit: 10.0
 
 cost:
@@ -44,5 +48,5 @@ outputs:
   save_metrics: true
 
 viewer:
-  show: true
-  real_time: true
+  show: false
+  real_time: false

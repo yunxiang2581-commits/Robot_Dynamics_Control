@@ -9,7 +9,7 @@
 ```bash
 python simulator/run_demo.py --demo B01_single_joint_mpc_demo --export-video
 python simulator/run_demo.py --demo B02_two_link_mpc_tracking_demo --export-video
-python simulator/run_demo.py --demo B03_rollout_predictive_sampling_demo --export-video
+python simulator/run_demo.py --demo B03_mpc_solver_ladder_demo --export-video
 python simulator/run_demo.py --demo B04_cart_double_inverted_pendulum_mpc --export-video
 python simulator/run_demo.py --demo B05_openloong_model_mpc_setup
 python simulator/run_demo.py --demo B06_openloong_standing_balance_mpc --export-video
