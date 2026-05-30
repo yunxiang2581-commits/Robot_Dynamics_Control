@@ -11,7 +11,9 @@ SIMULATOR_ROOT = REPO_ROOT / "projects" / "B_mujoco_mpc_study" / "simulator"
 if str(SIMULATOR_ROOT) not in sys.path:
     sys.path.insert(0, str(SIMULATOR_ROOT))
 
+MODULES_BEFORE_ROLLOUT_VISUALIZER_IMPORT = set(sys.modules)
 from utils.rollout_visualizer import build_rollout_marker_plan
+MODULES_ADDED_BY_ROLLOUT_VISUALIZER_IMPORT = set(sys.modules) - MODULES_BEFORE_ROLLOUT_VISUALIZER_IMPORT
 
 
 def test_build_rollout_marker_plan_selects_best_rollout() -> None:
@@ -55,4 +57,4 @@ def test_build_rollout_marker_plan_limits_candidate_count() -> None:
 
 
 def test_rollout_visualizer_does_not_import_mujoco() -> None:
-    assert "mujoco" not in sys.modules
+    assert "mujoco" not in MODULES_ADDED_BY_ROLLOUT_VISUALIZER_IMPORT

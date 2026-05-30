@@ -1,3 +1,5 @@
+"""Tests for TwoLinkEnv (requires mujoco)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -12,7 +14,8 @@ SIMULATOR_ROOT = REPO_ROOT / "projects" / "B_mujoco_mpc_study" / "simulator"
 if str(SIMULATOR_ROOT) not in sys.path:
     sys.path.insert(0, str(SIMULATOR_ROOT))
 
-from envs.two_link_env import TwoLinkEnv
+mujoco = pytest.importorskip("mujoco")
+from envs.two_link_env import TwoLinkEnv  # noqa: E402
 
 
 def test_two_link_env_initializes_default_model_and_respects_dt() -> None:

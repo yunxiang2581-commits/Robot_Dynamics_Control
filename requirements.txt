@@ -1,6 +1,7 @@
 mujoco
 numpy
 matplotlib
+seaborn
 imageio
 imageio-ffmpeg
 scipy

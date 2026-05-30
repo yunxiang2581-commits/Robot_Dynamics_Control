@@ -10,7 +10,13 @@ SIMULATOR_ROOT = REPO_ROOT / "projects" / "B_mujoco_mpc_study" / "simulator"
 if str(SIMULATOR_ROOT) not in sys.path:
     sys.path.insert(0, str(SIMULATOR_ROOT))
 
-from utils.solver_benchmark_logger import SolverBenchmarkLogBuffer
+from utils.solver_benchmark_logger import (
+    COMPARISON_METRICS_COLUMNS,
+    SolverBenchmarkLogBuffer,
+    SolverStepRow,
+    build_comparison_metrics_rows,
+    save_comparison_metrics_csv,
+)
 
 
 def _workspace_tmp_dir() -> Path:
@@ -117,3 +123,100 @@ def test_save_summary_csv() -> None:
     lines = output_path.read_text(encoding="utf-8").strip().splitlines()
     assert lines[0].startswith("solver_name,final_ee_error")
     assert len(lines) == 2
+
+
+def _make_step_rows(solver_name: str, n: int = 3) -> list[SolverStepRow]:
+    rows = []
+    for i in range(n):
+        rows.append(
+            SolverStepRow(
+                step=i,
+                time=0.01 * (i + 1),
+                solver_name=solver_name,
+                final_ee_error=0.2 - 0.05 * i,
+                current_ee_error=0.2 - 0.05 * i,
+                best_cost=2.0 - 0.3 * i,
+                runtime_ms=1.0 + 0.1 * i,
+                num_rollouts=64,
+                num_iterations=1,
+                max_abs_torque=0.5 + 0.1 * i,
+                control_smoothness=0.1 + 0.01 * i,
+                trajectory_smoothness=0.05 + 0.005 * i,
+                success=True,
+            )
+        )
+    return rows
+
+
+def test_build_comparison_metrics_rows_returns_one_per_solver() -> None:
+    step_rows_by_solver = {
+        "random_shooting": _make_step_rows("random_shooting"),
+        "cem": _make_step_rows("cem"),
+    }
+
+    rows = build_comparison_metrics_rows(step_rows_by_solver)
+
+    assert len(rows) == 2
+    solver_names = {r["solver_name"] for r in rows}
+    assert solver_names == {"random_shooting", "cem"}
+
+
+def test_build_comparison_metrics_rows_has_required_columns() -> None:
+    step_rows_by_solver = {
+        "mppi_lite": _make_step_rows("mppi_lite"),
+    }
+
+    rows = build_comparison_metrics_rows(step_rows_by_solver)
+
+    assert len(rows) == 1
+    row = rows[0]
+    for col in COMPARISON_METRICS_COLUMNS:
+        assert col in row, f"Missing column: {col}"
+
+
+def test_build_comparison_metrics_rows_values_are_finite() -> None:
+    step_rows_by_solver = {
+        "warm_start_sampling": _make_step_rows("warm_start_sampling"),
+    }
+
+    rows = build_comparison_metrics_rows(step_rows_by_solver)
+
+    row = rows[0]
+    for col in COMPARISON_METRICS_COLUMNS:
+        val = row[col]
+        if col == "solver_name":
+            continue
+        assert isinstance(val, (int, float)), f"{col} should be numeric"
+        assert val == val, f"{col} should not be NaN"  # NaN != NaN
+
+
+def test_build_comparison_metrics_rows_includes_config_fields() -> None:
+    step_rows_by_solver = {
+        "cem": _make_step_rows("cem"),
+    }
+    solver_configs = {
+        "cem": {"horizon": 16, "num_candidates": 256, "num_iterations": 3},
+    }
+
+    rows = build_comparison_metrics_rows(step_rows_by_solver, solver_configs=solver_configs)
+
+    row = rows[0]
+    assert row["horizon"] == 16
+    assert row["num_candidates"] == 256
+    assert row["num_iterations"] == 3
+
+
+def test_save_comparison_metrics_csv_creates_file() -> None:
+    tmp_dir = _workspace_tmp_dir()
+    output_path = tmp_dir / "metrics" / "comparison.csv"
+    step_rows_by_solver = {
+        "random_shooting": _make_step_rows("random_shooting"),
+        "cem": _make_step_rows("cem"),
+    }
+
+    save_comparison_metrics_csv(step_rows_by_solver, output_path)
+
+    assert output_path.exists()
+    lines = output_path.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 3  # header + 2 solvers
+    assert lines[0].startswith("solver_name,")

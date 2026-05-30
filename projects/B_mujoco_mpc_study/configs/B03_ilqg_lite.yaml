@@ -1,0 +1,28 @@
+demo:
+  name: B03_ilqg_lite_demo
+  description: "Toy double-integrator smoke demo for B03-R4B mini iLQR-lite."
+
+simulation:
+  model_family: toy
+  dt: 0.1
+  horizon: 32
+  initial_state: [0.0, 0.0]
+  target_position: 1.0
+  target_velocity: 0.0
+
+ilqg_lite:
+  max_iterations: 10
+  regularization: 1.0e-6
+  finite_difference_eps: 1.0e-5
+  tolerance: 1.0e-8
+  control_limit: 10.0
+  line_search: true
+  line_search_alphas: [1.0, 0.5, 0.25, 0.1, 0.05]
+
+cost:
+  Q: [10.0, 1.0]
+  R: [0.1]
+  Q_terminal: [20.0, 2.0]
+
+outputs:
+  run_group: B03_ilqg_lite_demo

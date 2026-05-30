@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import csv
+import math
 from pathlib import Path
+
+import numpy as np
 
 
 @dataclass(frozen=True)
@@ -204,3 +207,108 @@ class SolverBenchmarkLogBuffer:
                         row.solver_success_rate,
                     ]
                 )
+
+
+def _safe_float(values: list[float], agg: str = "mean") -> float:
+    """对有限值列表做聚合，全为非有限时返回 NaN。"""
+    finite = [v for v in values if math.isfinite(v)]
+    if not finite:
+        return float("nan")
+    if agg == "mean":
+        return float(np.mean(finite))
+    if agg == "max":
+        return float(np.max(finite))
+    if agg == "std":
+        return float(np.std(finite))
+    if agg == "last":
+        return finite[-1]
+    return float(np.mean(finite))
+
+
+COMPARISON_METRICS_COLUMNS = [
+    "solver_name",
+    "final_ee_error",
+    "mean_ee_error",
+    "max_ee_error",
+    "mean_best_cost",
+    "std_best_cost",
+    "mean_runtime_ms",
+    "max_runtime_ms",
+    "mean_abs_torque",
+    "max_abs_torque",
+    "control_smoothness",
+    "trajectory_smoothness",
+    "success_rate",
+    "horizon",
+    "num_candidates",
+    "num_iterations",
+]
+
+
+def build_comparison_metrics_rows(
+    step_rows_by_solver: dict[str, list[SolverStepRow]],
+    solver_configs: dict[str, dict[str, int | float]] | None = None,
+) -> list[dict[str, float | str | int]]:
+    """从每个 solver 的 step rows 构建统一 comparison metrics。
+
+    每个 solver 输出一行，包含所需全部字段。
+    solver_configs 可选，用于填充 horizon / num_candidates / num_iterations。
+    """
+    if not step_rows_by_solver:
+        return []
+
+    solver_configs = solver_configs or {}
+    rows: list[dict[str, float | str | int]] = []
+
+    for solver_name, steps in step_rows_by_solver.items():
+        if not steps:
+            rows.append({col: solver_name if col == "solver_name" else float("nan") for col in COMPARISON_METRICS_COLUMNS})
+            continue
+
+        ee_errors = [s.current_ee_error for s in steps]
+        best_costs = [s.best_cost for s in steps]
+        runtimes = [s.runtime_ms for s in steps]
+        torques = [s.max_abs_torque for s in steps]
+        success_flags = [1.0 if s.success else 0.0 for s in steps]
+        last_step = steps[-1]
+
+        cfg = solver_configs.get(solver_name, {})
+        horizon = int(cfg.get("horizon", 0))
+        num_candidates = int(cfg.get("num_candidates", 0))
+        num_iterations = int(cfg.get("num_iterations", 0))
+
+        rows.append({
+            "solver_name": solver_name,
+            "final_ee_error": _safe_float(ee_errors, "last"),
+            "mean_ee_error": _safe_float(ee_errors, "mean"),
+            "max_ee_error": _safe_float(ee_errors, "max"),
+            "mean_best_cost": _safe_float(best_costs, "mean"),
+            "std_best_cost": _safe_float(best_costs, "std"),
+            "mean_runtime_ms": _safe_float(runtimes, "mean"),
+            "max_runtime_ms": _safe_float(runtimes, "max"),
+            "mean_abs_torque": _safe_float(torques, "mean"),
+            "max_abs_torque": _safe_float(torques, "max"),
+            "control_smoothness": float(last_step.control_smoothness),
+            "trajectory_smoothness": float(last_step.trajectory_smoothness),
+            "success_rate": _safe_float(success_flags, "mean"),
+            "horizon": horizon,
+            "num_candidates": num_candidates,
+            "num_iterations": num_iterations,
+        })
+
+    return rows
+
+
+def save_comparison_metrics_csv(
+    step_rows_by_solver: dict[str, list[SolverStepRow]],
+    output_path: Path,
+    solver_configs: dict[str, dict[str, int | float]] | None = None,
+) -> None:
+    """构建并保存统一 comparison metrics CSV。"""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    rows = build_comparison_metrics_rows(step_rows_by_solver, solver_configs)
+    with output_path.open("w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=COMPARISON_METRICS_COLUMNS)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)

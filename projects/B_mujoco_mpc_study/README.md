@@ -14,6 +14,7 @@ B05-B07: OpenLoong humanoid MPC line
 
 - B02 已完成二连杆 task-space MPC tracking，并保留 benchmark / regression 两套基线。
 - B03 已重新定义为 MPC solver ladder demo。
+- B03-R4C 已把 mini iLQR-lite 接到 B02 two-link MuJoCo 环境，形成 joint-space state tracking smoke，并输出 metrics / cache / figures / report。
 - B03 不替代 B02；进入 B03 前优先跑 B02-regression-light 做健康检查。
 
 ## 文档入口
@@ -66,6 +67,9 @@ tests/
 simulator/scripts/run_B01_single_joint_mpc_demo.py
 simulator/scripts/run_B02_two_link_mpc_tracking_demo.py
 simulator/scripts/run_B03_mpc_solver_ladder_demo.py
+simulator/scripts/run_B03_sampling_solver_tuning.py
+simulator/scripts/run_B03_ilqg_lite_demo.py
+simulator/scripts/run_B03_ilqr_lite_two_link_smoke.py
 ```
 
 ## 运行提示
@@ -81,3 +85,38 @@ B02 轻量 regression：
 ```bash
 python projects/B_mujoco_mpc_study/simulator/scripts/run_B02_two_link_mpc_tracking_demo.py --config projects/B_mujoco_mpc_study/configs/B02_two_link_mpc_regression.yaml
 ```
+
+B03 sampling solver 调参：
+
+```bash
+python projects/B_mujoco_mpc_study/simulator/scripts/run_B03_sampling_solver_tuning.py --config projects/B_mujoco_mpc_study/configs/B03_sampling_tuning.yaml --run-id tuning_v1 --save-figures --save-report
+```
+
+B03 recommended sampling benchmark：
+
+```bash
+python projects/B_mujoco_mpc_study/simulator/scripts/run_B03_sampling_solver_tuning.py --recommended-benchmark --run-id recommended_v1 --save-figures --save-recommended-report
+```
+
+B03-R4B mini iLQR-lite toy smoke:
+```bash
+python projects/B_mujoco_mpc_study/simulator/scripts/run_B03_ilqg_lite_demo.py --config projects/B_mujoco_mpc_study/configs/B03_ilqg_lite.yaml --run-id ilqg_toy_smoke --model-family toy --horizon 32 --max-iterations 10 --save-report
+```
+
+B03-R4C mini iLQR-lite two-link state tracking smoke:
+```bash
+D:\anaconda\envs\mujoco_py311\python.exe projects/B_mujoco_mpc_study/simulator/scripts/run_B03_ilqr_lite_two_link_smoke.py --output-dir outputs/pytest_tmp/B03_R4C1G_real_smoke --log-level INFO
+```
+
+当前 R4C 输出：
+
+```text
+outputs/metrics/B03_R4C_ilqr_cost_history.csv
+outputs/metrics/B03_R4C_ilqr_two_link_smoke_metrics.csv
+outputs/cache/B03_R4C_two_link_state_tracking_placeholder.npz
+outputs/figures/B03_R4C_two_link_state_trajectory_todo.png
+outputs/figures/B03_R4C_ilqr_cost_history_todo.png
+outputs/reports/B03_R4C_ilqr_two_link_smoke_report.md
+```
+
+R4C 当前仍是 joint-space state tracking smoke，不是 task-space tracking、正式 MP4 或长 benchmark。

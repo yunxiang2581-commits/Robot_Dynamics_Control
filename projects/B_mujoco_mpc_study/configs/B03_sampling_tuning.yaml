@@ -1,0 +1,122 @@
+demo:
+  name: B03_sampling_solver_automated_tuning
+  description: "Small-scale automated tuning for CEM, MPPI-lite and Warm-start Sampling."
+
+base:
+  source_config: projects/B_mujoco_mpc_study/configs/B03_mpc_solver_ladder.yaml
+  run_group: B03_sampling_solver_tuning
+  seed: 0
+
+simulation:
+  num_steps: 100
+  dt: 0.01
+  horizon: 16
+  max_runtime_note: "Small-scale tuning only. Do not use as final benchmark."
+
+target:
+  type: circle
+  center: [0.45, 0.10]
+  radius: 0.08
+  frequency: 0.2
+
+sweep:
+  enabled_solvers:
+    - cem
+    - mppi_lite
+    - warm_start_sampling
+
+  cem:
+    - name: cem_fast
+      num_candidates: 128
+      num_iterations: 2
+      elite_ratio: 0.10
+      initial_std: 2.0
+      min_std: 0.10
+      early_stop_enabled: false
+
+    - name: cem_default
+      num_candidates: 256
+      num_iterations: 3
+      elite_ratio: 0.10
+      initial_std: 2.0
+      min_std: 0.10
+      early_stop_enabled: false
+
+    - name: cem_stable
+      num_candidates: 256
+      num_iterations: 3
+      elite_ratio: 0.20
+      initial_std: 2.0
+      min_std: 0.10
+      early_stop_enabled: false
+
+    - name: cem_early_stop
+      num_candidates: 256
+      num_iterations: 4
+      elite_ratio: 0.10
+      initial_std: 2.0
+      min_std: 0.10
+      early_stop_enabled: true
+      early_stop_min_delta: 1.0e-3
+      early_stop_patience: 2
+
+  mppi_lite:
+    - name: mppi_temp_0p5
+      num_candidates: 256
+      temperature: 0.5
+      noise_std: 2.0
+      torque_limit: 10.0
+
+    - name: mppi_temp_1p0
+      num_candidates: 256
+      temperature: 1.0
+      noise_std: 2.0
+      torque_limit: 10.0
+
+    - name: mppi_temp_2p0
+      num_candidates: 256
+      temperature: 2.0
+      noise_std: 2.0
+      torque_limit: 10.0
+
+    - name: mppi_temp_5p0
+      num_candidates: 256
+      temperature: 5.0
+      noise_std: 2.0
+      torque_limit: 10.0
+
+  warm_start_sampling:
+    - name: warm_start_default
+      num_candidates: 256
+      sampling_std: 2.0
+      torque_limit: 10.0
+      torque_rate_weight: 0.0
+
+    - name: warm_start_smooth_001
+      num_candidates: 256
+      sampling_std: 2.0
+      torque_limit: 10.0
+      torque_rate_weight: 0.001
+
+    - name: warm_start_smooth_01
+      num_candidates: 256
+      sampling_std: 2.0
+      torque_limit: 10.0
+      torque_rate_weight: 0.01
+
+selection:
+  objective:
+    mean_ee_error_weight: 1.0
+    runtime_weight: 0.2
+    control_smoothness_weight: 0.5
+    trajectory_smoothness_weight: 0.5
+  constraints:
+    max_mean_runtime_ms: 500.0
+    max_mean_ee_error: 0.15
+    min_success_rate: 0.95
+
+outputs:
+  run_group: B03_sampling_solver_tuning
+  save_metrics: true
+  save_figures: true
+  save_report: true

@@ -4,15 +4,20 @@ demo:
 
 simulation:
   model_family: two_link
-  num_steps: 200
+  num_steps: 1000
   dt: 0.01
   seed: 0
 
 target:
-  type: circle
+  type: lissajous
   center: [0.45, 0.10]
   radius: 0.08
   frequency: 0.2
+  radius_x: 0.10
+  radius_y: 0.06
+  frequency_x: 0.30
+  frequency_y: 0.50
+  phase_offset: 1.047
 
 benchmark:
   baseline: B02_two_link_mpc_tracking_demo
@@ -45,11 +50,14 @@ cem:
   initial_std: 2.0
   min_std: 0.1
   torque_limit: 10.0
+  early_stop_enabled: false
+  early_stop_min_delta: 1.0e-3
+  early_stop_patience: 2
 
 mppi:
   horizon: 16
   num_candidates: 256
-  temperature: 1.0
+  temperature: 0.5
   noise_std: 2.0
   torque_limit: 10.0
 

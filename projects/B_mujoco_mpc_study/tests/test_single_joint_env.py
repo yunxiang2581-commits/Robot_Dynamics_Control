@@ -1,7 +1,11 @@
+"""Tests for SingleJointEnv (requires mujoco)."""
+
 from __future__ import annotations
 
 from pathlib import Path
 import sys
+
+import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -9,7 +13,8 @@ SIMULATOR_ROOT = REPO_ROOT / "projects" / "B_mujoco_mpc_study" / "simulator"
 if str(SIMULATOR_ROOT) not in sys.path:
     sys.path.insert(0, str(SIMULATOR_ROOT))
 
-from envs.single_joint_env import SingleJointEnv
+mujoco = pytest.importorskip("mujoco")
+from envs.single_joint_env import SingleJointEnv  # noqa: E402
 
 
 def test_env_initializes_default_model_and_respects_dt() -> None:

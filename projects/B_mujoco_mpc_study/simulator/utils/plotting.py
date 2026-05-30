@@ -65,14 +65,17 @@ def plot_best_cost(time_history: list[float], best_cost_history: list[float], ou
 
 
 def save_b02_tracking_figures(tracking_rows: list[dict[str, float]], outputs: dict[str, Path]) -> None:
-    """保存 B02 独立后处理图表。
+    """保存 B02 独立后处理图表（6 张）。
 
-    TODO:
-    - 要实现什么：根据 tracking log 生成 target-vs-actual XY、tracking error-time、control input-time 三张图。
-    - 为什么需要：B02 的图表应从统一 tracking log 出发，而不是继续散落在 runner 的 history 变量里。
-    - 输入是什么：tracking_rows 和输出路径字典。
-    - 输出是什么：三张 PNG 图像。
-    - 验证标准：三张图都应成功写出，且文件大小大于 0。
+    根据 tracking log 生成：
+    1. xy_target_vs_actual — 末端 XY 目标 vs 实际轨迹
+    2. tracking_error_time — tracking error 随时间变化
+    3. control_input_time — 控制输入随时间变化
+    4. ee_trajectory_xy — 末端 XY 轨迹（与 target 同图）
+    5. ee_tracking_error — tracking error 曲线（别名风格）
+    6. joint_torque — 关节力矩曲线
+
+    仅绘制 outputs 字典中存在的键，缺失的键自动跳过。
     """
     if not tracking_rows:
         raise ValueError("tracking_rows 不能为空，无法生成 B02 图表。")
@@ -86,40 +89,86 @@ def save_b02_tracking_figures(tracking_rows: list[dict[str, float]], outputs: di
     u1_history = [float(row["u1"]) for row in tracking_rows]
     u2_history = [float(row["u2"]) for row in tracking_rows]
 
-    outputs["xy_target_vs_actual"].parent.mkdir(parents=True, exist_ok=True)
-    plt.figure(figsize=(5, 5))
-    plt.plot(target_x, target_y, "--", label="target")
-    plt.plot(actual_x, actual_y, label="actual")
-    plt.axis("equal")
-    plt.xlabel("x [m]")
-    plt.ylabel("y [m]")
-    plt.title("B02 target vs actual XY")
-    plt.grid(True, alpha=0.3)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(outputs["xy_target_vs_actual"])
-    plt.close()
+    if "xy_target_vs_actual" in outputs:
+        outputs["xy_target_vs_actual"].parent.mkdir(parents=True, exist_ok=True)
+        plt.figure(figsize=(5, 5))
+        plt.plot(target_x, target_y, "--", label="target")
+        plt.plot(actual_x, actual_y, label="actual")
+        plt.axis("equal")
+        plt.xlabel("x [m]")
+        plt.ylabel("y [m]")
+        plt.title("B02 target vs actual XY")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(outputs["xy_target_vs_actual"])
+        plt.close()
 
-    outputs["tracking_error_time"].parent.mkdir(parents=True, exist_ok=True)
-    plt.figure(figsize=(8, 4.5))
-    plt.plot(time_history, error_history)
-    plt.xlabel("time [s]")
-    plt.ylabel("tracking error [m]")
-    plt.title("B02 tracking error vs time")
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(outputs["tracking_error_time"])
-    plt.close()
+    if "tracking_error_time" in outputs:
+        outputs["tracking_error_time"].parent.mkdir(parents=True, exist_ok=True)
+        plt.figure(figsize=(8, 4.5))
+        plt.plot(time_history, error_history)
+        plt.xlabel("time [s]")
+        plt.ylabel("tracking error [m]")
+        plt.title("B02 tracking error vs time")
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(outputs["tracking_error_time"])
+        plt.close()
 
-    outputs["control_input_time"].parent.mkdir(parents=True, exist_ok=True)
-    plt.figure(figsize=(8, 4.5))
-    plt.plot(time_history, u1_history, label="u1")
-    plt.plot(time_history, u2_history, label="u2")
-    plt.xlabel("time [s]")
-    plt.ylabel("control input [Nm]")
-    plt.title("B02 control input vs time")
-    plt.grid(True, alpha=0.3)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(outputs["control_input_time"])
-    plt.close()
+    if "control_input_time" in outputs:
+        outputs["control_input_time"].parent.mkdir(parents=True, exist_ok=True)
+        plt.figure(figsize=(8, 4.5))
+        plt.plot(time_history, u1_history, label="u1")
+        plt.plot(time_history, u2_history, label="u2")
+        plt.xlabel("time [s]")
+        plt.ylabel("control input [Nm]")
+        plt.title("B02 control input vs time")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(outputs["control_input_time"])
+        plt.close()
+
+    if "ee_trajectory_xy" in outputs:
+        outputs["ee_trajectory_xy"].parent.mkdir(parents=True, exist_ok=True)
+        plt.figure(figsize=(5, 5))
+        plt.plot(target_x, target_y, "--", label="target", alpha=0.6)
+        plt.plot(actual_x, actual_y, label="ee actual")
+        plt.plot(actual_x[0], actual_y[0], "go", label="start")
+        plt.plot(actual_x[-1], actual_y[-1], "rs", label="end")
+        plt.axis("equal")
+        plt.xlabel("x [m]")
+        plt.ylabel("y [m]")
+        plt.title("B02 end-effector XY trajectory")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(outputs["ee_trajectory_xy"])
+        plt.close()
+
+    if "ee_tracking_error" in outputs:
+        outputs["ee_tracking_error"].parent.mkdir(parents=True, exist_ok=True)
+        plt.figure(figsize=(8, 4.5))
+        plt.plot(time_history, error_history)
+        plt.xlabel("time [s]")
+        plt.ylabel("ee tracking error [m]")
+        plt.title("B02 end-effector tracking error")
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(outputs["ee_tracking_error"])
+        plt.close()
+
+    if "joint_torque" in outputs:
+        outputs["joint_torque"].parent.mkdir(parents=True, exist_ok=True)
+        plt.figure(figsize=(8, 4.5))
+        plt.plot(time_history, u1_history, label="tau1")
+        plt.plot(time_history, u2_history, label="tau2")
+        plt.xlabel("time [s]")
+        plt.ylabel("joint torque [Nm]")
+        plt.title("B02 joint torque")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(outputs["joint_torque"])
+        plt.close()

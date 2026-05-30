@@ -58,6 +58,17 @@ class TwoLinkEnv:
         self.renderer: Any | None = None
         self.last_applied_torque: tuple[float, float] = (0.0, 0.0)
 
+        self._camera = mujoco.MjvCamera()
+        camera_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, "front")
+        if camera_id >= 0:
+            self._camera.fixedcamid = camera_id
+            self._camera.type = mujoco.mjtCamera.mjCAMERA_FIXED
+        else:
+            self._camera.lookat[:] = [0.25, 0.0, 0.2]
+            self._camera.distance = 1.8
+            self._camera.azimuth = -90
+            self._camera.elevation = -30
+
         if self.model.nq < 2 or self.model.nv < 2:
             raise ValueError("二连杆环境至少需要 2 个 qpos 和 2 个 qvel。")
         if self.model.nu < 2:
@@ -282,7 +293,7 @@ class TwoLinkEnv:
         if self.renderer is None:
             self.renderer = mujoco.Renderer(self.model, height=480, width=640)
 
-        self.renderer.update_scene(self.data)
+        self.renderer.update_scene(self.data, self._camera)
         frame = self.renderer.render()
 
         return frame
@@ -301,7 +312,7 @@ class TwoLinkEnv:
             self.renderer = mujoco.Renderer(self.model, height=480, width=640)
 
         mujoco.mj_forward(self.model, self.data)
-        self.renderer.update_scene(self.data)
+        self.renderer.update_scene(self.data, self._camera)
         scene = self.renderer.scene
 
         for geom_spec in scene_geoms:

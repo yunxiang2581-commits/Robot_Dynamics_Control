@@ -136,6 +136,62 @@ def _build_sampling_solution(
     )
 
 
+def _resolve_shifted_mean_sequence(
+    problem: MPCProblem,
+    previous_solution: MPCSolution | None,
+) -> np.ndarray | None:
+    """从上一拍解中提取 warm-start 均值序列。"""
+    if previous_solution is None or previous_solution.predicted_controls is None:
+        return None
+
+    previous_controls = np.asarray(previous_solution.predicted_controls, dtype=float)
+    if previous_controls.shape != (problem.horizon, problem.control_dim):
+        return None
+
+    return shift_control_sequence(previous_controls)
+
+
+def _build_selected_solution(
+    *,
+    problem: MPCProblem,
+    solver_name: str,
+    start_time: float,
+    best_controls: np.ndarray,
+    best_cost: float,
+    predicted_states: np.ndarray | None,
+    predicted_ee_positions: np.ndarray | None,
+    selected_index: int | None,
+    num_rollouts: int,
+    num_iterations: int,
+    message: str,
+    metadata: dict[str, Any] | None = None,
+) -> MPCSolution:
+    """把已知最优候选直接组装成 `MPCSolution`。"""
+    return MPCSolution(
+        first_control=np.asarray(best_controls[0], dtype=float),
+        predicted_states=(
+            np.asarray(predicted_states, dtype=float)
+            if predicted_states is not None
+            else _empty_state_prediction(problem)
+        ),
+        predicted_controls=np.asarray(best_controls, dtype=float),
+        best_cost=float(best_cost),
+        solver_name=solver_name,
+        solver_stats=SolverStats(
+            runtime_ms=(time.perf_counter() - start_time) * 1000.0,
+            num_rollouts=int(num_rollouts),
+            num_iterations=int(num_iterations),
+            success=True,
+            message=message,
+        ),
+        predicted_ee_positions=(
+            None if predicted_ee_positions is None else np.asarray(predicted_ee_positions, dtype=float)
+        ),
+        selected_index=selected_index,
+        metadata=dict(metadata or {}),
+    )
+
+
 def _require_positive_int(value: int, name: str) -> None:
     if int(value) != value or value <= 0:
         raise ValueError(f"{name} must be a positive integer, got {value}")
@@ -290,6 +346,105 @@ def rank_rollouts(costs: Sequence[float]) -> RolloutRanking:
     )
 
 
+def _compute_elite_count(num_candidates: int, elite_ratio: float) -> int:
+    """根据比例计算 elite 个数，并保证至少保留 1 条样本。"""
+    if not (0.0 < elite_ratio <= 1.0):
+        raise ValueError(f"elite_ratio must be in (0, 1], got {elite_ratio}")
+    return max(1, int(round(num_candidates * elite_ratio)))
+
+
+def _update_cem_distribution(
+    *,
+    elite_controls: np.ndarray,
+    mean_sequence: np.ndarray,
+    std: float,
+    smoothing_alpha: float,
+    min_std: float,
+    max_std: float | None,
+) -> tuple[np.ndarray, float]:
+    """根据 elite 样本更新 CEM 的均值和标量标准差。"""
+    if not (0.0 <= smoothing_alpha < 1.0):
+        raise ValueError(f"smoothing_alpha must be in [0, 1), got {smoothing_alpha}")
+    if min_std <= 0.0:
+        raise ValueError(f"min_std must be positive, got {min_std}")
+    if max_std is not None and max_std < min_std:
+        raise ValueError(f"max_std must be >= min_std, got {max_std} < {min_std}")
+
+    elite_mean = np.mean(elite_controls, axis=0)
+    centered = elite_controls - elite_mean[None, :, :]
+    elite_std = float(np.sqrt(np.mean(centered**2)))
+
+    updated_mean = smoothing_alpha * mean_sequence + (1.0 - smoothing_alpha) * elite_mean
+    updated_std = smoothing_alpha * float(std) + (1.0 - smoothing_alpha) * elite_std
+    updated_std = max(float(min_std), updated_std)
+    if max_std is not None:
+        updated_std = min(float(max_std), updated_std)
+
+    return updated_mean, float(updated_std)
+
+
+def _compute_mppi_weights(costs: np.ndarray, temperature: float) -> tuple[np.ndarray, dict[str, float]]:
+    """根据 MPPI 温度参数把 rollout cost 转成归一化权重。
+
+    返回 (weights, diagnostics)。diagnostics 包含 weight_entropy、min_weight、max_weight。
+    """
+    if temperature <= 0.0:
+        raise ValueError(f"temperature must be positive, got {temperature}")
+
+    shifted_costs = np.asarray(costs, dtype=float) - float(np.min(costs))
+    logits = -shifted_costs / float(temperature)
+    max_logit = float(np.max(logits))
+    stable_logits = logits - max_logit
+    weights = np.exp(stable_logits)
+    weight_sum = float(np.sum(weights))
+    if not np.isfinite(weight_sum) or weight_sum <= 0.0:
+        raise ValueError("MPPI weights are numerically invalid; check temperature and rollout costs.")
+    weights = weights / weight_sum
+
+    entropy = -float(np.sum(weights * np.log(weights + 1e-30)))
+    diagnostics = {
+        "weight_entropy": entropy,
+        "min_weight": float(np.min(weights)),
+        "max_weight": float(np.max(weights)),
+    }
+    return weights, diagnostics
+
+
+def _update_mppi_distribution(
+    *,
+    candidate_controls: np.ndarray,
+    mean_sequence: np.ndarray,
+    weights: np.ndarray,
+    std: float,
+    smoothing_alpha: float,
+    min_std: float,
+    max_std: float | None,
+) -> tuple[np.ndarray, float]:
+    """根据 MPPI 权重更新均值和标量噪声标准差。"""
+    if not (0.0 <= smoothing_alpha < 1.0):
+        raise ValueError(f"smoothing_alpha must be in [0, 1), got {smoothing_alpha}")
+    if min_std <= 0.0:
+        raise ValueError(f"min_std must be positive, got {min_std}")
+    if max_std is not None and max_std < min_std:
+        raise ValueError(f"max_std must be >= min_std, got {max_std} < {min_std}")
+
+    noises = np.asarray(candidate_controls, dtype=float) - mean_sequence[None, :, :]
+    weighted_delta = np.tensordot(weights, noises, axes=(0, 0))
+    proposal_mean = mean_sequence + weighted_delta
+
+    centered_noises = noises - weighted_delta[None, :, :]
+    weighted_variance = np.tensordot(weights, centered_noises**2, axes=(0, 0))
+    proposal_std = float(np.sqrt(np.mean(weighted_variance)))
+
+    updated_mean = smoothing_alpha * mean_sequence + (1.0 - smoothing_alpha) * proposal_mean
+    updated_std = smoothing_alpha * float(std) + (1.0 - smoothing_alpha) * proposal_std
+    updated_std = max(float(min_std), updated_std)
+    if max_std is not None:
+        updated_std = min(float(max_std), updated_std)
+
+    return updated_mean, float(updated_std)
+
+
 class RandomShootingSolver(BaseMPCSolver):
     """Random Shooting / Predictive Sampling solver skeleton."""
 
@@ -374,11 +529,7 @@ class WarmStartSamplingSolver(BaseMPCSolver):
         - 忘记对 shifted mean 周围采样而直接复用旧解。
         """
         start_time = time.perf_counter()
-        mean_sequence = None
-        if previous_solution is not None and previous_solution.predicted_controls is not None:
-            previous_controls = np.asarray(previous_solution.predicted_controls, dtype=float)
-            if previous_controls.shape == (problem.horizon, problem.control_dim):
-                mean_sequence = shift_control_sequence(previous_controls)
+        mean_sequence = _resolve_shifted_mean_sequence(problem, previous_solution)
 
         num_candidates = int(problem.solver_config["num_candidates"])
         candidate_batch = sample_candidate_controls(
@@ -406,7 +557,7 @@ class WarmStartSamplingSolver(BaseMPCSolver):
 
 
 class CEMShootingSolver(BaseMPCSolver):
-    """CEM-MPC solver skeleton."""
+    """CEM-MPC solver with warm start, smoothing, and global-best tracking."""
 
     solver_name = "cem"
 
@@ -415,35 +566,118 @@ class CEMShootingSolver(BaseMPCSolver):
         problem: MPCProblem,
         previous_solution: MPCSolution | None = None,
     ) -> MPCSolution:
-        """TODO: 用 Cross-Entropy Method 迭代更新控制分布。
+        """Run a B03-oriented CEM-R2 solver."""
+        start_time = time.perf_counter()
 
-        输入：
-        - 当前问题，必要时可结合 warm start。
+        num_candidates = int(problem.solver_config["num_candidates"])
+        horizon = int(problem.horizon)
+        control_dim = int(problem.control_dim)
+        torque_limit = float(problem.solver_config["torque_limit"])
+        num_iterations = int(problem.solver_config.get("num_iterations", 3))
+        elite_ratio = float(problem.solver_config.get("elite_ratio", 0.1))
+        elite_count = _compute_elite_count(num_candidates, elite_ratio)
+        smoothing_alpha = float(problem.solver_config.get("smoothing_alpha", 0.0))
+        min_std = float(problem.solver_config.get("min_std", 0.1))
+        max_std_raw = problem.solver_config.get("max_std")
+        max_std = None if max_std_raw is None else float(max_std_raw)
+        std = float(problem.solver_config.get("initial_std", problem.solver_config.get("sampling_std", 1.0)))
+        improvement_tol = float(problem.solver_config.get("improvement_tolerance", 0.0))
+        patience = int(problem.solver_config.get("early_stop_patience", 0))
+        seed = problem.solver_config.get("seed")
 
-        输出：
-        - 经多轮 elite update 后的最佳控制序列。
+        # Reuse the previous best sequence when available; otherwise start from zeros.
+        mean_sequence = _resolve_shifted_mean_sequence(problem, previous_solution)
+        if mean_sequence is None:
+            mean_sequence = np.zeros((horizon, control_dim), dtype=float)
 
-        数学关系：
-        - initialize mean/std
-        - sample
-        - evaluate
-        - elite select
-        - update mean/std
-        - repeat
+        iteration_best_costs: list[float] = []
+        best_controls_global: np.ndarray | None = None
+        best_states_global: np.ndarray | None = None
+        best_ee_positions_global: np.ndarray | None = None
+        best_cost_global = float("inf")
+        best_index_global: int | None = None
+        no_improvement_count = 0
+        actual_iterations = 0
 
-        验证标准：
-        - elite ratio 合法且每轮 std 不小于最小阈值。
+        for iteration in range(num_iterations):
+            iteration_seed = None if seed is None else int(seed) + iteration
+            candidate_batch = sample_candidate_controls(
+                num_candidates=num_candidates,
+                horizon=horizon,
+                control_dim=control_dim,
+                sampling_std=std,
+                torque_limit=torque_limit,
+                seed=iteration_seed,
+                mean_sequence=mean_sequence,
+            )
+            costs, predicted_states, predicted_ee_positions = _extract_rollout_payload(
+                problem,
+                candidate_batch.controls,
+            )
+            ranking = rank_rollouts(costs)
+            actual_iterations += 1
+            iteration_best_costs.append(ranking.best_cost)
 
-        常见错误：
-        - elite 个数为 0。
-        - std 收缩到 0 导致搜索停滞。
-        """
-        _ = problem, previous_solution
-        raise NotImplementedError("B03-A only defines the CEMShootingSolver TODO skeleton.")
+            elite_indices = ranking.sorted_indices[:elite_count]
+            elite_controls = candidate_batch.controls[elite_indices]
+            mean_sequence, std = _update_cem_distribution(
+                elite_controls=elite_controls,
+                mean_sequence=mean_sequence,
+                std=std,
+                smoothing_alpha=smoothing_alpha,
+                min_std=min_std,
+                max_std=max_std,
+            )
+
+            if ranking.best_cost + improvement_tol < best_cost_global:
+                best_cost_global = ranking.best_cost
+                best_index_global = ranking.selected_index
+                best_controls_global = np.asarray(candidate_batch.controls[ranking.selected_index], dtype=float)
+                best_states_global = (
+                    None if predicted_states is None else np.asarray(predicted_states[ranking.selected_index], dtype=float)
+                )
+                best_ee_positions_global = (
+                    None
+                    if predicted_ee_positions is None
+                    else np.asarray(predicted_ee_positions[ranking.selected_index], dtype=float)
+                )
+                no_improvement_count = 0
+            else:
+                no_improvement_count += 1
+
+            if patience > 0 and no_improvement_count >= patience:
+                break
+
+        if best_controls_global is None:
+            raise RuntimeError("CEM failed to select a global best control sequence.")
+
+        return _build_selected_solution(
+            problem=problem,
+            solver_name=self.solver_name,
+            start_time=start_time,
+            best_controls=best_controls_global,
+            best_cost=best_cost_global,
+            predicted_states=best_states_global,
+            predicted_ee_positions=best_ee_positions_global,
+            selected_index=best_index_global,
+            num_rollouts=num_candidates * actual_iterations,
+            num_iterations=actual_iterations,
+            message="CEM rollout_cost_fn evaluated successfully",
+            metadata={
+                "elite_ratio": elite_ratio,
+                "elite_count": elite_count,
+                "iteration_best_costs": iteration_best_costs,
+                "final_sampling_std": std,
+                "final_mean_sequence": mean_sequence,
+                "smoothing_alpha": smoothing_alpha,
+                "early_stop_patience": patience,
+                "improvement_tolerance": improvement_tol,
+            },
+        )
 
 
 class MPPILiteSolver(BaseMPCSolver):
-    """MPPI-lite solver skeleton."""
+    """MPPI-lite solver with warm start, soft weighting, and global-best tracking."""
 
     solver_name = "mppi_lite"
 
@@ -452,26 +686,131 @@ class MPPILiteSolver(BaseMPCSolver):
         problem: MPCProblem,
         previous_solution: MPCSolution | None = None,
     ) -> MPCSolution:
-        """TODO: 用 MPPI 风格的 cost-weighted averaging 更新控制序列。
+        """Run a B03-oriented MPPI-R2 solver."""
+        start_time = time.perf_counter()
 
-        输入：
-        - 当前问题、温度参数、噪声标准差和可选 warm start。
+        num_candidates = int(problem.solver_config["num_candidates"])
+        horizon = int(problem.horizon)
+        control_dim = int(problem.control_dim)
+        torque_limit = float(problem.solver_config["torque_limit"])
+        num_iterations = int(problem.solver_config.get("num_iterations", 3))
+        temperature = float(problem.solver_config.get("temperature", 1.0))
+        smoothing_alpha = float(problem.solver_config.get("smoothing_alpha", 0.0))
+        min_std = float(problem.solver_config.get("min_std", 0.1))
+        max_std_raw = problem.solver_config.get("max_std")
+        max_std = None if max_std_raw is None else float(max_std_raw)
+        std = float(
+            problem.solver_config.get(
+                "noise_std",
+                problem.solver_config.get("sampling_std", 1.0),
+            )
+        )
+        improvement_tol = float(problem.solver_config.get("improvement_tolerance", 0.0))
+        patience = int(problem.solver_config.get("early_stop_patience", 0))
+        seed = problem.solver_config.get("seed")
 
-        输出：
-        - 经过权重平均后的 mean control sequence，以及第一项控制。
+        # Reuse the previous best sequence when available; otherwise start from zeros.
+        mean_sequence = _resolve_shifted_mean_sequence(problem, previous_solution)
+        if mean_sequence is None:
+            mean_sequence = np.zeros((horizon, control_dim), dtype=float)
 
-        数学关系：
-        - sample noise
-        - rollout
-        - `w_i ∝ exp(-(J_i - J_min) / lambda)`
-        - update mean sequence
+        iteration_best_costs: list[float] = []
+        best_controls_global: np.ndarray | None = None
+        best_states_global: np.ndarray | None = None
+        best_ee_positions_global: np.ndarray | None = None
+        best_cost_global = float("inf")
+        best_index_global: int | None = None
+        no_improvement_count = 0
+        actual_iterations = 0
 
-        验证标准：
-        - 权重归一化后和为 1。
+        weight_diagnostics: dict[str, float] = {}
 
-        常见错误：
-        - 温度太小导致数值下溢。
-        - 忘记减去 `J_min` 造成指数不稳定。
-        """
-        _ = problem, previous_solution
-        raise NotImplementedError("B03-A only defines the MPPILiteSolver TODO skeleton.")
+        for iteration in range(num_iterations):
+            iteration_seed = None if seed is None else int(seed) + iteration
+            candidate_batch = sample_candidate_controls(
+                num_candidates=num_candidates,
+                horizon=horizon,
+                control_dim=control_dim,
+                sampling_std=std,
+                torque_limit=torque_limit,
+                seed=iteration_seed,
+                mean_sequence=mean_sequence,
+            )
+            costs, predicted_states, predicted_ee_positions = _extract_rollout_payload(
+                problem,
+                candidate_batch.controls,
+            )
+            ranking = rank_rollouts(costs)
+            weights, weight_diagnostics = _compute_mppi_weights(costs, temperature)
+            actual_iterations += 1
+            iteration_best_costs.append(ranking.best_cost)
+
+            mean_sequence, std = _update_mppi_distribution(
+                candidate_controls=candidate_batch.controls,
+                mean_sequence=mean_sequence,
+                weights=weights,
+                std=std,
+                smoothing_alpha=smoothing_alpha,
+                min_std=min_std,
+                max_std=max_std,
+            )
+
+            if ranking.best_cost + improvement_tol < best_cost_global:
+                best_cost_global = ranking.best_cost
+                best_index_global = ranking.selected_index
+                best_controls_global = np.asarray(candidate_batch.controls[ranking.selected_index], dtype=float)
+                best_states_global = (
+                    None if predicted_states is None else np.asarray(predicted_states[ranking.selected_index], dtype=float)
+                )
+                best_ee_positions_global = (
+                    None
+                    if predicted_ee_positions is None
+                    else np.asarray(predicted_ee_positions[ranking.selected_index], dtype=float)
+                )
+                no_improvement_count = 0
+            else:
+                no_improvement_count += 1
+
+            if patience > 0 and no_improvement_count >= patience:
+                break
+
+        if best_controls_global is None:
+            raise RuntimeError("MPPI failed to select a global best control sequence.")
+
+        updated_sequence = np.clip(mean_sequence, -torque_limit, torque_limit)
+        first_control = np.asarray(best_controls_global[0], dtype=float)
+
+        return MPCSolution(
+            first_control=first_control,
+            predicted_states=(
+                np.asarray(best_states_global, dtype=float)
+                if best_states_global is not None
+                else _empty_state_prediction(problem)
+            ),
+            predicted_controls=updated_sequence,
+            best_cost=float(best_cost_global),
+            solver_name=self.solver_name,
+            solver_stats=SolverStats(
+                runtime_ms=(time.perf_counter() - start_time) * 1000.0,
+                num_rollouts=num_candidates * actual_iterations,
+                num_iterations=actual_iterations,
+                success=True,
+                message="MPPI rollout_cost_fn evaluated successfully",
+            ),
+            predicted_ee_positions=(
+                None if best_ee_positions_global is None else np.asarray(best_ee_positions_global, dtype=float)
+            ),
+            selected_index=best_index_global,
+            metadata={
+                "temperature": temperature,
+                "weight_entropy": weight_diagnostics.get("weight_entropy", float("nan")),
+                "min_weight": weight_diagnostics.get("min_weight", float("nan")),
+                "max_weight": weight_diagnostics.get("max_weight", float("nan")),
+                "iteration_best_costs": iteration_best_costs,
+                "final_noise_std": std,
+                "final_mean_sequence": mean_sequence,
+                "smoothing_alpha": smoothing_alpha,
+                "early_stop_patience": patience,
+                "improvement_tolerance": improvement_tol,
+            },
+        )

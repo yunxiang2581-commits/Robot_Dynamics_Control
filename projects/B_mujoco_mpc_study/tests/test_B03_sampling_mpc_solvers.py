@@ -13,6 +13,8 @@ if str(SIMULATOR_ROOT) not in sys.path:
     sys.path.insert(0, str(SIMULATOR_ROOT))
 
 from planners.sampling_mpc_solvers import (
+    CEMShootingSolver,
+    MPPILiteSolver,
     RandomShootingSolver,
     WarmStartSamplingSolver,
     rank_rollouts,
@@ -224,3 +226,385 @@ def test_warm_start_solver_accepts_adapter_rollout_result() -> None:
     assert solution.selected_index == 1
     assert solution.best_cost == pytest.approx(0.5)
     np.testing.assert_allclose(solution.predicted_ee_positions, predicted_ee_positions[1])
+
+
+def test_cem_solver_tracks_global_best_across_iterations() -> None:
+    horizon = 3
+    state_dim = 4
+    num_candidates = 4
+    call_count = {"value": 0}
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        assert candidate_controls.shape == (num_candidates, horizon, 2)
+        _ = problem
+        iteration = call_count["value"]
+        call_count["value"] += 1
+
+        if iteration == 0:
+            costs = np.array([3.0, 2.0, 1.5, 1.0], dtype=float)
+            best_index = 3
+        elif iteration == 1:
+            costs = np.array([1.8, 0.25, 1.0, 1.2], dtype=float)
+            best_index = 1
+        else:
+            costs = np.array([0.8, 1.1, 1.4, 1.7], dtype=float)
+            best_index = 0
+
+        predicted_states = np.full((num_candidates, horizon + 1, state_dim), float(iteration), dtype=float)
+        predicted_ee_positions = np.full((num_candidates, horizon + 1, 2), float(iteration), dtype=float)
+        predicted_ee_positions[best_index, :, :] = 100.0 + float(iteration)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    previous_solution = MPCSolution(
+        first_control=np.array([0.0, 0.0], dtype=float),
+        predicted_states=np.zeros((horizon + 1, state_dim), dtype=float),
+        predicted_controls=np.array(
+            [
+                [0.1, 0.2],
+                [0.3, 0.4],
+                [0.5, 0.6],
+            ],
+            dtype=float,
+        ),
+        best_cost=1.0,
+        solver_name="warm_start_sampling",
+        solver_stats=SolverStats(
+            runtime_ms=1.0,
+            num_rollouts=num_candidates,
+            num_iterations=1,
+            success=True,
+            message="ok",
+        ),
+    )
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 0.5,
+            "initial_std": 0.7,
+            "torque_limit": 1.0,
+            "seed": 0,
+            "num_iterations": 3,
+            "elite_ratio": 0.25,
+            "min_std": 0.05,
+            "smoothing_alpha": 0.2,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = CEMShootingSolver().solve(problem, previous_solution=previous_solution)
+
+    assert call_count["value"] == 3
+    assert solution.best_cost == pytest.approx(0.25)
+    assert solution.selected_index == 1
+    assert solution.solver_stats.num_rollouts == 12
+    assert solution.solver_stats.num_iterations == 3
+    assert solution.metadata["elite_count"] == 1
+    assert solution.metadata["iteration_best_costs"] == [1.0, 0.25, 0.8]
+    np.testing.assert_allclose(solution.predicted_ee_positions, np.full((horizon + 1, 2), 101.0, dtype=float))
+
+
+def test_cem_solver_supports_early_stop() -> None:
+    horizon = 2
+    state_dim = 4
+    num_candidates = 3
+    call_count = {"value": 0}
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        assert candidate_controls.shape == (num_candidates, horizon, 2)
+        _ = problem
+        iteration = call_count["value"]
+        call_count["value"] += 1
+        costs = np.array([1.0, 1.1, 1.2], dtype=float)
+        predicted_states = np.full((num_candidates, horizon + 1, state_dim), float(iteration), dtype=float)
+        predicted_ee_positions = np.full((num_candidates, horizon + 1, 2), float(iteration), dtype=float)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 0.5,
+            "torque_limit": 1.0,
+            "num_iterations": 5,
+            "elite_ratio": 0.5,
+            "min_std": 0.05,
+            "early_stop_patience": 2,
+            "improvement_tolerance": 1e-9,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = CEMShootingSolver().solve(problem)
+
+    assert call_count["value"] == 3
+    assert solution.solver_stats.num_iterations == 3
+    assert solution.solver_stats.num_rollouts == 9
+
+
+def test_mppi_solver_tracks_global_best_across_iterations() -> None:
+    horizon = 3
+    state_dim = 4
+    num_candidates = 4
+    call_count = {"value": 0}
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        assert candidate_controls.shape == (num_candidates, horizon, 2)
+        _ = problem
+        iteration = call_count["value"]
+        call_count["value"] += 1
+
+        if iteration == 0:
+            costs = np.array([2.0, 1.0, 1.5, 1.8], dtype=float)
+            best_index = 1
+        elif iteration == 1:
+            costs = np.array([1.7, 1.4, 0.2, 1.1], dtype=float)
+            best_index = 2
+        else:
+            costs = np.array([0.5, 0.8, 0.9, 1.2], dtype=float)
+            best_index = 0
+
+        predicted_states = np.full((num_candidates, horizon + 1, state_dim), float(iteration), dtype=float)
+        predicted_ee_positions = np.full((num_candidates, horizon + 1, 2), float(iteration), dtype=float)
+        predicted_ee_positions[best_index, :, :] = 200.0 + float(iteration)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    previous_solution = MPCSolution(
+        first_control=np.array([0.0, 0.0], dtype=float),
+        predicted_states=np.zeros((horizon + 1, state_dim), dtype=float),
+        predicted_controls=np.array(
+            [
+                [0.1, 0.2],
+                [0.3, 0.4],
+                [0.5, 0.6],
+            ],
+            dtype=float,
+        ),
+        best_cost=1.0,
+        solver_name="warm_start_sampling",
+        solver_stats=SolverStats(
+            runtime_ms=1.0,
+            num_rollouts=num_candidates,
+            num_iterations=1,
+            success=True,
+            message="ok",
+        ),
+    )
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 0.5,
+            "noise_std": 0.6,
+            "torque_limit": 1.0,
+            "seed": 0,
+            "num_iterations": 3,
+            "temperature": 0.7,
+            "min_std": 0.05,
+            "smoothing_alpha": 0.2,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = MPPILiteSolver().solve(problem, previous_solution=previous_solution)
+
+    assert call_count["value"] == 3
+    assert solution.best_cost == pytest.approx(0.2)
+    assert solution.selected_index == 2
+    assert solution.solver_stats.num_rollouts == 12
+    assert solution.solver_stats.num_iterations == 3
+    assert solution.metadata["iteration_best_costs"] == [1.0, 0.2, 0.5]
+    np.testing.assert_allclose(solution.predicted_ee_positions, np.full((horizon + 1, 2), 201.0, dtype=float))
+
+
+def test_mppi_solver_supports_early_stop() -> None:
+    horizon = 2
+    state_dim = 4
+    num_candidates = 3
+    call_count = {"value": 0}
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        assert candidate_controls.shape == (num_candidates, horizon, 2)
+        _ = problem
+        iteration = call_count["value"]
+        call_count["value"] += 1
+        costs = np.array([1.0, 1.05, 1.1], dtype=float)
+        predicted_states = np.full((num_candidates, horizon + 1, state_dim), float(iteration), dtype=float)
+        predicted_ee_positions = np.full((num_candidates, horizon + 1, 2), float(iteration), dtype=float)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 0.5,
+            "torque_limit": 1.0,
+            "num_iterations": 5,
+            "temperature": 1.0,
+            "min_std": 0.05,
+            "early_stop_patience": 2,
+            "improvement_tolerance": 1e-9,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = MPPILiteSolver().solve(problem)
+
+    assert call_count["value"] == 3
+    assert solution.solver_stats.num_iterations == 3
+    assert solution.solver_stats.num_rollouts == 9
+
+
+def test_mppi_lite_outputs_updated_sequence_as_predicted_controls() -> None:
+    """MPPI-lite predicted_controls should be the updated mean_sequence, not the best sample."""
+    horizon = 3
+    state_dim = 4
+    num_candidates = 8
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        _ = problem
+        costs = np.linspace(0.5, 2.0, num_candidates, dtype=float)
+        predicted_states = np.zeros((num_candidates, horizon + 1, state_dim), dtype=float)
+        predicted_ee_positions = np.zeros((num_candidates, horizon + 1, 2), dtype=float)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 0.5,
+            "noise_std": 0.5,
+            "torque_limit": 1.0,
+            "seed": 42,
+            "num_iterations": 2,
+            "temperature": 1.0,
+            "min_std": 0.05,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = MPPILiteSolver().solve(problem)
+
+    assert solution.predicted_controls.shape == (horizon, 2)
+    assert solution.first_control.shape == (2,)
+    assert solution.metadata["temperature"] == pytest.approx(1.0)
+    assert "weight_entropy" in solution.metadata
+    assert "max_weight" in solution.metadata
+    assert "min_weight" in solution.metadata
+    assert solution.metadata["weight_entropy"] > 0.0
+    assert 0.0 < solution.metadata["max_weight"] <= 1.0
+    assert 0.0 < solution.metadata["min_weight"] <= 1.0
+
+
+def test_mppi_lite_predicted_controls_is_not_best_sample() -> None:
+    """Verify that MPPI-lite predicted_controls differs from best sample when weights are spread."""
+    horizon = 2
+    state_dim = 4
+    num_candidates = 4
+
+    call_count = {"value": 0}
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        _ = problem
+        iteration = call_count["value"]
+        call_count["value"] += 1
+        if iteration == 0:
+            costs = np.array([1.0, 0.5, 1.5, 2.0], dtype=float)
+        else:
+            costs = np.array([0.8, 0.6, 1.2, 1.8], dtype=float)
+        predicted_states = np.zeros((num_candidates, horizon + 1, state_dim), dtype=float)
+        predicted_ee_positions = np.zeros((num_candidates, horizon + 1, 2), dtype=float)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 1.0,
+            "noise_std": 1.0,
+            "torque_limit": 5.0,
+            "seed": 123,
+            "num_iterations": 2,
+            "temperature": 0.5,
+            "min_std": 0.05,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = MPPILiteSolver().solve(problem)
+
+    assert solution.predicted_controls.shape == (horizon, 2)
+    assert not np.isnan(solution.predicted_controls).any()
+
+
+def test_cem_solver_defaults_no_early_stop() -> None:
+    """CEM without early_stop_patience runs all iterations."""
+    horizon = 2
+    state_dim = 4
+    num_candidates = 3
+    call_count = {"value": 0}
+
+    def rollout_cost_fn(candidate_controls: np.ndarray, problem: MPCProblem) -> FakeRolloutResult:
+        _ = problem
+        call_count["value"] += 1
+        costs = np.array([1.0, 1.1, 1.2], dtype=float)
+        predicted_states = np.zeros((num_candidates, horizon + 1, state_dim), dtype=float)
+        predicted_ee_positions = np.zeros((num_candidates, horizon + 1, 2), dtype=float)
+        return FakeRolloutResult(costs, predicted_states, predicted_ee_positions)
+
+    problem = MPCProblem(
+        current_state=np.zeros(state_dim, dtype=float),
+        target_horizon=np.zeros((horizon, 2), dtype=float),
+        horizon=horizon,
+        control_dim=2,
+        dt=0.01,
+        cost_config={},
+        solver_config={
+            "num_candidates": num_candidates,
+            "sampling_std": 0.5,
+            "torque_limit": 1.0,
+            "num_iterations": 4,
+            "elite_ratio": 0.5,
+            "min_std": 0.05,
+        },
+        rollout_cost_fn=rollout_cost_fn,
+    )
+
+    solution = CEMShootingSolver().solve(problem)
+
+    assert call_count["value"] == 4
+    assert solution.solver_stats.num_iterations == 4
+    assert solution.solver_stats.num_rollouts == 12
+    assert solution.metadata["iteration_best_costs"]

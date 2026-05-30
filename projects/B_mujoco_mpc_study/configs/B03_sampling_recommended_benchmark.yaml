@@ -1,0 +1,69 @@
+demo:
+  name: B03_sampling_recommended_benchmark
+  description: "Short benchmark for recommended B03 sampling-family solver configs."
+
+simulation:
+  num_steps: 100
+  dt: 0.01
+  horizon: 16
+  seed: 0
+  note: "Short benchmark for recommended configs. Not final long benchmark."
+
+target:
+  type: circle
+  center: [0.45, 0.10]
+  radius: 0.08
+  frequency: 0.2
+
+adapter:
+  record_predicted_states: false
+  record_predicted_ee_positions: false
+  return_costs_only_for_tuning: true
+
+visualization:
+  export_video: false
+  save_figures: true
+  show_candidate_rollouts: false
+  show_best_rollout: false
+
+solvers:
+  enabled:
+    - random_shooting
+    - warm_start_fast
+    - cem_default
+    - mppi_smooth
+
+configs:
+  random_shooting:
+    num_candidates: 128
+    sampling_std: 2.0
+    torque_limit: 10.0
+
+  warm_start_fast:
+    num_candidates: 96
+    sampling_std: 1.0
+    torque_limit: 10.0
+    torque_rate_weight: 0.01
+
+  cem_default:
+    num_candidates: 128
+    num_iterations: 2
+    elite_ratio: 0.10
+    initial_std: 2.0
+    min_std: 0.10
+    torque_limit: 10.0
+    early_stop_enabled: true
+    early_stop_min_delta: 1.0e-3
+    early_stop_patience: 1
+
+  mppi_smooth:
+    num_candidates: 128
+    temperature: 2.0
+    noise_std: 1.5
+    torque_limit: 10.0
+
+outputs:
+  run_group: B03_sampling_recommended_benchmark
+  save_metrics: true
+  save_figures: true
+  save_report: true

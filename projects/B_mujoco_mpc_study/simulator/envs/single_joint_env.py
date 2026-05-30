@@ -46,6 +46,17 @@ class SingleJointEnv:
         self.data = mujoco.MjData(self.model)
         self.renderer: Any | None = None
 
+        self._camera = mujoco.MjvCamera()
+        camera_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, "fixed")
+        if camera_id >= 0:
+            self._camera.fixedcamid = camera_id
+            self._camera.type = mujoco.mjtCamera.mjCAMERA_FIXED
+        else:
+            self._camera.lookat[:] = [0.0, 0.0, 0.0]
+            self._camera.distance = 2.5
+            self._camera.azimuth = 90
+            self._camera.elevation = -30
+
         if self.model.nq < 1 or self.model.nv < 1:
             raise ValueError("单关节环境至少需要 1 个 qpos 和 1 个 qvel。")
         if self.model.nu < 1:
@@ -206,7 +217,7 @@ class SingleJointEnv:
             self.renderer = mujoco.Renderer(self.model, height=480, width=640)
 
         # 根据当前 data 更新渲染场景。
-        self.renderer.update_scene(self.data)
+        self.renderer.update_scene(self.data, self._camera)
 
         # 输出当前画面的 RGB array。
         frame = self.renderer.render()
