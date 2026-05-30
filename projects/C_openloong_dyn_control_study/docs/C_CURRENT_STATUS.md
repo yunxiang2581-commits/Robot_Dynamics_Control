@@ -47,6 +47,23 @@ C 的下一步不是直接跑完整 OpenLoong demo，而是：
 3. 整理 `C01_contact_force_allocation_demo` 的数学模型。
 4. 后续再实现简化双足接触力分配 QP。
 
+工程复现路径已经单独整理到：
+
+```text
+docs/09_engineering_reproduction_audit.md
+docs/10_official_reproduction_runbook.md
+```
+
+2026-05-30 预检结论：
+
+- 外部源码 commit 为 `4dd7a7e4`。
+- 当前系统是 Ubuntu 25.10，`g++` 为 15.2.0，不是官方推荐的 Ubuntu 22.04 / g++ 11。
+- 当前环境缺少 `cmake`，`gcc-11/g++-11` 也未找到。
+- `sudo apt-get update` 需要用户输入密码，Codex 无法代输。
+- 外部源码 `git status` 有大量 `M`，抽样看主要是 LF/CRLF 行尾变化；第一阶段仍按“外部源码只读”处理。
+
+因此，当前立即下一步是用户先安装官方构建依赖，然后按 `docs/10_official_reproduction_runbook.md` 从构建命令继续。
+
 在 Project B 完成 `B04_openloong_model_mpc_setup` 和 `B05_openloong_standing_balance_mpc` 后，C 可以优先复用这些概念输入：
 
 - desired base state。

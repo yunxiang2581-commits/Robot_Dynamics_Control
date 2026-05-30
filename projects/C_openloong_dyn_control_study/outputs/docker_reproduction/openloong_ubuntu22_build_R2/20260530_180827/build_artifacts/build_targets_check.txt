@@ -1,0 +1,5 @@
+walk_wbc FOUND build/walk_wbc
+walk_mpc_wbc FOUND build/walk_mpc_wbc
+wbc_speed_test FOUND build/wbc_speed_test
+jump_mpc FOUND build/jump_mpc
+float_control FOUND build/float_control

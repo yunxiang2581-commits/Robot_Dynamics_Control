@@ -1,0 +1,8 @@
+build/float_control
+build/jump_mpc
+build/walk_mpc_wbc
+build/walk_mpc_wbc_joystick
+build/walk_wbc
+build/walk_wbc_joystick
+build/walk_wbc_staircase
+build/wbc_speed_test

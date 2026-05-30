@@ -1,0 +1,18 @@
+flowchart TD
+    A[Initialize DataBus / fixed motor and base samples] --> B[DataBus.updateQ builds q and dq]
+    B --> C[Pin_KinDyn: FK / Jacobians / dynamics]
+    C --> D[JoyStickInterpreter: desired base command]
+    D --> H[GaitScheduler: phase and contact state]
+    H --> I[FootPlacement: swing foot target]
+    I --> J[Main writes WBC inputs: Fr_ff / des_delta_q / des_dq / des_ddq]
+    J --> K[WBC_priority.computeDdq: prioritized tasks]
+    K --> L[WBC_priority.computeTau: qpOASES contact and torque QP]
+    L --> M[PVT_Ctr: joint PVT torque output]
+    M --> N[chrono duration]
+    N --> E[DataLogger]
+    N --> F[stdout timing / benchmark]
+    E --> G[datalog.log]
+
+    X[No MuJoCo viewer] -. boundary .-> A
+    Y[No MuJoCo XML scene] -. boundary .-> A
+    Z[Finite LoopNum = 10000] -. boundary .-> A

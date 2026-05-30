@@ -95,3 +95,6 @@ external/mink_upstream/
 
 # External open-source repositories used only for source reading/reference
 external/open_source_repos/
+
+# Project C reproduction scratch worktrees contain upstream source copies and build outputs.
+projects/C_openloong_dyn_control_study/outputs/docker_reproduction/**/worktree/

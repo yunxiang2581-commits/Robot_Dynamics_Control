@@ -1,0 +1,12 @@
+clear variables; close all
+dataRec=load('datalog.log');
+motors_pos_cur=dataRec(:,1:31);
+motors_vel_cur=dataRec(:,32:62);
+rpy=dataRec(:,63:65);
+fL=dataRec(:,66:68);
+fR=dataRec(:,69:71);
+basePos=dataRec(:,72:74);
+baseLinVel=dataRec(:,75:77);
+baseAcc=dataRec(:,78:80);
+baseAngVel=dataRec(:,81:83);
+runTime=dataRec(:,84:84);
