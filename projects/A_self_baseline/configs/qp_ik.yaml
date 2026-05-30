@@ -1,0 +1,31 @@
+# QP-IK 学习配置模板
+
+model:
+  # URDF 路径: 不写死旧项目路径
+  urdf_path: "../../shared/robot_assets/models/your_robot.urdf"
+  # 目标 frame: 后续由模型检查脚本确认
+  target_frame: "left_foot"
+
+weights:
+  # task 权重: 越大越重视末端速度/位置任务
+  task: 1.0
+  # 正则权重: 抑制过大关节速度
+  regularization: 0.0001
+
+limits:
+  # 关节速度上限占位: 后续从模型或人工配置中补全
+  velocity_lower: "/path/to/velocity_lower_placeholder"
+  velocity_upper: "/path/to/velocity_upper_placeholder"
+  # 关节位置上下限安全裕度: 避免积分后越界
+  position_margin: 0.05
+
+solver:
+  # OSQP 最大迭代次数
+  max_iter: 1000
+  # OSQP 收敛容差
+  eps_abs: 0.0001
+  eps_rel: 0.0001
+
+output:
+  # 输出目录: 保存 solver 状态和约束检查报告
+  directory: "outputs/05_qp_ik_joint_limit_demo"

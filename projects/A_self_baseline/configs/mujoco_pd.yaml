@@ -1,0 +1,33 @@
+# MuJoCo PD 跟踪学习配置模板
+
+model:
+  # MuJoCo XML 路径: 可替换为 /path/to/your/robot.xml
+  xml_path: "../../shared/robot_assets/models/your_robot.xml"
+
+simulation:
+  # 仿真时长, 单位秒
+  duration: 2.0
+  # 控制频率, 单位 Hz
+  control_hz: 200
+  # 是否无窗口运行
+  headless: true
+
+controller:
+  # 目标关节名: 后续由模型检查确认
+  joint_name: "left_knee"
+  # 位置增益
+  kp: 50.0
+  # 速度增益
+  kd: 2.0
+
+trajectory:
+  # 轨迹类型: sine/step/constant 等后续实现
+  type: "sine"
+  # 幅值: 单位通常为 rad
+  amplitude: 0.1
+  # 频率: 单位 Hz
+  frequency: 0.5
+
+output:
+  # 输出目录: 保存 CSV、图像和运行摘要
+  directory: "outputs/06_mujoco_pd_tracking"
