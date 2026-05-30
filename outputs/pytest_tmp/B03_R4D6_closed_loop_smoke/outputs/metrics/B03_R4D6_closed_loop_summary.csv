@@ -1,0 +1,2 @@
+target_source,solver_family,final_ee_error,mean_ee_error,max_ee_error,mean_runtime_ms,max_runtime_ms,mean_abs_torque,max_abs_torque,control_energy
+b03_lissajous,cem,0.31229028631156436,0.31730372064480855,0.3223940939671669,4.77741666448613,5.270399997243658,0.14173964990693513,0.19156455579583007,0.2588206688116722

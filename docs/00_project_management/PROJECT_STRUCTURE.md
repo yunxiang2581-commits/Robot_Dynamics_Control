@@ -49,4 +49,3 @@ projects/A_self_baseline/
 - Overall project status: `docs/00_project_management/PROJECT_STATUS.md`.
 - A interface docs: `projects/A_self_baseline/docs/`.
 - Temporary step execution reports: keep only current reports needed for active refactors.
-

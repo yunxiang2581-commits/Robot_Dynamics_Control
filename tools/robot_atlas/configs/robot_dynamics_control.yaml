@@ -1,0 +1,57 @@
+repo:
+  root: /home/ubuntu/Robot_Dynamics_Control
+
+index_paths:
+  project_lines:
+    - projects/A_self_baseline
+    - projects/B_mujoco_mpc_study
+    - projects/C_openloong_dyn_control_study
+    - projects/D_legged_control_study
+  docs:
+    - docs/00_project_management
+  shared:
+    - shared/env
+    - shared/robot_assets
+
+ignore_paths:
+  - .git
+  - __pycache__
+  - .pytest_cache
+  - .venv
+  - external/open_source_repos
+
+project_lines:
+  A:
+    name: A_self_baseline
+    goal: 自研 baseline 学习与 demo
+  B:
+    name: B_mujoco_mpc_study
+    goal: MuJoCo MPC / iLQR / iLQG demo
+  C:
+    name: C_openloong_dyn_control_study
+    goal: OpenLoong-Dyn-Control study
+  D:
+    name: D_legged_control_study
+    goal: legged-control study
+
+required_demo_assets:
+  B03:
+    figures:
+      - tracking_error.png
+      - cost_history.png
+      - torque_profile.png
+    videos:
+      - state_tracking_smoke.mp4
+    logs:
+      - smoke_summary.json
+    docs:
+      - stepB03R4C1B_state_tracking_smoke_run.md
+
+forbidden_actions:
+  - git add
+  - git commit
+  - git push
+
+forbidden_paths:
+  - external/open_source_repos
+  - shared/robot_assets/vendor

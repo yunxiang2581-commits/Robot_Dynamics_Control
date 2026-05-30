@@ -140,4 +140,3 @@ git status --short
 - 已删除 `projects/A_self_baseline/docs/05_task_limit_qp_ik.md`
 
 删除后 `git status --short` 显示的删除项与本白名单一致。A01-A03 脚本、A01-A03 输出、`shared/robot_assets/`、`external/mink_upstream/`、`projects/A_self_baseline/external/mink/` 均未进入删除白名单。
-

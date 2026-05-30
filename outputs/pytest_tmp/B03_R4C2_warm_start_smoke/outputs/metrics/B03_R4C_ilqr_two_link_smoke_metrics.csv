@@ -1,0 +1,2 @@
+solver_name,success,message,termination_reason,warm_start_used,warm_start_source,horizon,state_dim,control_dim,best_cost,initial_cost,final_cost,num_cost_entries,runtime_ms,num_rollouts,num_iterations,max_abs_control,final_state_error_norm
+ilqg_lite,True,cost improvement below tolerance,tolerance,True,fake_sampling_warm_start,32,4,2,1.1564752096542601e-07,0.0002060211288054608,1.1564752096542601e-07,4,121.02140000206418,4,3,0.00033492960674299523,6.061847319144429e-05

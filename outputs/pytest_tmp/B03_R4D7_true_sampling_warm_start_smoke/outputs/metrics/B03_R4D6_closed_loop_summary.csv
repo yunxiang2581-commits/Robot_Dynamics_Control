@@ -1,0 +1,2 @@
+target_source,solver_family,final_ee_error,mean_ee_error,max_ee_error,mean_runtime_ms,max_runtime_ms,mean_sampling_runtime_ms,mean_ilqg_runtime_ms,mean_abs_torque,max_abs_torque,control_energy
+b03_lissajous,sampling_warm_start_ilqg,0.31824754784517933,0.3203108043392892,0.32238205318033025,176.9776000001002,177.5508999999147,4.705300001660362,172.27229999843985,0.1626154530491216,0.20515084098813738,0.17196590563036204

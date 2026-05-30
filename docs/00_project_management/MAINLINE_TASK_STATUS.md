@@ -163,4 +163,3 @@ docs/archive/project_history/
 4. 实现 B01 最小 MuJoCo 单关节 MPC 仿真。
 5. 导出 B01 MP4 视频和 metrics。
 6. 再进入 B02 二连杆 MPC 或 C01/D01 的简化 QP demo。
-

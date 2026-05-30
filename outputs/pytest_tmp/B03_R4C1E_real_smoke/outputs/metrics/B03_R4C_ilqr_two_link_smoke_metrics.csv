@@ -1,0 +1,2 @@
+solver_name,success,message,termination_reason,horizon,state_dim,control_dim,best_cost,initial_cost,final_cost,num_cost_entries,runtime_ms,num_rollouts,num_iterations,max_abs_control,final_state_error_norm
+ilqg_lite,True,cost improvement below tolerance,tolerance,32,4,2,1.5449372487697226e-07,2.516716749963712e-07,1.5449372487697226e-07,2,40.7446000026539,1,1,0.0003264583162950591,4.226534633890562e-05

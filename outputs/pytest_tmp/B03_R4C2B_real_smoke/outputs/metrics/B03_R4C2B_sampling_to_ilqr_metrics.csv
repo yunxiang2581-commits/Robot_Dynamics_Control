@@ -1,0 +1,4 @@
+label,solver_name,success,message,termination_reason,warm_start_used,warm_start_source,horizon,control_dim,best_cost,initial_cost,final_cost,num_cost_entries,runtime_ms,num_rollouts,num_iterations,max_abs_control,final_state_error_norm
+sampling_cem,cem,True,CEM rollout_cost_fn evaluated successfully,,False,zeros,32,2,0.08740462459974174,0.08740462459974174,0.08740462459974174,1,26.087700003699865,12,1,0.3386595798641297,0.06665738293841802
+zero_init_ilqr,ilqg_lite,True,cost improvement below tolerance,tolerance,False,zeros,32,2,1.5449372487697226e-07,2.516716749963712e-07,1.5449372487697226e-07,2,40.41980000329204,1,1,0.0003264583162950591,4.226534633890562e-05
+sampling_warm_start_ilqr,ilqg_lite,True,cost improvement below tolerance,tolerance,True,cem,32,2,1.6958950622978133e-07,0.095300328258794,1.6958950622978133e-07,5,149.9199999962002,4,4,0.00029982964087108774,5.214700188459595e-05
