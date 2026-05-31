@@ -49,6 +49,7 @@ Project C 不是纯资料阅读项目。最终需要实现一个受 OpenLoong-Dy
 - [08_source_repo_detailed_introduction.md](docs/08_source_repo_detailed_introduction.md)
 - [09_engineering_reproduction_audit.md](docs/09_engineering_reproduction_audit.md)
 - [10_official_reproduction_runbook.md](docs/10_official_reproduction_runbook.md)
+- [11_source_reading_workflow.md](docs/11_source_reading_workflow.md)
 - [simulator/README.md](simulator/README.md)
 - [literature_and_links.md](notes/literature_and_links.md)
 
