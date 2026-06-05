@@ -1,87 +1,42 @@
 # Robot Dynamics Control
 
-## Current Status
+`Robot_Dynamics_Control` 是一个 simulation-only 机器人运动学、动力学与控制学习仓库。仓库主线从 URDF / FK / Jacobian / IK 出发，逐步连接到 MuJoCo MPC、人形 WBC-MPC，以及 RL-augmented MPC locomotion 复现学习。
 
-`Robot_Dynamics_Control` is a simulation-only robotics motion-control learning repository. The current main line is Project A, which builds a readable baseline before later B/C/D simulation studies.
+## Repository Scope
 
-Project B is also active as the MuJoCo MPC learning line. B02 already provides the two-link MPC tracking baseline, while B03 has now been redefined as an MPC solver ladder demo covering sampling, CEM, MPPI, iLQG, SQP, and direct multiple shooting NMPC skeletons on simple models. B03 does not replace B02; keep B02 benchmark / regression baselines as the health checks before expanding B03.
+- 只做仿真、离线算法阅读与最小复现
+- 优先建立可解释、可验证、可复盘的学习链路
+- 不做真实机器人部署、sim2real、电机驱动、固件或硬件接口
 
-Project A is now split into two layers:
+## Project Index
 
-- Foundation validation layer: A00-A03.
-- Unified motion interface layer: A04-A07.
+| Project | Path | Focus | Current Stage | Next Step |
+|---|---|---|---|---|
+| Project A | `projects/A_self_baseline/` | 基础运动学、Pinocchio、URDF、MuJoCo 验证 | A01-A03 foundation retained; A04-A07 TODO wrappers | R1 `TargetDefinition` load/save/validate |
+| Project B | `projects/B_mujoco_mpc_study/` | MuJoCo MPC、tracking、solver ladder、iLQR / iLQG-lite | B02 baseline retained; B03 solver ladder active | continue B03 sampling / iLQR line |
+| Project C | `projects/C_openloong_dyn_control_study/` | OpenLoong-Dyn-Control humanoid WBC / MPC 学习 | source reading + simulation-only planning active | continue source audit / simulator mapping |
+| Project D | `projects/D_legged_control_study/` | legged_control / OCS2 四足 NMPC / WBC / state estimation 学习 | planning / reading line | continue quadruped simulator planning |
+| Project E | `projects/E_augmpc_hybrid_locomotion_study/` | RL-augmented MPC reproduction target based on AugMPC / LRHControl / IBRIDO. Focus on high-level RL contact schedules and twist commands with low-level MPC execution. Container-first, public bundle/eval before training, simulation-only. | E00 retarget cleanup / skeleton initialized | E01 upstream static audit |
 
-## Project A: Current Architecture
+## Project Boundaries
 
-Foundation validation layer:
+- Project A：自写学习基线，不直接把 `mink` 当替代实现
+- Project B：MuJoCo MPC 学习主线，不替代 B02 benchmark / regression 基线
+- Project C：OpenLoong 上游源码只读参考，不在 `external/open_source_repos/` 内直接改源码
+- Project D：当前只做 simulation-only 四足架构学习，不做 `legged_hw` 或真实机器人接口
+- Project E：当前只做 RL-augmented MPC locomotion simulation-only 复现，不运行真实机器人部署链路
 
-- A00 reference and assets.
-- A01 model inspect.
-- A02 configuration / site pose.
-- A03 site Jacobian check.
+## Legacy Note
 
-Unified motion interface layer:
-
-- Target interface: where the target comes from.
-- IK interface: how a target becomes `q_traj`.
-- Viewer interface: how viewer / mocap target will be planned.
-- Actuator interface: how `q_traj` will later enter MuJoCo actuator tracking.
-
-A04-A07 are now thin TODO learning wrappers around those interfaces:
-
-- A04 = DLS IK wrapper, `solver_type=dls`.
-- A05 = QP-IK wrapper, `solver_type=qp_scipy` / `qp_osqp`.
-- A06 = Target + Viewer wrapper.
-- A07 = Actuator wrapper.
-
-## Current Completion
-
-- A01-A03 validation outputs are retained.
-- Four-interface schema and TODO skeletons are created.
-- Old A04/A05 run artifacts and outdated step records were cleaned.
-- Documentation was refreshed around the new interface architecture.
-
-## Not Yet Implemented
-
-- Full TargetDefinition load/save/validate.
-- A05 `target_definition_json` regression.
-- A06 fixed target minimal implementation.
-- A06 derived MJCF, keyboard target movement, mouse drag validation, and kinematic IK follow.
-- A07 actuator tracking.
-- Video demo.
-
-## Next Step
-
-R1: finish `TargetDefinition` load/save/validate.
-
-Project B next step: continue B03-R1 by implementing the sampling-family core logic first, especially random shooting, warm-start predictive sampling, CEM-MPC, and MPPI-lite.
-
-## Project A Wrapper Entries
-
-A04/A05/A06/A07 are now complete-scope TODO learning skeletons:
-
-- A04: `projects/A_self_baseline/scripts/04_ik_dls_wrapper.py`
-- A05: `projects/A_self_baseline/scripts/05_ik_qp_wrapper.py`
-- A06: `projects/A_self_baseline/scripts/06_target_viewer_wrapper.py`
-- A07: `projects/A_self_baseline/scripts/07_actuator_wrapper.py`
-
-The TODO scope is full: DLS, QP-IK, target/viewer, and actuator routes are all planned, but not implemented in this step.
-
-## Boundaries
-
-- Do not call mink as a replacement implementation.
-- Do not modify `external/mink_upstream/`.
-- Do not modify original robot assets such as the UR5e `scene.xml`.
-- Do not write `data.ctrl` outside A07.
-- Do not run real hardware.
-- Do not record video outside the planned demo step.
+`projects/B_legged_control_study/` 是早期 `legged_control` 项目骨架，当前不作为主线 Project B 使用。当前 Project B 指 `projects/B_mujoco_mpc_study/`，Project D 承接四足 `legged_control` 学习线。
 
 ## Entry Points
 
 - [Project status](docs/00_project_management/PROJECT_STATUS.md)
-- [Project structure](docs/00_project_management/PROJECT_STRUCTURE.md)
 - [Project roadmap](docs/00_project_management/PROJECT_ROADMAP.md)
-- [A project README](projects/A_self_baseline/README.md)
-- [A four-interface plan](projects/A_self_baseline/docs/A_four_interface_refactor_plan.md)
+- [Project structure](docs/00_project_management/PROJECT_STRUCTURE.md)
+- [Project A README](projects/A_self_baseline/README.md)
 - [Project B README](projects/B_mujoco_mpc_study/README.md)
-- [B03 MPC solver ladder demo](projects/B_mujoco_mpc_study/docs/B03_mpc_solver_ladder/B03_MPC_SOLVER_LADDER.md)
+- [Project C README](projects/C_openloong_dyn_control_study/README.md)
+- [Project D README](projects/D_legged_control_study/README.md)
+- [Project E README](projects/E_augmpc_hybrid_locomotion_study/README.md)

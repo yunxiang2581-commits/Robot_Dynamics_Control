@@ -1,0 +1,11 @@
+module,input,output,learning_note
+MJ_Interface,"MuJoCo qpos qvel sensordata","DataBus current motor state rpy base accel gyro q dq and ctrl writeback","Bridge between simulator and controller."
+DataBus,"sensor state desired command kinematics dynamics WBC outputs","shared state for all modules","Central object connecting FK Jacobian dynamics WBC and actuator output."
+StateEst,"rpy accel gyro motor state contact state","estimated base state and force-related state","Important because basePos/baseLinVel direct write is commented in MJ_Interface."
+Pin_KinDyn,"q dq from DataBus","frame pose Jacobian dJ mass gravity nonlinear terms","Maps URDF floating-base state to kinematics and dynamics objects."
+JoyStickInterpreter,"time desired velocity initial pose","desired base position velocity yaw","Creates high-level command before gait and WBC."
+GaitScheduler,"motionState desired command timing","legState legStateNext contact phase","Produces contact schedule for walking."
+FootPlacement,"gait phase desired velocity foot state","swing foot desired position","Turns walking command into swing foot target."
+WBC_priority,"DataBus desired motion dynamics contact state","wbc_delta_q_final wbc_dq_final wbc_tauJointRes wbc_FrRes qp_status","Computes whole-body desired motion and torque/contact-force QP result."
+PVT_Ctr,"desired joint pos vel torque current joint state PD gains","motors_tor_out","Final joint-level torque layer applied to MuJoCo."
+DataLogger,"selected DataBus fields","record/datalog.log","Current walk_wbc log does not include qp_status or WBC force/torque outputs."

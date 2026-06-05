@@ -33,10 +33,14 @@ C 不替代 B 的 MPC 概念验证；C 负责把 B 中形成的 MPC target / con
 - 项目骨架已完成。
 - `docs/`、`notes/`、`simulator/`、`outputs/` 已规划。
 - 外部参考仓库已经 clone 到本地并通过 `.gitignore` 隔离。
+- 已完成官方工程复现路径审计和 Docker Ubuntu 22.04 构建复现记录。
+- 已完成 `wbc_speed_test` runtime smoke 记录：non-viewer WBC/PVT benchmark 可运行，生成 10000 行 datalog。
+- 已完成 `C05A wbc_speed_test` 源码追踪：固定输入 benchmark 链路已经清楚。
+- 已完成 `C05B walk_wbc` 主循环源码追踪：MuJoCo -> StateEst -> Pin_KinDyn -> WBC -> PVT -> MuJoCo torque 闭环已经清楚。
 - 尚未实现 `C01_contact_force_allocation_demo`。
-- 尚未运行仿真。
+- 尚未运行 `walk_wbc` GUI。
 - 尚未导出视频 demo。
-- 尚未生成 metrics。
+- 尚未生成 Project C 自己的 metrics。
 
 ## 3. 下一步
 
@@ -54,15 +58,19 @@ docs/09_engineering_reproduction_audit.md
 docs/10_official_reproduction_runbook.md
 ```
 
-2026-05-30 预检结论：
+2026-05-30 到 2026-06-03 阶段结论：
 
 - 外部源码 commit 为 `4dd7a7e4`。
 - 当前系统是 Ubuntu 25.10，`g++` 为 15.2.0，不是官方推荐的 Ubuntu 22.04 / g++ 11。
-- 当前环境缺少 `cmake`，`gcc-11/g++-11` 也未找到。
-- `sudo apt-get update` 需要用户输入密码，Codex 无法代输。
-- 外部源码 `git status` 有大量 `M`，抽样看主要是 LF/CRLF 行尾变化；第一阶段仍按“外部源码只读”处理。
+- 已通过 Docker Ubuntu 22.04 + g++ 11 路线完成官方工程构建复现记录。
+- 已完成 `wbc_speed_test` non-viewer runtime smoke。
+- 当前仍按“外部源码只读”处理，不修改官方仓库。
 
-因此，当前立即下一步是用户先安装官方构建依赖，然后按 `docs/10_official_reproduction_runbook.md` 从构建命令继续。
+因此，当前立即下一步不是安装依赖或直接跑 `walk_mpc_wbc`，而是继续做源码理解：
+
+1. `C05C MJ_Interface / StateEst / contact force trace`
+2. `C06 walk_wbc GUI/runtime observation`
+3. Project C simplified simulator 接口抽象
 
 在 Project B 完成 `B04_openloong_model_mpc_setup` 和 `B05_openloong_standing_balance_mpc` 后，C 可以优先复用这些概念输入：
 
@@ -79,4 +87,4 @@ docs/10_official_reproduction_runbook.md
 - 不做实物部署。
 - 不做真实机器人安全测试。
 - 不修改 `external/open_source_repos/OpenLoong-Dyn-Control/`。
-- 不编译、不运行外部仓库 demo。
+- 不在未规划 GUI / X11 / OpenGL / 录屏方案前直接运行 viewer demo。

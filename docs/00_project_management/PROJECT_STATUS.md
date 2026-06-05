@@ -1,56 +1,42 @@
 # Project Status
 
-## Current Main Line
+## Repository Status
 
-`Robot_Dynamics_Control` is a simulation-only robotics motion-control learning repository.
+`Robot_Dynamics_Control` 当前是一个 simulation-only 机器人控制学习仓库。仓库级状态以项目为单位管理，优先回答三个问题：
 
-Current focus: Project A has been refactored into a four-interface TODO skeleton while preserving A01-A03 foundation validation.
+- 每个项目当前在做什么
+- 当前做到哪一阶段
+- 推荐下一步是什么
 
-## Project A Status
+## Project Status Table
 
-Foundation validation layer retained:
+| Project | Path | Status | Current Stage | Next Step | Note |
+|---|---|---|---|---|---|
+| Project A | `projects/A_self_baseline/` | active | A01-A03 foundation retained; A04-A07 TODO wrappers | R1 `TargetDefinition` load/save/validate | 仍是当前基础学习主线 |
+| Project B | `projects/B_mujoco_mpc_study/` | active | B02 two-link tracking retained; B03 solver ladder active | continue B03 sampling / iLQR line | B03 不替代 B02 |
+| Project C | `projects/C_openloong_dyn_control_study/` | active | source reading + simulation-only reproduction planning | continue audit / architecture reading | `external` 上游源码只读 |
+| Project D | `projects/D_legged_control_study/` | planned | quadruped NMPC / WBC / state estimation reading line | continue simulator planning | 只做 simulation-only |
+| Project E | `projects/E_augmpc_hybrid_locomotion_study/` | initialized | E00 retarget cleanup / skeleton initialized | E01 upstream static audit | AugMPC / IBRIDO clone not yet |
 
-- A00 reference and assets.
-- A01 model inspect.
-- A02 configuration / site pose.
-- A03 site Jacobian check.
+## Project A Notes
 
-Unified motion interface layer:
+- Foundation validation layer retained: A00-A03
+- Unified motion interface wrappers retained: A04-A07
+- 当前未完成项仍包括 `TargetDefinition`、A06 target/viewer、A07 actuator tracking
 
-- Target interface: where the target comes from.
-- IK interface: how target becomes `q_traj`.
-- Viewer interface: how viewer / mocap target is planned.
-- Actuator interface: how `q_traj` later enters MuJoCo actuator tracking.
+## Project B Notes
 
-## Completed in Step R-C
+- B02 是稳定基线
+- B03 是 MPC solver ladder 与 sampling / iLQR 学习线
+- 进入 B03 之前，优先保留 B02 benchmark / regression 健康检查口径
 
-- Added shared schema in `motion_types.py`.
-- Added Target / IK / Trajectory IO / Viewer / Actuator interface skeletons.
-- Refactored A04-A07 into thin wrappers.
-- Added `configs/motion_task.yaml` as unified task template.
-- Cleaned old A04/A05 execution artifacts and outdated step records.
-- Updated project status and A documentation.
+## Project C / D / E Shared Boundaries
 
-## Not Completed
+- 只做 simulation-only
+- 不做真实机器人部署
+- 不做 sim2real
+- 不做电机驱动、固件或硬件接口
 
-- TargetDefinition load/save/validate full implementation.
-- A05 target_definition_json integration.
-- A06 fixed target minimal implementation.
-- A06 derived MJCF.
-- A06 keyboard target movement.
-- A06 mouse drag target validation.
-- A06 kinematic IK follow.
-- A07 actuator tracking.
-- Video demo.
+## Legacy Directory
 
-## Next Step
-
-R1: finish TargetDefinition load/save/validate.
-
-## Boundaries
-
-- Do not call mink as replacement implementation.
-- Do not modify `external/mink_upstream/`.
-- Do not write `data.ctrl` outside A07.
-- Do not record video outside the video demo step.
-- Do not run real hardware.
+`projects/B_legged_control_study/` 为历史骨架目录，当前不作为仓库级 Project B 主线状态表的一部分。

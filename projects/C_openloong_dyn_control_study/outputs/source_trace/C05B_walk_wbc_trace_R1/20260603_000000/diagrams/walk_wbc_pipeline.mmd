@@ -1,0 +1,16 @@
+flowchart TD
+    A[MuJoCo mj_step] --> B[MJ_Interface updateSensorValues]
+    B --> C[DataBus updateQ]
+    C --> D[StateEst]
+    D --> E[Pin_KinDyn FK Jacobian dynamics]
+    E --> F[JoyStickInterpreter]
+    F --> G[GaitScheduler]
+    G --> H[FootPlacement]
+    H --> I[WBC_priority computeDdq]
+    I --> J[WBC_priority computeTau]
+    J --> K[WBC output to joint commands]
+    K --> L[PVT_Ctr calMotorsPVT]
+    L --> M[MJ_Interface setMotorsTorque]
+    M --> A
+    L --> N[DataLogger]
+    A --> O[UI viewer update]

@@ -13,18 +13,23 @@ RUN apt-get update \
         g++-11 \
         gcc-11 \
         git \
+        libgl1-mesa-dri \
         libgl1-mesa-dev \
+        libglfw3 \
         libglu1-mesa-dev \
         libx11-dev \
+        libglx-mesa0 \
         libxcursor-dev \
         libxi-dev \
         libxinerama-dev \
         libxrandr-dev \
         make \
+        mesa-utils \
         pkg-config \
         python3 \
         python3-pip \
         rsync \
+        x11-apps \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /work

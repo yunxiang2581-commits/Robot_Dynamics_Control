@@ -1,0 +1,18 @@
+step,module_or_call,input,output,why_it_exists
+1,mj_step,mj_model and mj_data,next MuJoCo simulation state,Advance physics so controller reads fresh simulated state.
+2,MJ_Interface.updateSensorValues,mj_data qpos qvel sensordata,motor_pos motor_vel rpy baseAcc baseAngVel baseLinVel,Convert MuJoCo state and sensors into controller-side measurements.
+3,MJ_Interface.dataBusWrite,MJ_Interface cached measurements,DataBus motors rpy force accel gyro q dq,Populate shared state and call DataBus.updateQ for floating-base state.
+4,StateEst init/set/update/get,DataBus sensor state,estimated base state,Provide base state estimates used by the walking controller.
+5,Pin_KinDyn computeJ_dJ and computeDyn,DataBus q dq,Jacobians frame poses dynamics terms,Provide kinematics and dynamics quantities for WBC.
+6,StateEst force update,DataBus dynamics and contact-related state,estimated contact/base force state,Update force-related state after dynamics computation.
+7,JoyStickInterpreter,simTime and desired velocity,js_pos_des js_vel_des theta command,Generate desired base motion command.
+8,GaitScheduler,DataBus motionState and timing,legState contact phase phi,Decide stance/swing/contact schedule.
+9,FootPlacement,DataBus gait and desired velocity,swing foot target,Generate swing foot placement target.
+10,WBC input setup,js command gait state current q dq,des_delta_q des_dq des_ddq Fr_ff,Prepare task-space and floating-base desired quantities.
+11,WBC_priority.computeDdq,DataBus and Pin_KinDyn,wbc_delta_q_final wbc_dq_final wbc_ddq_final,Solve prioritized desired generalized motion.
+12,WBC_priority.computeTau,DataBus dynamics contact constraints,wbc_tauJointRes wbc_FrRes qp_status,Solve contact force and joint torque QP.
+13,WBC output conversion,q and wbc_delta_q_final,motors_pos_des motors_vel_des motors_tor_des,Convert generalized WBC result into actuated joint commands.
+14,PVT_Ctr.calMotorsPVT,joint desired and current states,motors_tor_out,Compute final motor torque with PD/PVT layer.
+15,MJ_Interface.setMotorsTorque,motors_tor_out,mj_data ctrl,Close the loop by applying torque to MuJoCo actuators.
+16,DataLogger,DataBus selected fields,record datalog row,Save state trace for later review.
+17,UIctr.updateScene,mj_model mj_data,viewer frame,Render current simulation state.
