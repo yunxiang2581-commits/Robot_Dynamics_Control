@@ -1,0 +1,107 @@
+bundle_format: augmpc_model_bundle_v1
+bundle_name: d2026_02_21_h14_m01_s10-CentauroCloopPartialUbNoWheels_FakePosTrackingEnv
+checkpoint_file: d2026_02_21_h14_m01_s10-CentauroCloopPartialUbNoWheels_FakePosTrackingEnv_model
+preserved_training_cfgs:
+  - ibrido_run__2026_02_21_13_59_20_ID/training_cfg_centauro_ub_cloop.sh
+framework:
+  repos:
+    AugMPC:
+      commit: f2ff28085ea76d2b548841de6f363f7183480f86
+      branch: ibrido
+      remote: git@github.com:AndrePatri/AugMPC.git
+      dirty: false
+    AugMPCEnvs:
+      commit: 46c5d4161cb4b249b3a2e50c93c6bc2aa087f027
+      branch: ibrido
+      remote: git@github.com:AndrePatri/AugMPCEnvs.git
+      dirty: false
+    AugMPCModels:
+      commit: 8b15c800c0f5684c61fdaf4847156ff71df61ebc
+      branch: main
+      remote: https://huggingface.co/AndrePatri/AugMPCModels
+      dirty: true
+    CentauroHybridMPC:
+      commit: 640889d4c3b9c8d360b5a3ccde6fc2bd8f139891
+      branch: ibrido
+      remote: git@github.com:ADVRHumanoids/CentauroHybridMPC.git
+      dirty: false
+    EigenIPC:
+      commit: 7c1c3ecd08716e61ed164a6e0bb788aa716705ca
+      branch: devel
+      remote: git@github.com:AndrePatri/EigenIPC.git
+      dirty: false
+    IBRIDO:
+      commit: 0ceb5f3e0508b6ecdce12bcc8f0dcbcde8f29a93
+      branch: main
+      remote: git@github.com:AndrePatri/IBRIDO.git
+      dirty: false
+    IsaacLab:
+      commit: a520a883ce996d855cc9d5255d71fd1c1307633f
+      branch: HEAD
+      remote: git@github.com:isaac-sim/IsaacLab.git
+      dirty: true
+    KyonRLStepping:
+      commit: 2bea2b8d70078974869df0549e90fc27ff31f851
+      branch: ibrido
+      remote: git@github.com:ADVRHumanoids/KyonRLStepping.git
+      dirty: false
+    MPCHive:
+      commit: 45b4fc692850cef607020dda2e32fd708e7fff62
+      branch: devel
+      remote: git@github.com:AndrePatri/MPCHive.git
+      dirty: false
+    MPCViz:
+      commit: 806d03efcc9d8ab1fb04991a159c19ba89bfb85b
+      branch: ros2_humble
+      remote: git@github.com:AndrePatri/MPCViz.git
+      dirty: false
+    adarl:
+      commit: f585499e49fa05fdd070a77f3211c0996599b87b
+      branch: ibrido
+      remote: git@github.com:c-rizz/adarl.git
+      dirty: false
+    casadi:
+      commit: 79cebe3b416dee22abc87de0076b80a5b97bd345
+      branch: optional_float
+      remote: git@github.com:AndrePatri/casadi.git
+      dirty: true
+    horizon:
+      commit: 3b084317709ff9b88d4a07ac5436f5988b39eece
+      branch: ibrido
+      remote: git@github.com:AndrePatri/horizon.git
+      dirty: true
+    iit-centauro-ros-pkg:
+      commit: 6069807ebb37a6d7df39430a02685e09ed9b167a
+      branch: ibrido_ros2
+      remote: git@github.com:AndrePatri/iit-centauro-ros-pkg.git
+      dirty: false
+    iit-dagana-ros-pkg:
+      commit: f7ecd6c84a0b7f3320c1b7de6449cbcd4445d2fe
+      branch: ibrido_ros2
+      remote: git@github.com:AndrePatri/iit-dagana-ros-pkg.git
+      dirty: false
+    iit-kyon-description:
+      commit: 50fd7c8909b3ddfd1ebbe67c61d6b775b86df6b1
+      branch: ibrido_ros2
+      remote: git@github.com:ADVRHumanoids/iit-kyon-ros-pkg.git
+      dirty: false
+    iit-kyon-description-mpc:
+      commit: 3a92bee28405172e8f6c628b4498703724d35bf5
+      branch: ibrido_ros2
+      remote: git@github.com:ADVRHumanoids/iit-kyon-ros-pkg.git
+      dirty: false
+    iit-kyon-ros-pkg:
+      commit: 298917efffb63dbca540e0aedbd21b41bf393fbf
+      branch: ibrido_ros2_simple
+      remote: git@github.com:ADVRHumanoids/iit-kyon-ros-pkg.git
+      dirty: false
+    phase_manager:
+      commit: 9925d18c0d7a55d013cbaa4998c61d85a3a8944f
+      branch: ibrido
+      remote: git@github.com:AndrePatri/phase_manager.git
+      dirty: false
+    unitree_ros:
+      commit: c75a622b8782d11dd6aa4c2ebd3b0f9c13a56aae
+      branch: ibrido
+      remote: git@github.com:AndrePatri/unitree_ros.git
+      dirty: true

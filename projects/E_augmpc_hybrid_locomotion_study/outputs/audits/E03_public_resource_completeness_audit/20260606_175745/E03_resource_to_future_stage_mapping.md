@@ -1,0 +1,13 @@
+# E03 Resource To Future Stage Mapping
+
+| Resource | Needed By Stage | Why Needed | Current Completeness | Next Action |
+|---|---|---|---|---|
+| HF public bundle tree | E04 execution prerequisites checklist | E04 needs to know whether future checks must account for bundle mounts and large-file transfer | sufficiently documented at metadata level | check storage / mount / network implications only |
+| Centauro public bundle path pattern | E05 delayed reproduction command plan | future command plan needs concrete `MPATH` / `MNAME` examples | strong for metadata, not local assets | use centauro example as command template |
+| B2W public bundle path pattern | E05 delayed reproduction command plan | future command plan should include a second public robot route | strong for metadata, not local assets | use B2W as alternate public template |
+| Public rosbag metadata | later visualization smoke | future bag replay plan needs concrete rosbag naming evidence | partially documented | delay actual download and replay |
+| Container training_cfg directories | E05 delayed reproduction command plan | matching config path is required by documented eval route | documented locally | map robot to config folders |
+| Private Kyon dependency note | E04 execution prerequisites checklist | E04 must distinguish public-ready from private-blocked routes | well documented | mark Kyon as excluded from first route |
+| Xet / large-file checkpoint markers | E04 execution prerequisites checklist | future download/storage concerns belong in prerequisites | well documented | add storage / transfer caveat |
+| Wandb run link | E06 learning report | useful for contextual learning, not required for base execution planning | mentioned only | treat as optional supporting evidence |
+| Uncloned AugMPCEnvs / MPCHive / EigenIPC / MPCViz | E06 learning report | important to explain remaining audit gaps | incomplete | keep as unresolved ecosystem surface |

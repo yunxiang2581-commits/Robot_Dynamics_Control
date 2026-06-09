@@ -11,11 +11,12 @@ Project E 已完全从 `isaac-quad-loco` / Orbit 方向重构。新目标是复�
 ## Reproduction Priority
 
 1. upstream static audit
-2. container readiness audit
-3. public model bundle / rosbag audit
-4. visualization smoke
-5. public model eval smoke
-6. minimal training only after eval works
+2. full-process reproducibility learning roadmap
+3. public resource completeness audit
+4. execution prerequisites checklist
+5. delayed reproduction command plan
+6. learning report
+7. only after the above, consider later execution-oriented smoke steps
 
 ## Project Boundaries
 

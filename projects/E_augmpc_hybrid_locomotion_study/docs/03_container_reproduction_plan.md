@@ -14,8 +14,8 @@ Project E 采用 container-first 路线。
 - 容器更适合固定图形、GPU、系统依赖和复现命令
 - 先做容器 readiness audit，比直接安装依赖风险更低
 
-## E02 / E03 Focus
+## E04 / E05 Relation
 
-- host 是否具备 container runtime
-- 是否存在 `Singularity`, `Apptainer`, `Dockerfile` 或 container docs
-- 是否有公开 bundle / eval 命令和容器绑定
+- E04 只列执行前置条件，不安装任何东西
+- E05 只把将来可能执行的命令写成计划，不实际运行
+- 在 E03 之前先把公开资源边界确认清楚，避免为了补资料而误触下载或执行

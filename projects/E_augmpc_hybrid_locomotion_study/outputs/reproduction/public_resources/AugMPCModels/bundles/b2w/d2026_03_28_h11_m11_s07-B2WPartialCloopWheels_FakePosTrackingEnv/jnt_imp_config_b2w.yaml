@@ -1,0 +1,17 @@
+XBotInterface:
+  urdf_path: $PWD/xmj_env_files/b2w/unitree_b2w.urdf
+  srdf_path: $PWD/xmj_env_files/b2w/unitree_b2w.srdf
+
+# defaults
+motor_pd:
+  "*hip_joint": [200, 60]
+  "*thigh_joint": [200, 60]
+  "*calf_joint": [200, 60]
+  "*foot_joint": [0, 30]
+
+# startup pd config
+startup_motor_pd:
+  "*hip_joint": [200, 60]
+  "*thigh_joint": [200, 60]
+  "*calf_joint": [200, 60]
+  "*foot_joint": [0, 30]
