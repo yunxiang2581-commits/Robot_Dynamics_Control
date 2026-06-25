@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_ROOT="/home/ubuntu/Robot_Dynamics_Control"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd "$SCRIPT_DIR/../../../.." && pwd)
 SRC_ROOT="$REPO_ROOT/external/open_source_repos/OpenLoong-Dyn-Control"
 RUN_ROOT="${1:-$REPO_ROOT/projects/C_openloong_dyn_control_study/outputs/docker_reproduction/openloong_ubuntu22_build_R1/20260530_000000}"
 IMAGE_TAG="openloong-ubuntu22-build:local"
