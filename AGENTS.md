@@ -1,3 +1,23 @@
+## Personal Image Generation Preference
+
+When the user asks to generate, create, draw, render, save, upscale, or post-process a raster image, prefer the `openai-image.generate_image` MCP tool. Treat this trigger as sensitive: use it for English phrases such as `generate image`, `create image`, `draw`, `render`, `4K`, `wallpaper`, `avatar`, `poster`, `AI image`, `high resolution`, and `upscale`.
+
+Also use it for Chinese phrases such as `生图`, `生成图片`, `画图`, `绘图`, `画一张`, `随机画`, `出图`, `图片`, `4k图`, `壁纸`, `头像`, `海报`, `AI图`, `高清`, `真实感`, `细节清晰`, and `超分`. If the user writes `mpc` in an image-generation context, treat it as a likely typo for MCP and still prefer `openai-image.generate_image`.
+
+Use these size aliases when the user asks for common resolutions:
+
+- `1k` -> `1024x1024`
+- `2k` -> `2048x2048`
+- `4k` -> `3840x2160`
+
+If the user provides an output path, pass it as `output_path`. If no path is provided, save under `D:\project\generated_images`.
+
+For high-quality realistic 4K requests, prefer `realism=natural`, `upscale=auto`, `detail=balanced`, and `postprocess_depth=max` when the user asks for highest quality or full GPU use. For speed-focused drafts, use the default depth.
+
+For images with clocks, watches, gauges, meters, dials, instrument panels, numerals, tick marks, 表盘, 钟表, 刻度, 数字, 指针, or 仪表, prefer `precision_detail=auto` or force `precision_detail=on` when the user explicitly complains that these details are blurry or unreadable.
+
+---
+
 # AGENTS.md
 
 ## 项目目标

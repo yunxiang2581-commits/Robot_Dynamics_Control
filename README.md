@@ -16,7 +16,7 @@
 | Project B | `projects/B_mujoco_mpc_study/` | MuJoCo MPC、tracking、solver ladder、iLQR / iLQG-lite | B02 baseline retained; B03 solver ladder active | continue B03 sampling / iLQR line |
 | Project C | `projects/C_openloong_dyn_control_study/` | OpenLoong-Dyn-Control humanoid WBC / MPC 学习 | source reading + simulation-only planning active | continue source audit / simulator mapping |
 | Project D | `projects/D_legged_control_study/` | legged_control / OCS2 四足 NMPC / WBC / state estimation 学习 | planning / reading line | continue quadruped simulator planning |
-| Project E | `projects/E_augmpc_hybrid_locomotion_study/` | RL-augmented MPC reproduction target based on AugMPC / LRHControl / IBRIDO. Focus on high-level RL contact schedules and twist commands with low-level MPC execution. Container-first, public bundle/eval before training, simulation-only. | E00 retarget cleanup / skeleton initialized | E01 upstream static audit |
+| Project E | `projects/E_augmpc_hybrid_locomotion_study/` | RL-augmented MPC reproduction target based on AugMPC / LRHControl / IBRIDO. Focus on high-level RL contact schedules and twist commands with low-level MPC execution. Container-first, public resource audit before execution, simulation-only. | E00-E02 completed | E03 public resource completeness audit |
 
 ## Project Boundaries
 

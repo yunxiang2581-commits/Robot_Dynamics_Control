@@ -20,7 +20,8 @@
 - `external/open_source_repos/OpenLoong-Dyn-Control/math/ramp_trajectory.cpp`
 - `external/open_source_repos/OpenLoong-Dyn-Control/algorithm/gait_scheduler.h`
 - `external/open_source_repos/OpenLoong-Dyn-Control/algorithm/gait_scheduler.cpp`
-- 后续还要继续读 `foot_placement.cpp`
+- `external/open_source_repos/OpenLoong-Dyn-Control/algorithm/foot_placement.h`
+- `external/open_source_repos/OpenLoong-Dyn-Control/algorithm/foot_placement.cpp`
 
 暂时不展开：
 
@@ -243,70 +244,70 @@ FRest = -pseudoInv_SVD(J_r * dyn_M.inverse() * J_r.transpose()) * (J_r * dyn_M.i
 
 先从 floating-base 动力学方程出发：
 
-\[
-M(q)\ddot q + h(q,\dot q) = \tau + J^\top F
-\]
+```text
+M(q) * ddq + h(q, dq) = tau + J^T * F
+```
 
 其中：
 
-- \(M(q)\) 对应 `dyn_M`
-- \(h(q,\dot q)\) 对应 `dyn_Non`
-- \(\tau\) 对应 `tauAll`
-- \(J\) 对应该脚 Jacobian
-- \(F\) 对应该脚接触力
+- `M(q)` 对应 `dyn_M`
+- `h(q, dq)` 对应 `dyn_Non`
+- `tau` 对应 `tauAll`
+- `J` 对应该脚 Jacobian
+- `F` 对应该脚接触力
 
 如果把脚看成稳定接触脚，那么脚端世界系加速度近似为 0：
 
-\[
-\ddot x_{foot} \approx 0
-\]
+```text
+ddx_foot ~= 0
+```
 
 而脚端速度关系是：
 
-\[
-\dot x_{foot} = J(q)\dot q
-\]
+```text
+dx_foot = J(q) * dq
+```
 
 对时间再求导：
 
-\[
-\ddot x_{foot} = \frac{d}{dt}(J\dot q) = J\ddot q + \dot J \dot q
-\]
+```text
+ddx_foot = d/dt(J * dq) = J * ddq + dJ * dq
+```
 
 所以接触约束写成：
 
-\[
-J\ddot q + \dot J \dot q = 0
-\]
+```text
+J * ddq + dJ * dq = 0
+```
 
 把动力学里的
 
-\[
-\ddot q = M^{-1}(\tau + J^\top F - h)
-\]
+```text
+ddq = M^{-1} * (tau + J^T * F - h)
+```
 
 代进去，得到：
 
-\[
-J M^{-1}(\tau + J^\top F - h) + \dot J \dot q = 0
-\]
+```text
+J * M^{-1} * (tau + J^T * F - h) + dJ * dq = 0
+```
 
 整理：
 
-\[
-J M^{-1}J^\top F
+```text
+J * M^{-1} * J^T * F
 =
--\left(J M^{-1}(\tau - h) + \dot J \dot q\right)
-\]
+-(J * M^{-1} * (tau - h) + dJ * dq)
+```
 
 于是：
 
-\[
+```text
 F
 =
--\left(J M^{-1}J^\top\right)^+
-\left(J M^{-1}(\tau - h) + \dot J \dot q\right)
-\]
+-(J * M^{-1} * J^T)^+
+ * (J * M^{-1} * (tau - h) + dJ * dq)
+```
 
 这就是代码里的：
 
@@ -346,31 +347,31 @@ F
 
 这句来自 Jacobian 速度映射：
 
-\[
-x_{foot} = f(q)
-\]
+```text
+x_foot = f(q)
+```
 
-\[
-\dot x_{foot} = J(q)\dot q
-\]
+```text
+dx_foot = J(q) * dq
+```
 
 再对时间求导：
 
-\[
-\ddot x_{foot} = \frac{d}{dt}(J\dot q) = J\ddot q + \dot J \dot q
-\]
+```text
+ddx_foot = d/dt(J * dq) = J * ddq + dJ * dq
+```
 
 如果脚被视为稳定接触、相对地面不加速，那么：
 
-\[
-\ddot x_{foot} \approx 0
-\]
+```text
+ddx_foot ~= 0
+```
 
 于是得到：
 
-\[
-J\ddot q + \dot J \dot q \approx 0
-\]
+```text
+J * ddq + dJ * dq ~= 0
+```
 
 这不是恒等式，而是“接触脚不动”的约束假设。
 
@@ -697,30 +698,35 @@ motionState
 
 这就是 `GaitScheduler` 到 `FootPlacement` 的接口。
 
-## 7. 阶段检查：GaitScheduler 已读完
+## 7. 阶段检查：第五轮已读完
 
 - `JoyStickInterpreter`
+  - 速度目标设置
+  - `RampTrajectory` 平滑爬坡
+  - `step()` 积分 yaw 和世界系 base 参考
+  - `dataBusWrite()` 写回 `js_*` 与 `base_*_des`
 - `RampTrajectory`
+  - `setPara()` 计算线性斜率
+  - `step()` 逐周期趋近目标速度
 - `GaitScheduler`
   - `dataBusRead()`：读取模型量、脚位置、当前 motionState
   - `step()`：估计接触力、推进相位、换脚、Walk2Stand 收口
   - `dataBusWrite()`：写回 `legState / phi / swingStartPos_W / posHip_W`
   - `start()`：打开第一次起步初始化标志
+- `FootPlacement`
+  - `dataBusRead()`：读取 `GaitScheduler` 的步态变量、`JoyStickInterpreter` 的速度目标和当前 base 状态
+  - `getSwingPos()`：先算最终落点 `posDes_W`，再根据 `phi` 算当前轨迹点 `pDesCur`
+  - `Trajectory()`：给 z 方向返回当前相位下的抬脚/落脚高度偏移
+  - `dataBusWrite()`：把 `pDesCur` 写成 `swing_fe_pos_des_W`，供 WBC 跟踪
 
-读完 `GaitScheduler` 后，第五轮还剩最后一段：
-
-- `FootPlacement::dataBusRead()`
-- `FootPlacement::getSwingPos()`
-- `FootPlacement::dataBusWrite()`
-
-到那一步，才能把：
+第五轮现在已经把这条链完整收口：
 
 ```text
-legState / phi / posHip_W / posST_W
+JoyStickInterpreter
+-> GaitScheduler
+-> FootPlacement
 -> swing_fe_pos_des_W / swing_fe_rpy_des_W
 ```
-
-这条链完整收口。下面第 8 节就是这部分。
 
 ## 8. FootPlacement：把步态状态变成摆动脚目标
 
@@ -943,6 +949,51 @@ phi = 0 和 phi = 1 附近速度比较平滑，
 摆动脚起步和落脚不会突然跳变。
 ```
 
+数学上可以写成：
+
+```text
+p(phi) = p0 + (pf - p0) * (2*pi*phi - sin(2*pi*phi)) / (2*pi)
+```
+
+其中：
+
+- `p0`：`posStart_W`
+- `pf`：`posDes_W`
+- `phi`：当前摆动相位
+
+定义：
+
+```text
+s(phi) = (2*pi*phi - sin(2*pi*phi)) / (2*pi)
+```
+
+则：
+
+```text
+s(0) = 0
+s(1) = 1
+```
+
+且：
+
+```text
+s'(phi) = 1 - cos(2*pi*phi)
+```
+
+所以：
+
+```text
+s'(0) = 0
+s'(1) = 0
+```
+
+这就是 x/y 方向摆线轨迹的意义：
+
+```text
+起点和终点附近水平速度接近 0，
+摆动脚不会突然起步，也不会在终点突然停住。
+```
+
 z 方向使用 `Trajectory(...)`：
 
 ```cpp
@@ -962,7 +1013,163 @@ pDesCur[2] = posStart_W(2) + Trajectory(0.2, stepHeight, posDes_W(2) - posStart_
 帮助摆动脚更容易接触地面/台阶。
 ```
 
-### 8.7 dataBusWrite() 写给谁
+### 8.7 Trajectory()：z 方向抬脚/落脚高度
+
+对应 [foot_placement.cpp](/home/ubuntu/Robot_Dynamics_Control/external/open_source_repos/OpenLoong-Dyn-Control/algorithm/foot_placement.cpp:123)：
+
+```cpp
+double FootPlacement::Trajectory(double phase, double hei, double len)
+{
+    Bezier_1D Bswpid;
+    double para0 = 5, para1 = 3;
+    for (int i = 0; i < para0; i++)
+    {
+        Bswpid.P.push_back(0.0);
+    }
+    for (int i = 0; i < para1; i++)
+    {
+        Bswpid.P.push_back(1.0);
+    }
+
+    double output;
+    if (phi < phase)
+    {
+        output = hei * Bswpid.getOut(phi / phase);
+    }
+    else
+    {
+        double s = Bswpid.getOut((1.4 - phi) / (1.4 - phase));
+        if (s > 0)
+        {
+            output = hei * s + len * (1.0 - s);
+        }
+        else
+        {
+            output = len;
+        }
+    }
+    return output;
+}
+```
+
+调用处是：
+
+```cpp
+Trajectory(0.2, stepHeight, posDes_W(2) - posStart_W(2))
+```
+
+所以三个参数是：
+
+- `phase = 0.2`：前 20% 相位主要用于抬脚
+- `hei = stepHeight`：最大抬脚高度
+- `len = posDes_W(2) - posStart_W(2)`：最终高度差
+
+`Trajectory()` 每次只返回一个标量：
+
+```text
+当前 phi 下，摆动脚 z 方向相对起点的高度偏移。
+```
+
+它不是一次返回整段轨迹数组。控制循环每个周期用新的 `phi` 调用一次，很多个 `output` 连起来，才形成完整的 z 方向摆脚轨迹。
+
+#### 8.7.1 Bezier 平滑函数
+
+这段代码构造了一组一维 Bezier 控制点：
+
+```cpp
+P = [0, 0, 0, 0, 0, 1, 1, 1]
+```
+
+`Bezier_1D::getOut(s)` 计算的是：
+
+```text
+B(s) = sum_{i=0..n} C(n, i) * (1 - s)^(n - i) * s^i * P_i
+```
+
+这里一共有 8 个控制点，所以 `n = 7`。由于前 5 个 `P_i = 0`，后 3 个 `P_i = 1`，实际可以理解为一个从 0 平滑过渡到 1 的函数：
+
+```text
+B(0) = 0
+B(1) = 1
+起点附近比较平
+终点附近也比较平
+```
+
+因此它适合用作抬脚/落脚阶段的平滑权重。
+
+#### 8.7.2 前段：抬脚
+
+当：
+
+```cpp
+phi < phase
+```
+
+代码使用：
+
+```cpp
+output = hei * Bswpid.getOut(phi / phase);
+```
+
+数学上：
+
+```text
+output(phi) = h * B(phi / phase)
+```
+
+含义是：
+
+```text
+前 20% 相位里，
+脚从起点高度平滑抬到 stepHeight。
+```
+
+#### 8.7.3 后段：落脚
+
+当：
+
+```cpp
+phi >= phase
+```
+
+代码先构造反向相位：
+
+```text
+r(phi) = (1.4 - phi) / (1.4 - phase)
+```
+
+再计算：
+
+```text
+s(phi) = B(r(phi))
+```
+
+最后：
+
+```cpp
+output = hei * s + len * (1.0 - s);
+```
+
+数学上：
+
+```text
+output(phi) = h * s(phi) + l * (1 - s(phi))
+```
+
+其中：
+
+- `h`：`stepHeight`
+- `l`：最终高度差 `len`
+
+所以这段是在做：
+
+```text
+从 stepHeight 平滑过渡到最终高度差 len。
+```
+
+`1.4` 是经验参数。因为正常 `phi` 最大约为 1，它让 z 方向不要太早完全压到最终高度，最后再配合 `zStretch` 做落地前向下探脚。
+
+### 8.8 dataBusWrite() 写给谁
 
 对应 [foot_placement.cpp](/home/ubuntu/Robot_Dynamics_Control/external/open_source_repos/OpenLoong-Dyn-Control/algorithm/foot_placement.cpp:29)：
 
@@ -980,6 +1187,20 @@ robotState.swing_fe_pos_des_W << pDesCur[0], pDesCur[1], pDesCur[2];
 - `swing_fe_pos_des_W`：WBC 真正读取的摆动脚位置目标
 - `swing_fe_rpy_des_W`：WBC 真正读取的摆动脚姿态目标
 
+这里最关键的区别是：
+
+```text
+swingDesPosFinal_W = posDes_W
+```
+
+表示这一整步最终落点；
+
+```text
+swing_fe_pos_des_W = pDesCur
+```
+
+表示当前 `phi` 对应的摆动脚世界系目标点，也是 WBC 每个控制周期真正跟踪的目标。
+
 姿态目标目前很简单：
 
 ```text
@@ -990,7 +1211,7 @@ yaw = base_rpy_des.z
 
 也就是摆动脚 yaw 跟随期望 base yaw。
 
-### 8.8 FootPlacement 本节结论
+### 8.9 FootPlacement 本节结论
 
 `FootPlacement` 可以收成一句：
 
