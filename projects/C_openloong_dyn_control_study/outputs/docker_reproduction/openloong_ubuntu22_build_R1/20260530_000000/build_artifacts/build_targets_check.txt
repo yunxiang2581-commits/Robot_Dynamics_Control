@@ -1,0 +1,8 @@
+walk_wbc build/walk_wbc NOT FOUND
+walk_mpc_wbc build/walk_mpc_wbc NOT FOUND
+wbc_speed_test build/wbc_speed_test NOT FOUND
+jump_mpc build/jump_mpc NOT FOUND
+float_control build/float_control NOT FOUND
+
+说明：cmake --build 在链接 MuJoCo 动态库阶段失败，后续可执行文件检查命令没有进入容器脚本的自动执行阶段。
+本文件为本轮复现后的人工记录，用于说明预期 demo 目标均未生成可执行文件。
