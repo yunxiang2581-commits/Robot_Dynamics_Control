@@ -1,0 +1,9 @@
+[submodule "projects/E_augmpc_hybrid_locomotion_study/external/open_source_repos/IBRIDO"]
+	path = projects/E_augmpc_hybrid_locomotion_study/external/open_source_repos/IBRIDO
+	url = https://github.com/AndrePatri/IBRIDO.git
+[submodule "projects/E_augmpc_hybrid_locomotion_study/external/open_source_repos/LRHControl"]
+	path = projects/E_augmpc_hybrid_locomotion_study/external/open_source_repos/LRHControl
+	url = https://github.com/AndrePatri/LRHControl.git
+[submodule "projects/E_augmpc_hybrid_locomotion_study/external/open_source_repos/ibrido-containers"]
+	path = projects/E_augmpc_hybrid_locomotion_study/external/open_source_repos/ibrido-containers
+	url = https://github.com/AndrePatri/ibrido-containers.git
