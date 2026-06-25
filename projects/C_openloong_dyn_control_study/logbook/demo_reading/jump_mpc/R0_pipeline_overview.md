@@ -17,7 +17,19 @@ jump_mpc:     状态机驱动，重点是起跳、腾空、下落、触地恢复
 2. MPC 在跳跃里什么时候启用、什么时候关闭？
 3. MPC 的输出最后怎样进入电机命令？
 
-## 2. 先看总流程
+## 2. 当前阅读进度
+
+这一份 R0 先作为 jump demo 的总地图，后面按 walk_wbc 那样分轮推进：
+
+- `R0`：已完成，总览与阅读路线图
+- `R1`：待阅读，主流程和主循环入口
+- `R2`：待阅读，`jump_state` 和阶段切换
+- `R3`：待阅读，MPC 何时介入、输出如何使用
+- `R4`：待阅读，Jacobian / wrench -> 关节力矩
+- `R5`：待阅读，PVT 和最终 `ctrl` 写回
+- `R6`：待阅读，和 `walk_mpc_wbc` 的差异总结
+
+## 3. 先看总流程
 
 `jump_mpc.cpp` 的控制链路可以先记成：
 
@@ -34,7 +46,7 @@ MuJoCo
 
 和 `walk_mpc_wbc` 相比，这里不再强调 `gaitScheduler` 和 `FootPlacement` 的周期性步态，而是靠 `jump_state` 来切换不同阶段的控制策略。
 
-## 3. jump_mpc 的阶段结构
+## 4. jump_mpc 的阶段结构
 
 源码里最关键的是：
 
@@ -63,7 +75,7 @@ double prepareTime = 3;
 
 这和 walking 的周期性 `legState` 不一样，jump 的控制逻辑是显式状态机。
 
-## 4. 跳跃 demo 的核心变量
+## 5. 跳跃 demo 的核心变量
 
 这一版跳跃控制最重要的变量有：
 
@@ -90,7 +102,7 @@ fe_react_tau_cmd
 - `Jac_stand`：双脚支撑时的接触 Jacobian。
 - `FLest / FRest`：根据关节力矩反推的左右脚接触力估计。
 
-## 5. MPC 在 jump_mpc 里怎么插
+## 6. MPC 在 jump_mpc 里怎么插
 
 `jump_mpc` 里和 `walk_mpc_wbc` 一样有 MPC，但调用方式更直接：
 
@@ -124,7 +136,7 @@ MPC 给出接触力前馈
 -> 再交给 PVT
 ```
 
-## 6. 和 walk_mpc_wbc 的关键区别
+## 7. 和 walk_mpc_wbc 的关键区别
 
 ### 6.1 walk_mpc_wbc
 
@@ -146,7 +158,7 @@ jump demo 的 MPC 更偏向：
 
 也就是说，jump 里的 MPC 更像“推一把”，目标是让身体获得足够的向上速度，而不是维持周期走路。
 
-## 7. 为什么跳跃更适合用状态机
+## 8. 为什么跳跃更适合用状态机
 
 因为跳跃不是平稳周期行为，而是强阶段性行为。
 
@@ -169,7 +181,7 @@ walking: 先有周期步态，再用 MPC/WBC 跟踪
 jumping: 先有阶段状态机，再在阶段内部启用 MPC
 ```
 
-## 8. 跳跃 demo 的核心输出
+## 9. 跳跃 demo 的核心输出
 
 和 walking 一样，最后都要写回：
 
@@ -198,7 +210,7 @@ RobotState.js_eul_des
 落地时怎么重新恢复支撑
 ```
 
-## 9. 当前源码里可先抓住的控制逻辑
+## 10. 当前源码里可先抓住的控制逻辑
 
 从源码看，`jump_mpc.cpp` 至少有三层控制逻辑：
 
@@ -238,7 +250,7 @@ else if (simTime >= startJumpingTime) { ... }
 按 jump_state 切换起跳、上升、下降、恢复
 ```
 
-## 10. 这一轮先得到什么结论
+## 11. 这一轮先得到什么结论
 
 先把 `jump_mpc` 粗略记成一句话：
 
@@ -248,7 +260,9 @@ else if (simTime >= startJumpingTime) { ... }
 再借助 Jacobian 和 PVT 把结果变成电机 torque。
 ```
 
-## 11. 后续阅读顺序
+## 12. 后续阅读顺序
+
+这一段和 walk_wbc 的 R0 一样，后面会拆成几轮慢慢读：
 
 后面可以按这个顺序继续：
 
@@ -258,11 +272,10 @@ else if (simTime >= startJumpingTime) { ... }
 4. `FLest / FRest` 是怎么估计的
 5. PVT 如何把关节 torque 发给 MuJoCo
 
-## 12. 面试一句话
+## 13. 面试一句话
 
 如果要用一句话讲 jump demo，可以先这么说：
 
 ```text
 我阅读并复盘了 OpenLoong 的 jump_mpc 跳跃 demo，理解了它如何通过跳跃状态机切换起跳、腾空和落地阶段，并结合 MPC、Jacobian 映射和 PVT 实现从接触力前馈到关节力矩输出的完整闭环。
 ```
-
