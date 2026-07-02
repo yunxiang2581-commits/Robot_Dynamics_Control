@@ -98,3 +98,12 @@ external/open_source_repos/
 
 # Project C reproduction scratch worktrees contain upstream source copies and build outputs.
 projects/C_openloong_dyn_control_study/outputs/docker_reproduction/**/worktree/
+
+# --- Project C docker reproduction demo run artifacts (regenerable, not source) ---
+projects/C_openloong_dyn_control_study/outputs/docker_reproduction/openloong_demo_runs/
+projects/C_openloong_dyn_control_study/outputs/docker_reproduction/openloong_modular_jump_runs/
+projects/C_openloong_dyn_control_study/outputs/docker_reproduction/*_jump_verify_*/
+projects/C_openloong_dyn_control_study/outputs/docker_reproduction/*_basepos_exp/
+projects/C_openloong_dyn_control_study/outputs/docker_reproduction/latest_*.txt
+# stray windows dir with trailing dot (unopenable by git)
+image/remote_vscode_tailscale_ssh_setup./
