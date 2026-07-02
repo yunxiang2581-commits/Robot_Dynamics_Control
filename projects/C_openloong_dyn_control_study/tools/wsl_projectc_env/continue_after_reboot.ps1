@@ -46,7 +46,8 @@ function Require-File {
 
 function Test-WslCommandReady {
     $helpText = (& wsl.exe --help 2>&1) -join "`n"
-    return ($helpText -match "--import") -or ($helpText -match "--list") -or ($helpText -match "-l")
+    $plainHelpText = $helpText -replace "`0", ""
+    return ($plainHelpText -match "--import") -or ($plainHelpText -match "--list") -or ($plainHelpText -match "-l")
 }
 
 $downloadDir = Join-Path $WslRoot "downloads"

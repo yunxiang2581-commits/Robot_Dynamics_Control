@@ -27,6 +27,7 @@ declare -gA OPENLOONG_DEMO_TO_EXEC=(
     [walk_mpc_wbc_joystick]=walk_mpc_wbc_joystick
     [walk_wbc_joystick]=walk_wbc_joystick
     [jump_mpc]=jump_mpc
+    [jump_mpc_modular]=jump_mpc_modular
     [float_control]=float_control
     [walk_wbc_speed_test]=wbc_speed_test
     [wbc_speed_test]=wbc_speed_test
@@ -40,6 +41,7 @@ declare -ga OPENLOONG_CANONICAL_DEMOS=(
     walk_mpc_wbc_joystick
     walk_wbc_joystick
     jump_mpc
+    jump_mpc_modular
     float_control
     walk_wbc_speed_test
 )

@@ -27,6 +27,13 @@ if [[ ! -x "./$EXECUTABLE_NAME" ]]; then
     exit 1
 fi
 
+if [[ "$DEMO_NAME" == "jump_mpc" && -z "${OPENLOONG_HOLD_WINDOW_AFTER_END:-}" ]]; then
+    export OPENLOONG_HOLD_WINDOW_AFTER_END=1
+fi
+if [[ "$DEMO_NAME" == "jump_mpc" && -z "${OPENLOONG_HOLD_WINDOW_SECONDS:-}" ]]; then
+    export OPENLOONG_HOLD_WINDOW_SECONDS=600
+fi
+
 {
 echo "pwd: $(pwd)"
 echo "demo: $DEMO_NAME"
@@ -49,6 +56,10 @@ readelf -d "./$EXECUTABLE_NAME" | grep -E "RPATH|RUNPATH" || true
 echo
 echo "record dir:"
 ls -lah "$RECORD_DIR" || true
+echo
+echo "visual hold:"
+echo "OPENLOONG_HOLD_WINDOW_AFTER_END=${OPENLOONG_HOLD_WINDOW_AFTER_END:-}"
+echo "OPENLOONG_HOLD_WINDOW_SECONDS=${OPENLOONG_HOLD_WINDOW_SECONDS:-}"
 } 2>&1 | tee "$PRECHECK_LOG"
 
 "./$EXECUTABLE_NAME" 2>&1 | tee "$RUNTIME_LOG"
