@@ -107,3 +107,10 @@ projects/C_openloong_dyn_control_study/outputs/docker_reproduction/*_basepos_exp
 projects/C_openloong_dyn_control_study/outputs/docker_reproduction/latest_*.txt
 # stray windows dir with trailing dot (unopenable by git)
 image/remote_vscode_tailscale_ssh_setup./
+
+# --- local tooling / scratch, not project deliverables ---
+.claude/
+tmp/
+outputs/chat_extract/
+outputs/grok_image_web/
+tools/grok_image_web/

@@ -100,3 +100,14 @@ WSL 和 Docker 可用后，验证顺序是：
 - `docker version`：已返回 Client/Server `29.6.0`。
 - `docker build -t openloong-ubuntu22-build:local ...`：已成功。
 - `test_openloong_watch_sync_build.sh`：已成功。
+
+## 2026-06-27 复核
+
+- WSL 发行版：`Ubuntu-22.04-ProjectC`，WSL2。
+- WSL 发行版虚拟磁盘：`D:\wsl\distros\Ubuntu-22.04-ProjectC\ext4.vhdx`，当前约 `5.36 GB`。
+- Docker daemon：active。
+- Docker version：Client/Server `29.6.0`。
+- Docker info：`DockerRootDir=/var/lib/docker`，`Driver=overlayfs`，`Cgroup=systemd`。
+- Docker 镜像：`openloong-ubuntu22-build:local` 已存在，约 `2.34 GB`。
+- Project C 脚本测试：`test_openloong_watch_sync_build.sh` 通过。
+- 容器 smoke check：镜像内 `gcc-11`、`g++-11`、`cmake`、`python3` 可用；已有 R2 build 产物中的 `walk_wbc` 和 `wbc_speed_test` 可在容器挂载路径下访问。
