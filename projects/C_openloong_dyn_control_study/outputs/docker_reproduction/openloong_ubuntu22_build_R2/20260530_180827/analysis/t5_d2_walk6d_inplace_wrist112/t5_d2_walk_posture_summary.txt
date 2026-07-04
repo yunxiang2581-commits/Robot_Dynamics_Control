@@ -1,0 +1,13 @@
+T5-D2 walk 6-DoF right-hand posture hold summary
+source_log=D:\project\Robot_Dynamics_Control\projects\C_openloong_dyn_control_study\outputs\docker_reproduction\openloong_ubuntu22_build_R2\20260530_180827\logs\20260704_t5_d2_walk6d_inplace_wrist112_smoke70.log
+locked_count=19
+all_pos_max_mm=34.758
+all_rot_max_deg=3.360
+steady_count=12
+steady_pos_avg_mm=10.496
+steady_pos_max_mm=14.523
+steady_pos_tail_mm=13.177
+steady_rot_avg_deg=1.708
+steady_rot_max_deg=2.744
+steady_rot_tail_deg=1.578
+done_check_result=PASS_STEADY_STATE

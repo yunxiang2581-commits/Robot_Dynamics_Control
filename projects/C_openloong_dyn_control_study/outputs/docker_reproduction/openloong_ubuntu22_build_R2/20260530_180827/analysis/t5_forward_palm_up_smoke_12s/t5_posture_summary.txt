@@ -1,0 +1,17 @@
+T5 stand posture smoke analysis
+
+runtime_log=D:\project\Robot_Dynamics_Control\projects\C_openloong_dyn_control_study\outputs\docker_reproduction\openloong_ubuntu22_build_R2\20260530_180827\logs\20260704_t5_forward_palm_up_smoke_12s.log
+sample_period_s=0.500
+total_samples=4
+locked_samples=2
+lock_count=1000
+lock_time_s=1.000
+lock_pose=[pos=(0.323218, -0.391693, 1.065010), rot_des_angle_deg=0.000]
+angular_j_nonzero_cols(raw)=3 4 5 13 14 15 16 17 18 19
+model_nv=37
+
+locked_pos_err_mm: count=2, avg=348.358, max=373.606, tail=373.606
+locked_rot_err_deg: count=2, avg=107.519, max=112.148, tail=112.148
+
+done_check: locked_pos_err_max_mm < 20.0 and locked_rot_err_max_deg < 5.0
+done_check_result=FAIL

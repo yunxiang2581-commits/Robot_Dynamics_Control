@@ -1,0 +1,29 @@
+T5-D3 delayed-lock right-hand 6-DoF posture hold summary
+steady_start_s=4.5
+
+[D2 lock@1000]
+locked_count=19
+all_pos_max_mm=34.758
+all_rot_max_deg=3.360
+steady_count=12
+steady_pos_avg_mm=10.496
+steady_pos_max_mm=14.523
+steady_pos_tail_mm=13.177
+steady_rot_avg_deg=1.708
+steady_rot_max_deg=2.744
+steady_rot_tail_deg=1.578
+
+[D3 lock@4500]
+locked_count=10
+all_pos_max_mm=16.149
+all_rot_max_deg=3.125
+steady_count=10
+steady_pos_avg_mm=10.091
+steady_pos_max_mm=16.149
+steady_pos_tail_mm=6.913
+steady_rot_avg_deg=1.587
+steady_rot_max_deg=3.125
+steady_rot_tail_deg=1.250
+
+all_pos_peak_reduction_pct=53.5
+done_check_result=PASS_ALL_LOCKED
