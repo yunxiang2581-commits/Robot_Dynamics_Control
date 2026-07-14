@@ -38,9 +38,10 @@ v1 sim 卡死根因:机器人蹲到 base_z=0.90 时右前臂持续压杆顶(`cro
 
 ### 3.0 `CrouchPhase` 改动(回退 v1 实验 + high-and-back hover)
 - **删除** v1 的 `CROUCH_RETRACT_ARM`/`CONTACT_ABORT_TICKS`/收高-后撤实验(已实测无效/反效果);CrouchPhase 回到 M1a 干净形态:legs-only 下降(descend 段不发 Cartesian 手任务,避免 M1a 观测到的下降期塌陷)+ 进入 hover 窗口后 pose6 hover。
-- **hover 目标 = high-and-back pre-grasp 悬停**(杆上后撤,见 3.1 Hover):下蹲期把手 park 在远离杆的高后位,配合 elbow-out 种子偏置,让前臂在沉降时不横压杆顶。**去掉 G1**后,不压顶靠这两条(hover 位置 + elbow-out 种子),不靠相位内固定姿。
+- **hover 目标 = high-and-back pre-grasp 悬停**(杆上后撤,见 3.1 Hover):下蹲期把手 park 在远离杆的高后位,让前臂在沉降时不横压杆顶。**去掉 G1**后,下蹲期不压顶主要靠 hover 位置(把手停在远离杆的高后位)。
 - checkAbort:side/top 中止(与 ApproachUnder/Grasp 统一);done() 不变(base_z≤0.93 + 静止 + settle_time_s)。
-- **实现前必查(verify-before-code):** 确认 `OPENLOONG_T5_ELBOW_OUT_BIAS=0.25` 在 `OPENLOONG_T5_NEW_FSM=1` 路径下**确实生效**(种子偏置施加到右臂 IK)。理由:v1 已证"只靠 hover 位置"不足以清开前臂;若 NEW_FSM 路径未接 elbow-out 种子,须先补接,否则 G2 轨迹仍会压顶。engine `-e` 白名单已含此变量(前轮修复)。
+- **elbow-out 机制的真实边界(2026-07-14 静态确认,坏消息):** `applyRightElbowOutBias`(`walk_mpc_wbc_t5_pick_place.cpp:1984`)只在开机 `if (t5_forward_palm_up)` 初始化块内施加到 `initJointPosRes`——它设定的是**初始关节姿**,**不是抓取期每 tick 的手 IK 种子偏置**。所以 spec 早前"前臂靠 elbow-out 种子持续外摆"的假设**不成立**:抓取期手 IK 跟踪杆下 waypoint 时,冗余肘 DOF 可能漂回杆顶,初始外摆会被冲洗掉。**因此 v2 的主杠杆是 G2 轨迹本身**(descend-behind→沿轴 insert,几何上就不从上砸),这条独立于 elbow-out 仍成立。
+- **实现前必查(verify-before-code,#1 风险):** 抓取期(ApproachUnder/Grasp 每 tick 手 IK)冗余肘 DOF 是否保持外摆——取决于 `computeInK_Hand` 是否 warm-start(以上一 tick 解为种子)。这是 sim 首个观测项:若 InsertUnder 段前臂几何越顶(手心到位但前臂压杆),说明肘 DOF 漂回,需要在抓取期手 IK 种子里补 elbow-out(而非仅依赖 init 姿)。engine `-e` 白名单已含 `OPENLOONG_T5_ELBOW_OUT_BIAS`(前轮修复)。
 
 ### 3.1 `ApproachUnderPhase`(axis_lift 三段轨迹,pose6 锁朝向)
 
